@@ -34,7 +34,8 @@ export async function upsertExpenseCategoryAction(formData: FormData) {
 
   revalidatePath("/expenses");
   revalidatePath("/admin/expenses");
-  redirect("/admin/expenses?success=category-saved");
+  revalidatePath("/admin/expenses/settings");
+  redirect("/admin/expenses/settings?success=category-saved");
 }
 
 export async function deleteExpenseCategoryAction(formData: FormData) {
@@ -43,7 +44,8 @@ export async function deleteExpenseCategoryAction(formData: FormData) {
   await db.delete(expenseCategories).where(eq(expenseCategories.id, id));
   revalidatePath("/expenses");
   revalidatePath("/admin/expenses");
-  redirect("/admin/expenses?success=category-deleted");
+  revalidatePath("/admin/expenses/settings");
+  redirect("/admin/expenses/settings?success=category-deleted");
 }
 
 export async function upsertExpenseAction(formData: FormData) {
@@ -97,5 +99,3 @@ export async function deleteExpenseAction(formData: FormData) {
   revalidatePath("/admin/expenses");
   redirect("/admin/expenses?success=expense-deleted");
 }
-
-
