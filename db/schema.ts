@@ -58,6 +58,7 @@ export const events = pgTable(
     slug: varchar("slug", { length: 180 }).notNull(),
     description: text("description"),
     venue: varchar("venue", { length: 180 }),
+    bannerImageUrl: text("banner_image_url"),
     startsAt: timestamp("starts_at", { withTimezone: true }),
     endsAt: timestamp("ends_at", { withTimezone: true }),
     budget: integer("budget").notNull().default(0),
@@ -308,6 +309,3 @@ export type BoothLocation = typeof boothLocations.$inferSelect;
 export type Product = typeof products.$inferSelect;
 export type ExpenseCategory = typeof expenseCategories.$inferSelect;
 export type Expense = typeof expenses.$inferSelect;
-
-
-

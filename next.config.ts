@@ -9,6 +9,10 @@ const nextConfig: NextConfig = {
       },
       {
         protocol: "https",
+        hostname: "comifuro.net"
+      },
+      {
+        protocol: "https",
         hostname: "images.unsplash.com"
       }
     ]

@@ -20,6 +20,7 @@ CREATE TABLE "events" (
   "slug" varchar(180) NOT NULL,
   "description" text,
   "venue" varchar(180),
+  "banner_image_url" text,
   "starts_at" timestamptz,
   "ends_at" timestamptz,
   "budget" integer NOT NULL DEFAULT 0,

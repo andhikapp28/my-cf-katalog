@@ -97,10 +97,16 @@ export default async function ProductsPage({
         view === "list" ? (
           <div className="space-y-3">
             {products.map((product) => (
-              <Link key={product.id} href={`/products/${product.id}`} className="panel flex items-center justify-between gap-4 p-4 hover:border-brand-300">
+              <Link
+                key={product.id}
+                href={`/products/${product.id}`}
+                className="panel flex items-center justify-between gap-4 p-4 hover:border-brand-300"
+              >
                 <div>
                   <p className="font-semibold text-ink-900">{product.name}</p>
-                  <p className="mt-1 text-sm text-ink-500">{product.circle.name} â€¢ Booth {boothMap.get(`${product.eventId}:${product.circleId}`) || "-"}</p>
+                  <p className="mt-1 text-sm text-ink-500">
+                    {product.circle.name} - Booth {boothMap.get(`${product.eventId}:${product.circleId}`) || "-"}
+                  </p>
                 </div>
                 <div className="text-right text-sm text-ink-700">
                   <p>{product.status}</p>
@@ -126,5 +132,3 @@ export default async function ProductsPage({
     </div>
   );
 }
-
-

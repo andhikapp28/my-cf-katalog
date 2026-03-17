@@ -51,6 +51,8 @@ async function main() {
       slug: "comifuro-22",
       description: "Sample event untuk bootstrap katalog target belanja.",
       venue: "ICE BSD City",
+      bannerImageUrl:
+        "https://images.unsplash.com/photo-1511578314322-379afb476865?auto=format&fit=crop&w=1600&q=80",
       startsAt: new Date("2026-07-18T09:00:00+07:00"),
       endsAt: new Date("2026-07-19T18:00:00+07:00"),
       budget: 1500000,

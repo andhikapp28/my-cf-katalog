@@ -1,8 +1,8 @@
 export const dynamic = "force-dynamic";
 
 import Link from "next/link";
-import { EmptyState } from "@/components/ui/empty-state";
 import { Card, CardContent } from "@/components/ui/card";
+import { EmptyState } from "@/components/ui/empty-state";
 import { getFloorMapsList } from "@/db/queries";
 
 export default async function MapsPage() {
@@ -27,10 +27,13 @@ export default async function MapsPage() {
           <Card key={map.id}>
             <CardContent className="space-y-3">
               <p className="text-sm text-ink-500">{map.event.name}</p>
-              <Link href={`/maps/${map.id}`} className="font-[var(--font-display)] text-2xl font-semibold text-ink-900 hover:text-brand-700">
+              <Link
+                href={`/maps/${map.id}`}
+                className="font-[var(--font-display)] text-2xl font-semibold text-ink-900 hover:text-brand-700"
+              >
                 {map.name}
               </Link>
-              <p className="text-sm text-ink-500">{map.width} Ã— {map.height}</p>
+              <p className="text-sm text-ink-500">{map.width} x {map.height}</p>
               <Link href={`/maps/${map.id}`} className="inline-flex rounded-full border border-line px-4 py-2 text-sm font-medium text-ink-700">
                 Open map
               </Link>
@@ -41,5 +44,3 @@ export default async function MapsPage() {
     </div>
   );
 }
-
-

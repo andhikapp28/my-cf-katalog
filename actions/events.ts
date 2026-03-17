@@ -2,11 +2,11 @@
 
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
+import { eq } from "drizzle-orm";
 import { db } from "@/db";
 import { events } from "@/db/schema";
-import { eventSchema } from "@/lib/validators";
 import { requireAdmin } from "@/lib/auth";
-import { eq } from "drizzle-orm";
+import { eventSchema } from "@/lib/validators";
 
 export async function upsertEventAction(formData: FormData) {
   await requireAdmin();
@@ -17,6 +17,7 @@ export async function upsertEventAction(formData: FormData) {
     slug: formData.get("slug"),
     description: formData.get("description") || undefined,
     venue: formData.get("venue") || undefined,
+    bannerImageUrl: formData.get("bannerImageUrl") || undefined,
     startsAt: formData.get("startsAt") || undefined,
     endsAt: formData.get("endsAt") || undefined,
     budget: formData.get("budget"),
@@ -35,6 +36,7 @@ export async function upsertEventAction(formData: FormData) {
         slug: parsed.slug,
         description: parsed.description,
         venue: parsed.venue,
+        bannerImageUrl: parsed.bannerImageUrl || null,
         startsAt: parsed.startsAt ? new Date(parsed.startsAt) : null,
         endsAt: parsed.endsAt ? new Date(parsed.endsAt) : null,
         budget: parsed.budget,
@@ -48,6 +50,7 @@ export async function upsertEventAction(formData: FormData) {
       slug: parsed.slug,
       description: parsed.description,
       venue: parsed.venue,
+      bannerImageUrl: parsed.bannerImageUrl || null,
       startsAt: parsed.startsAt ? new Date(parsed.startsAt) : null,
       endsAt: parsed.endsAt ? new Date(parsed.endsAt) : null,
       budget: parsed.budget,
@@ -72,5 +75,3 @@ export async function deleteEventAction(formData: FormData) {
   revalidatePath("/admin/events");
   redirect("/admin/events?success=event-deleted");
 }
-
-

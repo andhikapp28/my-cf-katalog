@@ -82,7 +82,7 @@ export default async function ExpensesPage({
                   <div className="flex items-start justify-between gap-4">
                     <div>
                       <p className="font-medium text-ink-900">{item.product?.name || item.category.name}</p>
-                      <p className="mt-1 text-ink-500">{formatDate(item.expenseDate)} â€¢ {item.paymentMethod}</p>
+                      <p className="mt-1 text-ink-500">{formatDate(item.expenseDate)} - {item.paymentMethod}</p>
                       {item.note ? <p className="mt-2 text-ink-600">{item.note}</p> : null}
                     </div>
                     <p className="font-semibold text-ink-900">{formatCurrency(item.amount)}</p>
@@ -96,5 +96,3 @@ export default async function ExpensesPage({
     </div>
   );
 }
-
-

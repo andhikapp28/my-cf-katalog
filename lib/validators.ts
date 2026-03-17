@@ -12,6 +12,7 @@ export const eventSchema = z.object({
   slug: z.string().min(2).max(180),
   description: z.string().max(2000).optional(),
   venue: z.string().max(180).optional(),
+  bannerImageUrl: z.string().url().optional().or(z.literal("")),
   startsAt: z.string().optional(),
   endsAt: z.string().optional(),
   budget: z.coerce.number().int().min(0),
@@ -51,6 +52,7 @@ export const productSchema = z.object({
   eventId: z.string().uuid(),
   circleId: z.string().uuid(),
   name: z.string().min(2).max(200),
+  imageUrl: z.string().url().optional().or(z.literal("")),
   price: z.coerce.number().int().min(0),
   poDeadline: z.string().optional(),
   productLink: z.string().url().optional().or(z.literal("")),
@@ -58,8 +60,7 @@ export const productSchema = z.object({
   priority: z.enum(priorities),
   quantity: z.coerce.number().int().min(1).max(99),
   notes: z.string().max(4000).optional(),
-  purchaseType: z.enum(purchaseTypes),
-  previousImageUrl: z.string().url().optional().or(z.literal(""))
+  purchaseType: z.enum(purchaseTypes)
 });
 
 export const expenseCategorySchema = z.object({
@@ -85,6 +86,3 @@ export const expenseSchema = z
   .refine((data) => data.isPlanned || data.isActual, {
     message: "Expense harus planned atau actual."
   });
-
-
-
