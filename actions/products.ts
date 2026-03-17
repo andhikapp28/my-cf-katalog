@@ -6,7 +6,6 @@ import { eq } from "drizzle-orm";
 import { db } from "@/db";
 import { productStatusLogs, products } from "@/db/schema";
 import { requireAdmin } from "@/lib/auth";
-import { safeDeleteBlob, uploadImageToBlob } from "@/lib/blob";
 import { productSchema } from "@/lib/validators";
 
 export async function upsertProductAction(formData: FormData) {
@@ -17,6 +16,7 @@ export async function upsertProductAction(formData: FormData) {
     eventId: formData.get("eventId"),
     circleId: formData.get("circleId"),
     name: formData.get("name"),
+    imageUrl: formData.get("imageUrl") || undefined,
     price: formData.get("price"),
     poDeadline: formData.get("poDeadline") || undefined,
     productLink: formData.get("productLink") || undefined,
@@ -24,16 +24,10 @@ export async function upsertProductAction(formData: FormData) {
     priority: formData.get("priority"),
     quantity: formData.get("quantity"),
     notes: formData.get("notes") || undefined,
-    purchaseType: formData.get("purchaseType"),
-    previousImageUrl: formData.get("previousImageUrl") || undefined
+    purchaseType: formData.get("purchaseType")
   });
 
-  const image = formData.get("image");
-  let imageUrl = parsed.previousImageUrl || null;
-
-  if (image instanceof File && image.size > 0) {
-    imageUrl = await uploadImageToBlob(image, "products", parsed.previousImageUrl || null);
-  }
+  const imageUrl = parsed.imageUrl || null;
 
   if (parsed.id) {
     const previous = await db.query.products.findFirst({
@@ -46,6 +40,7 @@ export async function upsertProductAction(formData: FormData) {
         eventId: parsed.eventId,
         circleId: parsed.circleId,
         name: parsed.name,
+        imageUrl,
         price: parsed.price,
         poDeadline: parsed.poDeadline || null,
         productLink: parsed.productLink || null,
@@ -54,7 +49,6 @@ export async function upsertProductAction(formData: FormData) {
         quantity: parsed.quantity,
         notes: parsed.notes,
         purchaseType: parsed.purchaseType,
-        imageUrl,
         updatedAt: new Date()
       })
       .where(eq(products.id, parsed.id));
@@ -74,6 +68,7 @@ export async function upsertProductAction(formData: FormData) {
         eventId: parsed.eventId,
         circleId: parsed.circleId,
         name: parsed.name,
+        imageUrl,
         price: parsed.price,
         poDeadline: parsed.poDeadline || null,
         productLink: parsed.productLink || null,
@@ -81,8 +76,7 @@ export async function upsertProductAction(formData: FormData) {
         priority: parsed.priority,
         quantity: parsed.quantity,
         notes: parsed.notes,
-        purchaseType: parsed.purchaseType,
-        imageUrl
+        purchaseType: parsed.purchaseType
       })
       .returning();
 
@@ -137,9 +131,7 @@ export async function quickUpdateProductStatusAction(formData: FormData) {
 export async function deleteProductImageAction(formData: FormData) {
   await requireAdmin();
   const productId = String(formData.get("productId") ?? "");
-  const imageUrl = String(formData.get("imageUrl") ?? "");
   await db.update(products).set({ imageUrl: null, updatedAt: new Date() }).where(eq(products.id, productId));
-  await safeDeleteBlob(imageUrl);
   revalidatePath("/products");
   revalidatePath("/admin/products");
   redirect("/admin/products?success=image-removed");
@@ -148,14 +140,10 @@ export async function deleteProductImageAction(formData: FormData) {
 export async function deleteProductAction(formData: FormData) {
   await requireAdmin();
   const id = String(formData.get("id") ?? "");
-  const existing = await db.query.products.findFirst({ where: eq(products.id, id) });
   await db.delete(products).where(eq(products.id, id));
-  await safeDeleteBlob(existing?.imageUrl);
   revalidatePath("/");
   revalidatePath("/products");
   revalidatePath("/admin");
   revalidatePath("/admin/products");
   redirect("/admin/products?success=product-deleted");
 }
-
-

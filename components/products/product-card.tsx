@@ -1,7 +1,7 @@
-import Image from "next/image";
 import Link from "next/link";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
+import { ProductImage } from "@/components/products/product-image";
 import { priorityStyles, statusStyles } from "@/lib/constants";
 import { formatCurrency, formatDate } from "@/lib/format";
 
@@ -27,13 +27,13 @@ export function ProductCard({
 }) {
   return (
     <Card className="overflow-hidden">
-      <div className="relative aspect-[4/3] bg-brand-50">
-        {product.imageUrl ? (
-          <Image src={product.imageUrl} alt={product.name} fill className="object-cover" />
-        ) : (
-          <div className="flex h-full items-center justify-center text-sm text-ink-500">No image</div>
-        )}
-      </div>
+      <ProductImage
+        src={product.imageUrl}
+        alt={product.name}
+        className="aspect-[4/3] rounded-none border-0"
+        fallbackLabel="No image"
+        fallbackDescription="Tambahkan direct image URL untuk preview produk ini."
+      />
       <CardContent className="space-y-4">
         <div className="space-y-2">
           <div className="flex flex-wrap gap-2">
@@ -80,5 +80,3 @@ export function ProductCard({
     </Card>
   );
 }
-
-

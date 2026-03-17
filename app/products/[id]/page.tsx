@@ -1,10 +1,10 @@
 export const dynamic = "force-dynamic";
 
-import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
+import { ProductImage } from "@/components/products/product-image";
 import { getBoothLocationForCircle, getProductById } from "@/db/queries";
 import { formatCurrency, formatDate, formatDateTime } from "@/lib/format";
 import { priorityStyles, statusStyles } from "@/lib/constants";
@@ -23,13 +23,13 @@ export default async function ProductDetailPage({ params }: { params: Promise<{ 
     <div className="container-shell space-y-8 py-8">
       <section className="grid gap-6 lg:grid-cols-[1fr_0.95fr]">
         <div className="panel overflow-hidden p-4">
-          <div className="relative aspect-[4/3] overflow-hidden rounded-3xl border border-line bg-brand-50">
-            {product.imageUrl ? (
-              <Image src={product.imageUrl} alt={product.name} fill className="object-cover" />
-            ) : (
-              <div className="flex h-full items-center justify-center text-sm text-ink-500">No image uploaded</div>
-            )}
-          </div>
+          <ProductImage
+            src={product.imageUrl}
+            alt={product.name}
+            className="aspect-[4/3] rounded-3xl"
+            fallbackLabel="No image"
+            fallbackDescription="Direct image URL belum diisi atau preview tidak bisa dimuat."
+          />
         </div>
         <div className="panel p-6">
           <div className="flex flex-wrap gap-2">
@@ -123,5 +123,3 @@ export default async function ProductDetailPage({ params }: { params: Promise<{ 
     </div>
   );
 }
-
-
