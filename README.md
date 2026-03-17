@@ -1,54 +1,55 @@
 # Katalog CF22
 
-Aplikasi web katalog belanja Comifuro berbasis event untuk penggunaan personal jangka panjang. Stack utama: Next.js App Router, TypeScript strict, Tailwind CSS, PostgreSQL, Drizzle ORM, Vercel Blob, dan Auth.js credentials login untuk admin.
+Aplikasi web katalog belanja Comifuro berbasis event untuk penggunaan personal jangka panjang. Stack utama: Next.js App Router, TypeScript strict, Tailwind CSS, PostgreSQL, Drizzle ORM, Auth.js credentials login, dan Vercel Blob untuk floor map.
 
 ## Arsitektur Singkat
-- Satu project full-stack Next.js tanpa backend Express terpisah.
-- Server Components untuk halaman utama, server actions untuk seluruh CRUD admin.
-- Drizzle ORM + PostgreSQL untuk data event, circle, produk, booth, map, expense, dan admin user.
-- Auth.js credentials dengan proteksi middleware untuk seluruh route `/admin/*`.
-- Upload gambar produk dan floor map ke Vercel Blob dengan validasi mime type dan ukuran.
-- Data dipisah per event, tetapi circle tetap reusable lintas event melalui booth locations.
+- Satu project full-stack Next.js tanpa backend terpisah.
+- Server Components untuk halaman utama, server actions untuk CRUD admin.
+- PostgreSQL + Drizzle ORM untuk data event, circle, produk, booth, map, expense, dan admin.
+- Auth.js credentials + middleware untuk proteksi route `/admin/*`.
+- Floor map image disimpan di Vercel Blob.
+- Produk menggunakan `imageUrl` biasa, tanpa upload file image.
+- Data dipisah per event, dengan circle reusable lintas event melalui booth locations.
 
 ## Struktur Folder
 ```text
 .
 +- app/
-�  +- admin/
-�  +- api/auth/[...nextauth]/
-�  +- circles/
-�  +- events/
-�  +- expenses/
-�  +- maps/
-�  +- products/
-�  +- error.tsx
-�  +- globals.css
-�  +- layout.tsx
-�  +- loading.tsx
-�  +- not-found.tsx
-�  +- page.tsx
+|  +- admin/
+|  +- api/auth/[...nextauth]/
+|  +- circles/
+|  +- events/
+|  +- expenses/
+|  +- maps/
+|  +- products/
+|  +- error.tsx
+|  +- globals.css
+|  +- layout.tsx
+|  +- loading.tsx
+|  +- not-found.tsx
+|  +- page.tsx
 +- actions/
 +- components/
-�  +- admin/
-�  +- dashboard/
-�  +- forms/
-�  +- layout/
-�  +- maps/
-�  +- products/
-�  +- ui/
+|  +- admin/
+|  +- dashboard/
+|  +- forms/
+|  +- layout/
+|  +- maps/
+|  +- products/
+|  +- ui/
 +- db/
-�  +- client.ts
-�  +- index.ts
-�  +- queries.ts
-�  +- schema.ts
-�  +- seed.ts
+|  +- client.ts
+|  +- index.ts
+|  +- queries.ts
+|  +- schema.ts
+|  +- seed.ts
 +- drizzle/
-�  +- 0000_initial.sql
+|  +- 0000_initial.sql
+|  +- 0001_event_banner.sql
 +- lib/
 +- types/
 +- auth.config.ts
 +- auth.ts
-+- components.json
 +- drizzle.config.ts
 +- middleware.ts
 +- next.config.ts
@@ -56,19 +57,20 @@ Aplikasi web katalog belanja Comifuro berbasis event untuk penggunaan personal j
 +- README.md
 ```
 
-## Fitur yang Sudah Diimplementasikan
-- Public dashboard event aktif dengan budget, planned spend, actual spend, priority items, deadline, dan quick links circle.
-- Katalog produk dengan search, filter status/priority/circle/event, sort, dan detail produk.
+## Fitur Utama
+- Dashboard event aktif dengan budget, planned spend, actual spend, priority items, deadline, dan quick links circle.
+- Katalog produk dengan search, filter, priority badge, status badge, dan detail produk.
+- Produk admin memakai image URL dengan live preview, tanpa upload file.
 - Directory circle dan halaman detail circle.
 - Floor map listing dan detail map dengan marker booth berbasis koordinat x/y.
 - Expense summary per event.
 - Admin login credentials.
 - Admin CRUD untuk events, circles, floor maps, booth locations, products, expense categories, dan expenses.
 - Quick status update produk dan status log history.
-- Upload image produk dan map ke Vercel Blob.
+- Action dropdown reusable, pagination reusable, dan admin layout responsif.
 
 ## Environment Variables
-Buat file `.env.local` berdasarkan `.env.example`:
+Gunakan `.env.example` untuk local development:
 
 ```env
 DATABASE_URL=postgres://user:password@host:5432/katalog_cf22
@@ -78,19 +80,26 @@ ADMIN_PASSWORD=change-this-now
 AUTH_SECRET=replace-with-a-long-random-string
 ```
 
+Gunakan `.env.production.example` untuk Vercel production.
+
+Keterangan:
+- `DATABASE_URL`: wajib, PostgreSQL yang bisa diakses app.
+- `AUTH_SECRET`: wajib, secret session Auth.js.
+- `ADMIN_EMAIL`: wajib, email admin awal.
+- `ADMIN_PASSWORD`: wajib, password admin awal.
+- `BLOB_READ_WRITE_TOKEN`: wajib hanya jika ingin upload floor map image ke Vercel Blob.
+
 ## Install
 ```bash
 npm install
 ```
 
 ## Menjalankan Migration
-Pilihan paling sederhana:
-
 ```bash
 npm run db:migrate
 ```
 
-Jika ingin meninjau SQL awal secara manual, migration pertama tersedia di [drizzle/0000_initial.sql](/d:/Andhika/Code/KatalogCF22/drizzle/0000_initial.sql).
+Migration SQL awal tersedia di [drizzle/0000_initial.sql](/d:/Andhika/Code/KatalogCF22/drizzle/0000_initial.sql) dan tambahan banner event di [drizzle/0001_event_banner.sql](/d:/Andhika/Code/KatalogCF22/drizzle/0001_event_banner.sql).
 
 ## Seed Data Awal
 Seed akan:
@@ -99,7 +108,6 @@ Seed akan:
 - membuat sample circles, floor map, booth locations, products, kategori expense, dan expenses
 
 Jalankan:
-
 ```bash
 npm run db:seed
 ```
@@ -118,21 +126,53 @@ npm run start
 ```
 
 ## Deploy ke Vercel
-1. Push repo ini ke Git provider.
+1. Push repo ke Git provider.
 2. Import project ke Vercel.
-3. Set semua environment variable di Project Settings.
-4. Pastikan `DATABASE_URL` mengarah ke PostgreSQL yang bisa diakses Vercel.
-5. Pastikan `BLOB_READ_WRITE_TOKEN` aktif untuk upload image.
-6. Deploy.
-7. Jalankan migration dan seed pada environment target bila database masih kosong.
+3. Tambahkan environment variables di `Project Settings -> Environment Variables`.
+4. Minimal isi:
+   - `DATABASE_URL`
+   - `AUTH_SECRET`
+   - `ADMIN_EMAIL`
+   - `ADMIN_PASSWORD`
+   - `BLOB_READ_WRITE_TOKEN` jika ingin upload floor map aktif
+5. Gunakan PostgreSQL production yang bisa diakses Vercel.
+6. Jalankan migration ke database production.
+7. Jika perlu sample data, jalankan seed ke database production.
+8. Deploy.
+
+## Setup Env Production di Vercel
+Contoh template:
+
+```env
+DATABASE_URL=postgres://user:password@host:5432/katalog_cf22
+BLOB_READ_WRITE_TOKEN=vercel_blob_rw_token
+ADMIN_EMAIL=admin@example.com
+ADMIN_PASSWORD=use-a-long-random-password
+AUTH_SECRET=generate-a-32-byte-or-longer-random-secret
+```
+
+Tips:
+- Isi variable minimal di scope `Production`.
+- Kalau pakai preview deploy, copy juga ke scope `Preview`.
+- Jangan commit file `.env` production ke git.
+- Jika mengganti `ADMIN_PASSWORD`, admin akan disinkronkan ulang dari env saat login.
+- Jika mengganti `AUTH_SECRET`, session login lama akan invalid.
+
+Generate `AUTH_SECRET` cepat:
+```bash
+node -e "console.log(require('crypto').randomBytes(32).toString('hex'))"
+```
 
 ## Catatan Implementasi
-- Semua route data-heavy dijalankan sebagai dynamic server rendering agar cocok untuk aplikasi pribadi berbasis database dan tidak memaksa pre-render saat build.
-- `db/client.ts` sengaja lazy-safe saat `DATABASE_URL` belum tersedia, tetapi query tetap akan gagal dengan error jelas bila env belum diisi.
-- Untuk replace image, admin cukup upload file baru. URL lama akan dihapus dari Blob saat pergantian berhasil.
-- Marker booth memakai koordinat persentase `0-100`, sehingga tetap proporsional pada berbagai ukuran layar.
+- Semua route data-heavy dijalankan sebagai dynamic server rendering agar cocok untuk app personal berbasis database.
+- `db/client.ts` akan memberi error jelas jika `DATABASE_URL` belum diisi.
+- Floor map image masih memakai Vercel Blob.
+- Produk tidak memakai upload file image; hanya menyimpan `imageUrl` string.
+- Marker booth memakai koordinat persentase `0-100` agar tetap proporsional pada berbagai ukuran layar.
+- Banner event dan image eksternal yang dipakai oleh `next/image` tetap perlu host yang diizinkan di [next.config.ts](/d:/Andhika/Code/KatalogCF22/next.config.ts).
 
-## Verifikasi yang Sudah Saya Jalankan
+## Verifikasi
+Perintah yang sudah lolos di local:
 ```bash
 npm install
 npm run build
