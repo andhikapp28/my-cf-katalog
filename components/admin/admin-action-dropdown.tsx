@@ -78,7 +78,7 @@ export function AdminActionDropdown({
 
   return (
     <AdminActionDropdownContext.Provider value={{ closeMenu }}>
-      <div ref={containerRef} className="group relative inline-block text-left">
+      <div ref={containerRef} className="relative inline-block text-left">
         <button
           type="button"
           aria-label={label}
@@ -89,7 +89,7 @@ export function AdminActionDropdown({
           <MoreHorizontal className="h-4 w-4" />
         </button>
         {open ? (
-          <div className="absolute right-0 top-full z-30 mt-2 w-56 rounded-2xl border border-line bg-white/95 p-2 shadow-soft backdrop-blur">
+          <div className="absolute right-0 top-full z-[80] mt-2 w-56 rounded-2xl border border-line bg-white/95 p-2 shadow-soft backdrop-blur">
             <div className="space-y-1">{children}</div>
           </div>
         ) : null}
@@ -130,6 +130,7 @@ export function AdminActionButton({
   className,
   destructive = false,
   onClick,
+  type,
   ...props
 }: ButtonHTMLAttributes<HTMLButtonElement> & {
   destructive?: boolean;
@@ -139,8 +140,15 @@ export function AdminActionButton({
   return (
     <button
       {...props}
+      type={type}
       onClick={(event) => {
         onClick?.(event);
+
+        // Keep submit buttons mounted so form submission can finish normally.
+        if (type === "submit") {
+          return;
+        }
+
         context?.closeMenu();
       }}
       className={cn(itemClassName, destructive && "text-rose-700 hover:bg-rose-50 hover:text-rose-800", className)}

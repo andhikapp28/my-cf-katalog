@@ -5,6 +5,7 @@ import Link from "next/link";
 import { deleteEventAction, upsertEventAction } from "@/actions/events";
 import { AdminCardGrid } from "@/components/admin/admin-card-grid";
 import { AdminCreatePanel } from "@/components/admin/admin-create-panel";
+import { AdminCreateToggle, AdminCreateToggleButton, AdminCreateTogglePanel } from "@/components/admin/admin-create-toggle";
 import { AdminField } from "@/components/admin/admin-field";
 import { AdminSectionHeading } from "@/components/admin/admin-section-heading";
 import { ConfirmDeleteButton } from "@/components/admin/confirm-delete-button";
@@ -29,11 +30,13 @@ export default async function AdminEventsPage({
   const events = await getEventList();
 
   return (
-    <AdminShell
-      title="Events"
-      description="Simpan semua event Comifuro, atur budget, tandai event aktif, dan pasang banner visual untuk dashboard utama."
-    >
-      <AdminCreatePanel
+    <AdminCreateToggle>
+      <AdminShell
+        title="Events"
+        description="Simpan semua event Comifuro, atur budget, tandai event aktif, dan pasang banner visual untuk dashboard utama."
+        headerActions={<AdminCreateToggleButton label="Add event" />}
+      >
+      <AdminCreateTogglePanel
         title="Create event"
         description="Form utama untuk menambah event baru, menentukan budget, dan memilih event aktif yang muncul di dashboard."
       >
@@ -70,7 +73,7 @@ export default async function AdminEventsPage({
             <SubmitButton>Create event</SubmitButton>
           </div>
         </form>
-      </AdminCreatePanel>
+      </AdminCreateTogglePanel>
 
       <section className="space-y-4">
         <AdminSectionHeading
@@ -180,5 +183,6 @@ export default async function AdminEventsPage({
         )}
       </section>
     </AdminShell>
+    </AdminCreateToggle>
   );
 }

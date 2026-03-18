@@ -5,6 +5,7 @@ import Link from "next/link";
 import { deleteFloorMapAction, upsertFloorMapAction } from "@/actions/floor-maps";
 import { AdminCardGrid } from "@/components/admin/admin-card-grid";
 import { AdminCreatePanel } from "@/components/admin/admin-create-panel";
+import { AdminCreateToggle, AdminCreateToggleButton, AdminCreateTogglePanel } from "@/components/admin/admin-create-toggle";
 import { AdminField } from "@/components/admin/admin-field";
 import { AdminSectionHeading } from "@/components/admin/admin-section-heading";
 import { ConfirmDeleteButton } from "@/components/admin/confirm-delete-button";
@@ -28,11 +29,13 @@ export default async function AdminFloorMapsPage({
   const [events, maps] = await Promise.all([getEventList(), getFloorMapsList()]);
 
   return (
-    <AdminShell
-      title="Floor Maps"
-      description="Upload denah event ke Vercel Blob dan simpan ukuran asli agar marker booth bisa ditempatkan konsisten."
-    >
-      <AdminCreatePanel
+    <AdminCreateToggle>
+      <AdminShell
+        title="Floor Maps"
+        description="Upload denah event ke Vercel Blob dan simpan ukuran asli agar marker booth bisa ditempatkan konsisten."
+        headerActions={<AdminCreateToggleButton label="Upload floor map" />}
+      >
+      <AdminCreateTogglePanel
         title="Upload floor map"
         description="Gunakan panel ini untuk menambah floor map baru lengkap dengan ukuran kanvas aslinya."
       >
@@ -63,7 +66,7 @@ export default async function AdminFloorMapsPage({
             <SubmitButton>Save floor map</SubmitButton>
           </div>
         </form>
-      </AdminCreatePanel>
+      </AdminCreateTogglePanel>
 
       <section className="space-y-4">
         <AdminSectionHeading
@@ -156,5 +159,6 @@ export default async function AdminFloorMapsPage({
         )}
       </section>
     </AdminShell>
+    </AdminCreateToggle>
   );
 }

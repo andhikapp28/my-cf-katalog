@@ -5,7 +5,17 @@ import { auth } from "@/auth";
 import { SearchParamToast } from "@/components/forms/search-param-toast";
 import { SignOutButton } from "@/components/admin/sign-out-button";
 
-export async function AdminShell({ title, description, children }: { title: string; description: string; children: ReactNode }) {
+export async function AdminShell({
+  title,
+  description,
+  children,
+  headerActions
+}: {
+  title: string;
+  description: string;
+  children: ReactNode;
+  headerActions?: ReactNode;
+}) {
   const session = await auth();
 
   return (
@@ -35,9 +45,14 @@ export async function AdminShell({ title, description, children }: { title: stri
         </aside>
         <section className="space-y-6">
           <div className="panel p-6">
-            <p className="text-xs uppercase tracking-[0.28em] text-ink-500">Admin Workspace</p>
-            <h1 className="mt-2 font-[var(--font-display)] text-3xl font-semibold tracking-tight">{title}</h1>
-            <p className="mt-2 max-w-2xl text-sm text-ink-500">{description}</p>
+            <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
+              <div>
+                <p className="text-xs uppercase tracking-[0.28em] text-ink-500">Admin Workspace</p>
+                <h1 className="mt-2 font-[var(--font-display)] text-3xl font-semibold tracking-tight">{title}</h1>
+                <p className="mt-2 max-w-2xl text-sm text-ink-500">{description}</p>
+              </div>
+              {headerActions ? <div className="flex w-full flex-wrap items-center justify-end gap-3 sm:w-auto">{headerActions}</div> : null}
+            </div>
           </div>
           {children}
         </section>
@@ -45,5 +60,3 @@ export async function AdminShell({ title, description, children }: { title: stri
     </div>
   );
 }
-
-

@@ -4,6 +4,7 @@ import Link from "next/link";
 import { deleteBoothAction, upsertBoothAction } from "@/actions/floor-maps";
 import { AdminCardGrid } from "@/components/admin/admin-card-grid";
 import { AdminCreatePanel } from "@/components/admin/admin-create-panel";
+import { AdminCreateToggle, AdminCreateToggleButton, AdminCreateTogglePanel } from "@/components/admin/admin-create-toggle";
 import { AdminField } from "@/components/admin/admin-field";
 import { AdminSectionHeading } from "@/components/admin/admin-section-heading";
 import { ConfirmDeleteButton } from "@/components/admin/confirm-delete-button";
@@ -32,11 +33,13 @@ export default async function AdminBoothsPage({
   ]);
 
   return (
-    <AdminShell
-      title="Booth Locations"
-      description="Hubungkan circle ke event dan floor map dengan booth code serta koordinat marker berbasis persentase x/y."
-    >
-      <AdminCreatePanel
+    <AdminCreateToggle>
+      <AdminShell
+        title="Booth Locations"
+        description="Hubungkan circle ke event dan floor map dengan booth code serta koordinat marker berbasis persentase x/y."
+        headerActions={<AdminCreateToggleButton label="Add booth marker" />}
+      >
+      <AdminCreateTogglePanel
         title="Add booth marker"
         description="X dan Y memakai basis persentase terhadap image map, jadi 0 sampai 100 akan lebih mudah dipelihara lintas device."
       >
@@ -87,7 +90,7 @@ export default async function AdminBoothsPage({
             <SubmitButton>Save booth</SubmitButton>
           </div>
         </form>
-      </AdminCreatePanel>
+      </AdminCreateTogglePanel>
 
       <section className="space-y-4">
         <AdminSectionHeading
@@ -200,5 +203,6 @@ export default async function AdminBoothsPage({
         )}
       </section>
     </AdminShell>
+    </AdminCreateToggle>
   );
 }

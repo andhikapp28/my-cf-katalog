@@ -10,6 +10,7 @@ import {
   AdminActionLink
 } from "@/components/admin/admin-action-dropdown";
 import { AdminCreatePanel } from "@/components/admin/admin-create-panel";
+import { AdminCreateToggle, AdminCreateToggleButton, AdminCreateTogglePanel } from "@/components/admin/admin-create-toggle";
 import { AdminField } from "@/components/admin/admin-field";
 import { AdminPagination } from "@/components/admin/admin-pagination";
 import { AdminSectionHeading } from "@/components/admin/admin-section-heading";
@@ -98,11 +99,13 @@ export default async function AdminProductsPage({
   const selectedProduct = filteredProducts.find((product) => product.id === editId);
 
   return (
-    <AdminShell
-      title="Products"
-      description="Kelola target item, gunakan image URL untuk preview produk, update status cepat, dan simpan metadata yang relevan untuk hari event."
-    >
-      <AdminCreatePanel
+    <AdminCreateToggle>
+      <AdminShell
+        title="Products"
+        description="Kelola target item, gunakan image URL untuk preview produk, update status cepat, dan simpan metadata yang relevan untuk hari event."
+        headerActions={<AdminCreateToggleButton label="Add product" />}
+      >
+      <AdminCreateTogglePanel
         title="Add product"
         description="Panel utama untuk menambah target item baru. Image produk sekarang cukup memakai direct image URL agar lebih ringan dan mudah dikelola."
       >
@@ -179,7 +182,7 @@ export default async function AdminProductsPage({
             <SubmitButton>Save product</SubmitButton>
           </div>
         </form>
-      </AdminCreatePanel>
+      </AdminCreateTogglePanel>
 
       <section className="panel p-5 sm:p-6">
         <AdminSectionHeading title="Products grid" description="Filter ringan tetap dipertahankan, tetapi daftar produk sekarang lebih visual dan nyaman dipindai." />
@@ -436,5 +439,6 @@ export default async function AdminProductsPage({
         )}
       </section>
     </AdminShell>
+    </AdminCreateToggle>
   );
 }
