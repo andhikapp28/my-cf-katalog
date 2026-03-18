@@ -16,7 +16,7 @@ export function SiteHeader() {
       <div className="container-shell flex h-16 items-center justify-between gap-4">
         <div className="flex items-center gap-6">
           <Link href="/" className="font-[var(--font-display)] text-lg font-semibold tracking-tight text-ink-900">
-            Katalog CF
+            Katalog Event
           </Link>
           <nav className="hidden items-center gap-4 md:flex">
             {links.map((item) => (

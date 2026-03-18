@@ -1,5 +1,6 @@
 export const dynamic = "force-dynamic";
 
+import { ExpenseEventHeader } from "@/components/events/expense-event-header";
 import { Card, CardContent } from "@/components/ui/card";
 import { EmptyState } from "@/components/ui/empty-state";
 import { Select } from "@/components/ui/select";
@@ -49,6 +50,15 @@ export default async function ExpensesPage({
           </button>
         </div>
       </form>
+
+      <ExpenseEventHeader
+        name={summary.event.name}
+        venue={summary.event.venue}
+        startsAt={summary.event.startsAt}
+        endsAt={summary.event.endsAt}
+        bannerImageUrl={summary.event.bannerImageUrl}
+        isActive={summary.event.isActive}
+      />
 
       <section className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
         <Card><CardContent><p className="text-xs uppercase tracking-[0.24em] text-ink-500">Budget</p><p className="mt-3 text-2xl font-semibold">{formatCurrency(summary.totalBudget)}</p></CardContent></Card>

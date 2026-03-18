@@ -262,6 +262,7 @@ export async function getEventsWithCounts() {
       isActive: events.isActive,
       startsAt: events.startsAt,
       budget: events.budget,
+      bannerImageUrl: events.bannerImageUrl,
       productCount: count(products.id)
     })
     .from(events)
@@ -398,5 +399,7 @@ export async function getUpcomingDeadlines(limit = 8) {
     }
   });
 }
+
+
 
 
