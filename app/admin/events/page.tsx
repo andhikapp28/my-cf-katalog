@@ -33,7 +33,7 @@ export default async function AdminEventsPage({
     <AdminCreateToggle>
       <AdminShell
         title="Events"
-        description="Simpan semua event Comifuro, atur budget, tandai event aktif, dan pasang banner visual untuk dashboard utama."
+        description="Simpan semua event anime, atur budget, tandai event aktif, dan pasang banner visual untuk dashboard utama."
         headerActions={<AdminCreateToggleButton label="Add event" />}
       >
       <AdminCreateTogglePanel
@@ -42,10 +42,10 @@ export default async function AdminEventsPage({
       >
         <form action={upsertEventAction} className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
           <AdminField label="Event name" required>
-            <Input name="name" placeholder="Comifuro 23" required />
+            <Input name="name" placeholder="Anime Festival 2026" required />
           </AdminField>
           <AdminField label="Slug" required>
-            <Input name="slug" placeholder="comifuro-23" required />
+            <Input name="slug" placeholder="anime-festival-2026" required />
           </AdminField>
           <AdminField label="Venue">
             <Input name="venue" placeholder="ICE BSD City" />

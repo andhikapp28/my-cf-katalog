@@ -1,4 +1,4 @@
-export const dynamic = "force-dynamic";
+export const revalidate = 120;
 
 import { ExpenseEventHeader } from "@/components/events/expense-event-header";
 import { Card, CardContent } from "@/components/ui/card";

@@ -1,4 +1,4 @@
-export const dynamic = "force-dynamic";
+export const revalidate = 120;
 
 import { notFound } from "next/navigation";
 import { FloorMapViewer } from "@/components/maps/floor-map-viewer";

@@ -56,7 +56,7 @@ export function EventCardBanner({
           <p className="mt-2 max-w-[18rem] text-xs leading-5 text-ink-500">
             {state === "error"
               ? "Banner gagal dimuat. Periksa kembali URL gambar event."
-              : "Tambahkan banner event agar listing Comifuro terasa lebih hidup dan mudah dipindai."}
+              : "Tambahkan banner event agar listing terasa lebih hidup dan mudah dipindai."}
           </p>
         </div>
       ) : null}

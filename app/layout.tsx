@@ -6,8 +6,6 @@ import { SiteHeader } from "@/components/layout/site-header";
 import { SiteFooter } from "@/components/layout/site-footer";
 import { Toaster } from "sonner";
 
-export const dynamic = "force-dynamic";
-
 const sans = IBM_Plex_Sans({
   subsets: ["latin"],
   weight: ["400", "500", "600", "700"],
@@ -21,8 +19,8 @@ const display = Space_Grotesk({
 });
 
 export const metadata: Metadata = {
-  title: "Katalog Comifuro",
-  description: "Personal catalog and spending tracker for Comifuro events."
+  title: "Dipa Katalog",
+  description: "Personal catalog and spending tracker for anime and hobby events."
 };
 
 export default function RootLayout({ children }: Readonly<{ children: ReactNode }>) {

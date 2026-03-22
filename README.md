@@ -1,6 +1,6 @@
-# Katalog CF22
+# Dipa Katalog
 
-Aplikasi web katalog belanja Comifuro berbasis event untuk penggunaan personal jangka panjang. Stack utama: Next.js App Router, TypeScript strict, Tailwind CSS, PostgreSQL, Drizzle ORM, Auth.js credentials login, dan Vercel Blob untuk floor map.
+Aplikasi web katalog belanja event anime berbasis event untuk penggunaan personal jangka panjang. Stack utama: Next.js App Router, TypeScript strict, Tailwind CSS, PostgreSQL, Drizzle ORM, Auth.js credentials login, dan Vercel Blob untuk floor map.
 
 ## Arsitektur Singkat
 - Satu project full-stack Next.js tanpa backend terpisah.
@@ -73,7 +73,7 @@ Aplikasi web katalog belanja Comifuro berbasis event untuk penggunaan personal j
 Gunakan `.env.example` untuk local development:
 
 ```env
-DATABASE_URL=postgres://user:password@host:5432/katalog_cf22
+DATABASE_URL=postgres://user:password@host:5432/dipa_katalog
 BLOB_READ_WRITE_TOKEN=
 ADMIN_EMAIL=admin@example.com
 ADMIN_PASSWORD=change-this-now
@@ -144,7 +144,7 @@ npm run start
 Contoh template:
 
 ```env
-DATABASE_URL=postgres://user:password@host:5432/katalog_cf22
+DATABASE_URL=postgres://user:password@host:5432/dipa_katalog
 BLOB_READ_WRITE_TOKEN=vercel_blob_rw_token
 ADMIN_EMAIL=admin@example.com
 ADMIN_PASSWORD=use-a-long-random-password
@@ -164,7 +164,7 @@ node -e "console.log(require('crypto').randomBytes(32).toString('hex'))"
 ```
 
 ## Catatan Implementasi
-- Semua route data-heavy dijalankan sebagai dynamic server rendering agar cocok untuk app personal berbasis database.
+- Public pages memakai revalidate ringan agar lebih hemat query, sementara admin tetap dinamis untuk menjaga konsistensi CRUD berbasis database.
 - `db/client.ts` akan memberi error jelas jika `DATABASE_URL` belum diisi.
 - Floor map image masih memakai Vercel Blob.
 - Produk tidak memakai upload file image; hanya menyimpan `imageUrl` string.

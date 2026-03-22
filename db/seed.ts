@@ -47,9 +47,9 @@ async function main() {
   const [event] = await db
     .insert(events)
     .values({
-      name: "Comifuro 22",
-      slug: "comifuro-22",
-      description: "Sample event untuk bootstrap katalog target belanja.",
+      name: "Anime Event Sample",
+      slug: "anime-event-sample",
+      description: "Sample event untuk bootstrap katalog target belanja lintas event anime.",
       venue: "ICE BSD City",
       bannerImageUrl:
         "https://images.unsplash.com/photo-1511578314322-379afb476865?auto=format&fit=crop&w=1600&q=80",
