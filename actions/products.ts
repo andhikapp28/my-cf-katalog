@@ -6,26 +6,31 @@ import { eq } from "drizzle-orm";
 import { db } from "@/db";
 import { productStatusLogs, products } from "@/db/schema";
 import { requireAdmin } from "@/lib/auth";
-import { productSchema } from "@/lib/validators";
+import { parseFormData } from "@/lib/form";
+import { productSchema, quickStatusSchema } from "@/lib/validators";
 
 export async function upsertProductAction(formData: FormData) {
   const session = await requireAdmin();
 
-  const parsed = productSchema.parse({
-    id: formData.get("id") || undefined,
-    eventId: formData.get("eventId"),
-    circleId: formData.get("circleId"),
-    name: formData.get("name"),
-    imageUrl: formData.get("imageUrl") || undefined,
-    price: formData.get("price"),
-    poDeadline: formData.get("poDeadline") || undefined,
-    productLink: formData.get("productLink") || undefined,
-    status: formData.get("status"),
-    priority: formData.get("priority"),
-    quantity: formData.get("quantity"),
-    notes: formData.get("notes") || undefined,
-    purchaseType: formData.get("purchaseType")
-  });
+  const parsed = parseFormData(
+    productSchema,
+    {
+      id: formData.get("id") || undefined,
+      eventId: formData.get("eventId"),
+      circleId: formData.get("circleId"),
+      name: formData.get("name"),
+      imageUrl: formData.get("imageUrl") || undefined,
+      price: formData.get("price"),
+      poDeadline: formData.get("poDeadline") || undefined,
+      productLink: formData.get("productLink") || undefined,
+      status: formData.get("status"),
+      priority: formData.get("priority"),
+      quantity: formData.get("quantity"),
+      notes: formData.get("notes") || undefined,
+      purchaseType: formData.get("purchaseType")
+    },
+    "/admin/products?error=validation"
+  );
 
   const imageUrl = parsed.imageUrl || null;
 
@@ -96,8 +101,15 @@ export async function upsertProductAction(formData: FormData) {
 
 export async function quickUpdateProductStatusAction(formData: FormData) {
   const session = await requireAdmin();
-  const productId = String(formData.get("productId") ?? "");
-  const nextStatus = String(formData.get("status") ?? "");
+
+  const { productId, status: nextStatus } = parseFormData(
+    quickStatusSchema,
+    {
+      productId: formData.get("productId"),
+      status: formData.get("status")
+    },
+    "/admin/products?error=invalid-status"
+  );
 
   const existing = await db.query.products.findFirst({
     where: eq(products.id, productId)
@@ -110,7 +122,7 @@ export async function quickUpdateProductStatusAction(formData: FormData) {
   await db
     .update(products)
     .set({
-      status: nextStatus as typeof existing.status,
+      status: nextStatus,
       updatedAt: new Date()
     })
     .where(eq(products.id, productId));
@@ -118,7 +130,7 @@ export async function quickUpdateProductStatusAction(formData: FormData) {
   await db.insert(productStatusLogs).values({
     productId,
     fromStatus: existing.status,
-    toStatus: nextStatus as typeof existing.status,
+    toStatus: nextStatus,
     createdBy: session.user.id
   });
 

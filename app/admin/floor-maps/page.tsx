@@ -101,7 +101,7 @@ export default async function AdminFloorMapsPage({
                   </div>
 
                   <div className="mt-5 relative aspect-[16/10] overflow-hidden rounded-3xl border border-line bg-brand-50">
-                    <Image src={map.imageUrl} alt={map.name} fill className="object-cover" />
+                    <Image src={map.imageUrl} alt={map.name} fill unoptimized className="object-cover" />
                   </div>
 
                   <div className="mt-5 grid gap-3 sm:grid-cols-2">

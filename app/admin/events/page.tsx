@@ -116,7 +116,7 @@ export default async function AdminEventsPage({
 
                   {event.bannerImageUrl ? (
                     <div className="relative mt-5 aspect-[2.6/1] overflow-hidden rounded-3xl border border-line bg-brand-50">
-                      <Image src={event.bannerImageUrl} alt={event.name} fill className="object-cover" />
+                      <Image src={event.bannerImageUrl} alt={event.name} fill unoptimized className="object-cover" />
                     </div>
                   ) : null}
 

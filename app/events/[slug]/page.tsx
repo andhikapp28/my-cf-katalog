@@ -54,7 +54,7 @@ export default async function EventDetailPage({ params }: { params: Promise<{ sl
         <div className="relative overflow-hidden rounded-[34px] border border-line/70 bg-ink-900 text-white">
           {event.bannerImageUrl ? (
             <>
-              <Image src={event.bannerImageUrl} alt={event.name} fill priority className="object-cover object-center" />
+              <Image src={event.bannerImageUrl} alt={event.name} fill priority unoptimized className="object-cover object-center" />
               <div className="absolute inset-0 bg-[linear-gradient(90deg,rgba(19,14,12,0.84)_0%,rgba(19,14,12,0.72)_34%,rgba(19,14,12,0.38)_62%,rgba(19,14,12,0.18)_100%)]" />
               <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_left,rgba(212,106,58,0.22),transparent_34%)]" />
             </>

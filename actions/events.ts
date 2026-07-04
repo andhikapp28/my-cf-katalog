@@ -6,23 +6,28 @@ import { eq } from "drizzle-orm";
 import { db } from "@/db";
 import { events } from "@/db/schema";
 import { requireAdmin } from "@/lib/auth";
+import { parseFormData } from "@/lib/form";
 import { eventSchema } from "@/lib/validators";
 
 export async function upsertEventAction(formData: FormData) {
   await requireAdmin();
 
-  const parsed = eventSchema.parse({
-    id: formData.get("id") || undefined,
-    name: formData.get("name"),
-    slug: formData.get("slug"),
-    description: formData.get("description") || undefined,
-    venue: formData.get("venue") || undefined,
-    bannerImageUrl: formData.get("bannerImageUrl") || undefined,
-    startsAt: formData.get("startsAt") || undefined,
-    endsAt: formData.get("endsAt") || undefined,
-    budget: formData.get("budget"),
-    isActive: formData.get("isActive") === "on"
-  });
+  const parsed = parseFormData(
+    eventSchema,
+    {
+      id: formData.get("id") || undefined,
+      name: formData.get("name"),
+      slug: formData.get("slug"),
+      description: formData.get("description") || undefined,
+      venue: formData.get("venue") || undefined,
+      bannerImageUrl: formData.get("bannerImageUrl") || undefined,
+      startsAt: formData.get("startsAt") || undefined,
+      endsAt: formData.get("endsAt") || undefined,
+      budget: formData.get("budget"),
+      isActive: formData.get("isActive") === "on"
+    },
+    "/admin/events?error=validation"
+  );
 
   if (parsed.isActive) {
     await db.update(events).set({ isActive: false, updatedAt: new Date() });

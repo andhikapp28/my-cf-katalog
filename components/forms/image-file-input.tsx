@@ -23,7 +23,7 @@ export function ImageFileInput({
       <label className="text-sm font-medium text-ink-700">{label}</label>
       {preview ? (
         <div className="relative aspect-[4/3] overflow-hidden rounded-2xl border border-line bg-white">
-          <Image src={preview} alt={label} fill className="object-cover" />
+          <Image src={preview} alt={label} fill unoptimized className="object-cover" />
         </div>
       ) : null}
       <input

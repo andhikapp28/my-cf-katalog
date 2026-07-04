@@ -40,7 +40,7 @@ export function FloorMapViewer({
     <div className="grid gap-5 lg:grid-cols-[minmax(0,1fr)_320px]">
       <div className="panel overflow-hidden p-4">
         <div className="relative overflow-hidden rounded-3xl border border-line bg-white" style={{ aspectRatio: `${width}/${height}` }}>
-          <Image src={imageUrl} alt={name} fill className="object-cover" />
+          <Image src={imageUrl} alt={name} fill unoptimized className="object-cover" />
           {markers.map((marker) => (
             <button
               key={marker.id}

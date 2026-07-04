@@ -6,18 +6,23 @@ import { eq } from "drizzle-orm";
 import { db } from "@/db";
 import { circles } from "@/db/schema";
 import { requireAdmin } from "@/lib/auth";
+import { parseFormData } from "@/lib/form";
 import { circleSchema } from "@/lib/validators";
 
 export async function upsertCircleAction(formData: FormData) {
   await requireAdmin();
 
-  const parsed = circleSchema.parse({
-    id: formData.get("id") || undefined,
-    name: formData.get("name"),
-    slug: formData.get("slug"),
-    socialLink: formData.get("socialLink") || undefined,
-    notes: formData.get("notes") || undefined
-  });
+  const parsed = parseFormData(
+    circleSchema,
+    {
+      id: formData.get("id") || undefined,
+      name: formData.get("name"),
+      slug: formData.get("slug"),
+      socialLink: formData.get("socialLink") || undefined,
+      notes: formData.get("notes") || undefined
+    },
+    "/admin/circles?error=validation"
+  );
 
   if (parsed.id) {
     await db

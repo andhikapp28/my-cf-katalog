@@ -7,19 +7,24 @@ import { db } from "@/db";
 import { boothLocations, floorMaps } from "@/db/schema";
 import { requireAdmin } from "@/lib/auth";
 import { safeDeleteBlob, uploadImageToBlob } from "@/lib/blob";
+import { parseFormData } from "@/lib/form";
 import { boothLocationSchema, floorMapSchema } from "@/lib/validators";
 
 export async function upsertFloorMapAction(formData: FormData) {
   await requireAdmin();
 
-  const parsed = floorMapSchema.parse({
-    id: formData.get("id") || undefined,
-    eventId: formData.get("eventId"),
-    name: formData.get("name"),
-    width: formData.get("width"),
-    height: formData.get("height"),
-    previousImageUrl: formData.get("previousImageUrl") || undefined
-  });
+  const parsed = parseFormData(
+    floorMapSchema,
+    {
+      id: formData.get("id") || undefined,
+      eventId: formData.get("eventId"),
+      name: formData.get("name"),
+      width: formData.get("width"),
+      height: formData.get("height"),
+      previousImageUrl: formData.get("previousImageUrl") || undefined
+    },
+    "/admin/floor-maps?error=validation"
+  );
 
   const image = formData.get("image");
   let imageUrl = parsed.previousImageUrl || null;
@@ -73,16 +78,20 @@ export async function deleteFloorMapAction(formData: FormData) {
 export async function upsertBoothAction(formData: FormData) {
   await requireAdmin();
 
-  const parsed = boothLocationSchema.parse({
-    id: formData.get("id") || undefined,
-    eventId: formData.get("eventId"),
-    circleId: formData.get("circleId"),
-    floorMapId: formData.get("floorMapId"),
-    boothCode: formData.get("boothCode"),
-    posX: formData.get("posX"),
-    posY: formData.get("posY"),
-    notes: formData.get("notes") || undefined
-  });
+  const parsed = parseFormData(
+    boothLocationSchema,
+    {
+      id: formData.get("id") || undefined,
+      eventId: formData.get("eventId"),
+      circleId: formData.get("circleId"),
+      floorMapId: formData.get("floorMapId"),
+      boothCode: formData.get("boothCode"),
+      posX: formData.get("posX"),
+      posY: formData.get("posY"),
+      notes: formData.get("notes") || undefined
+    },
+    "/admin/booths?error=validation"
+  );
 
   if (parsed.id) {
     await db

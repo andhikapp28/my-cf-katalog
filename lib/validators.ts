@@ -63,6 +63,11 @@ export const productSchema = z.object({
   purchaseType: z.enum(purchaseTypes)
 });
 
+export const quickStatusSchema = z.object({
+  productId: z.string().uuid(),
+  status: z.enum(productStatuses)
+});
+
 export const expenseCategorySchema = z.object({
   id: z.string().uuid().optional(),
   name: z.string().min(2).max(120),

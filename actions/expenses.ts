@@ -6,17 +6,22 @@ import { eq } from "drizzle-orm";
 import { db } from "@/db";
 import { expenseCategories, expenses } from "@/db/schema";
 import { requireAdmin } from "@/lib/auth";
+import { parseFormData } from "@/lib/form";
 import { expenseCategorySchema, expenseSchema } from "@/lib/validators";
 
 export async function upsertExpenseCategoryAction(formData: FormData) {
   await requireAdmin();
 
-  const parsed = expenseCategorySchema.parse({
-    id: formData.get("id") || undefined,
-    name: formData.get("name"),
-    slug: formData.get("slug"),
-    color: formData.get("color") || "#D46A3A"
-  });
+  const parsed = parseFormData(
+    expenseCategorySchema,
+    {
+      id: formData.get("id") || undefined,
+      name: formData.get("name"),
+      slug: formData.get("slug"),
+      color: formData.get("color") || "#D46A3A"
+    },
+    "/admin/expenses/settings?error=validation"
+  );
 
   if (parsed.id) {
     await db
@@ -51,18 +56,22 @@ export async function deleteExpenseCategoryAction(formData: FormData) {
 export async function upsertExpenseAction(formData: FormData) {
   await requireAdmin();
 
-  const parsed = expenseSchema.parse({
-    id: formData.get("id") || undefined,
-    eventId: formData.get("eventId"),
-    productId: formData.get("productId") || undefined,
-    categoryId: formData.get("categoryId"),
-    amount: formData.get("amount"),
-    expenseDate: formData.get("expenseDate"),
-    note: formData.get("note") || undefined,
-    paymentMethod: formData.get("paymentMethod"),
-    isPlanned: formData.get("isPlanned") === "on",
-    isActual: formData.get("isActual") === "on"
-  });
+  const parsed = parseFormData(
+    expenseSchema,
+    {
+      id: formData.get("id") || undefined,
+      eventId: formData.get("eventId"),
+      productId: formData.get("productId") || undefined,
+      categoryId: formData.get("categoryId"),
+      amount: formData.get("amount"),
+      expenseDate: formData.get("expenseDate"),
+      note: formData.get("note") || undefined,
+      paymentMethod: formData.get("paymentMethod"),
+      isPlanned: formData.get("isPlanned") === "on",
+      isActual: formData.get("isActual") === "on"
+    },
+    "/admin/expenses?error=validation"
+  );
 
   const values = {
     eventId: parsed.eventId,

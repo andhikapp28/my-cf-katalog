@@ -47,6 +47,7 @@ export default async function HomePage() {
                   alt={dashboard.selectedEvent.name}
                   fill
                   priority
+                  unoptimized
                   className="object-cover"
                 />
                 <div className="absolute inset-0 bg-gradient-to-br from-black/70 via-black/45 to-brand-700/35" />

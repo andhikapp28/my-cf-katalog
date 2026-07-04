@@ -99,7 +99,11 @@ npm install
 npm run db:migrate
 ```
 
-Migration SQL awal tersedia di [drizzle/0000_initial.sql](/d:/Andhika/Code/KatalogCF22/drizzle/0000_initial.sql) dan tambahan banner event di [drizzle/0001_event_banner.sql](/d:/Andhika/Code/KatalogCF22/drizzle/0001_event_banner.sql).
+`db:migrate` menjalankan runner SQL kustom di [`scripts/migrate.ts`](scripts/migrate.ts) yang menerapkan seluruh file `drizzle/*.sql` secara berurutan. Script ini otomatis memuat `.env` (`--env-file-if-exists=.env`), jadi tidak perlu meng-export `DATABASE_URL` secara manual selama `.env` sudah terisi.
+
+File migration tersedia di [`drizzle/0000_initial.sql`](drizzle/0000_initial.sql) dan tambahan banner event di [`drizzle/0001_event_banner.sql`](drizzle/0001_event_banner.sql).
+
+> Catatan: `npm run db:generate` (drizzle-kit) hanya dipakai untuk membangkitkan file SQL baru dari perubahan `db/schema.ts`. Penerapan migration ke database tetap lewat `db:migrate` di atas, bukan `drizzle-kit migrate`.
 
 ## Seed Data Awal
 Seed akan:
@@ -107,10 +111,14 @@ Seed akan:
 - membuat sample event aktif
 - membuat sample circles, floor map, booth locations, products, kategori expense, dan expenses
 
+Seperti `db:migrate`, script seed juga otomatis memuat `.env` (`--env-file-if-exists=.env`) sehingga cukup dijalankan langsung tanpa set environment manual.
+
 Jalankan:
 ```bash
 npm run db:seed
 ```
+
+Alur setup lengkap dari nol: `npm install` → isi `.env` (lihat `.env.example`) → `npm run db:migrate` → `npm run db:seed` → `npm run dev`.
 
 ## Menjalankan Development Server
 ```bash
@@ -169,7 +177,8 @@ node -e "console.log(require('crypto').randomBytes(32).toString('hex'))"
 - Floor map image masih memakai Vercel Blob.
 - Produk tidak memakai upload file image; hanya menyimpan `imageUrl` string.
 - Marker booth memakai koordinat persentase `0-100` agar tetap proporsional pada berbagai ukuran layar.
-- Banner event dan image eksternal yang dipakai oleh `next/image` tetap perlu host yang diizinkan di [next.config.ts](/d:/Andhika/Code/KatalogCF22/next.config.ts).
+- Image optimizer Next hanya mem-proxy host tepercaya (Vercel Blob) di [`next.config.ts`](next.config.ts). Banner event, floor map, dan image produk dari URL sembarang milik user dirender dengan `unoptimized`/`<img>` biasa (di-fetch langsung oleh browser) agar tetap tampil tanpa membuka celah image proxy.
+- Security headers (CSP moderat, X-Frame-Options, HSTS, dll.) dipasang lewat `headers()` di [`next.config.ts`](next.config.ts). Perubahan pada file ini membutuhkan restart dev server agar berlaku.
 
 ## Verifikasi
 Perintah yang sudah lolos di local:
