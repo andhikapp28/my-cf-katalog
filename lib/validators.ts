@@ -91,3 +91,43 @@ export const expenseSchema = z
   .refine((data) => data.isPlanned || data.isActual, {
     message: "Expense harus planned atau actual."
   });
+
+// --- Quick catalog: satu payload untuk circle + booth (opsional) + banyak produk ---
+
+const catalogCircleSchema = z.discriminatedUnion("mode", [
+  z.object({ mode: z.literal("existing"), id: z.string().uuid() }),
+  z.object({
+    mode: z.literal("new"),
+    name: z.string().min(2).max(160),
+    socialLink: z.string().url().optional().or(z.literal("")),
+    notes: z.string().max(2000).optional()
+  })
+]);
+
+const catalogBoothSchema = z.object({
+  floorMapId: z.string().uuid(),
+  boothCode: z.string().min(1).max(32),
+  posX: z.coerce.number().int().min(0).max(100),
+  posY: z.coerce.number().int().min(0).max(100),
+  notes: z.string().max(1000).optional()
+});
+
+const catalogProductSchema = z.object({
+  name: z.string().min(2).max(200),
+  imageUrl: z.string().url().optional().or(z.literal("")),
+  price: z.coerce.number().int().min(0),
+  poDeadline: z.string().optional(),
+  productLink: z.string().url().optional().or(z.literal("")),
+  status: z.enum(productStatuses),
+  priority: z.enum(priorities),
+  quantity: z.coerce.number().int().min(1).max(99),
+  notes: z.string().max(4000).optional(),
+  purchaseType: z.enum(purchaseTypes)
+});
+
+export const catalogEntrySchema = z.object({
+  eventId: z.string().uuid(),
+  circle: catalogCircleSchema,
+  booth: catalogBoothSchema.optional(),
+  products: z.array(catalogProductSchema).min(1).max(20)
+});

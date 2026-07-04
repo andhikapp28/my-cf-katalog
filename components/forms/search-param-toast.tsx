@@ -12,6 +12,7 @@ const errorMessages: Record<string, string> = {
 };
 
 const successMessages: Record<string, string> = {
+  "catalog-entry-saved": "Entri katalog berhasil ditambahkan.",
   "product-saved": "Produk berhasil disimpan.",
   "status-updated": "Status produk diperbarui.",
   "image-removed": "Gambar produk dihapus.",

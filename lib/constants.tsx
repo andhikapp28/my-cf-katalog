@@ -5,6 +5,7 @@ import {
   LayoutDashboard,
   Map,
   MapPinned,
+  PackagePlus,
   Settings,
   ShoppingBag,
   Users2
@@ -40,6 +41,7 @@ export const priorityStyles: Record<(typeof priorities)[number], string> = {
 
 export const adminNavigation: Array<{ href: string; label: string; icon: ReactNode }> = [
   { href: "/admin", label: "Dashboard", icon: <LayoutDashboard className="h-4 w-4" /> },
+  { href: "/admin/catalog/new", label: "Quick Catalog", icon: <PackagePlus className="h-4 w-4" /> },
   { href: "/admin/events", label: "Events", icon: <Boxes className="h-4 w-4" /> },
   { href: "/admin/circles", label: "Circles", icon: <Users2 className="h-4 w-4" /> },
   { href: "/admin/floor-maps", label: "Floor Maps", icon: <Map className="h-4 w-4" /> },

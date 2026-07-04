@@ -103,7 +103,14 @@ export default async function AdminProductsPage({
       <AdminShell
         title="Products"
         description="Kelola target item, gunakan image URL untuk preview produk, update status cepat, dan simpan metadata yang relevan untuk hari event."
-        headerActions={<AdminCreateToggleButton label="Add product" />}
+        headerActions={
+          <>
+            <Button asChild variant="secondary">
+              <Link href="/admin/catalog/new">Quick catalog</Link>
+            </Button>
+            <AdminCreateToggleButton label="Add product" />
+          </>
+        }
       >
       <AdminCreateTogglePanel
         title="Add product"
