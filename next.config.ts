@@ -28,7 +28,12 @@ const contentSecurityPolicy = [
   "base-uri 'self'",
   "form-action 'self'",
   "frame-ancestors 'none'",
-  "manifest-src 'self'"
+  "manifest-src 'self'",
+  // Eksplisit untuk service worker (public/sw.js, Sprint 3 PWA) — default
+  // fallback ke script-src biasanya cukup di browser modern, tapi beberapa
+  // browser (terutama Firefox versi lama) menegakkan `worker-src` secara
+  // terpisah dan akan menolak registrasi service worker tanpa direktif ini.
+  "worker-src 'self'"
 ].join("; ");
 
 const securityHeaders = [
@@ -49,6 +54,14 @@ const securityHeaders = [
 ];
 
 const nextConfig: NextConfig = {
+  // Playwright menjalankan `next dev` sendiri di port terpisah (lihat
+  // playwright.config.ts) sementara `next dev` milik developer mungkin masih
+  // berjalan di port 3000. Dua proses `next dev` yang berbagi folder `.next`
+  // yang sama bisa saling korup cache/file watcher, jadi instance e2e dipaksa
+  // pakai dist dir sendiri. `PLAYWRIGHT_DIST_DIR` hanya di-set oleh proses
+  // child yang di-spawn Playwright, sehingga `npm run build`/`npm run dev`
+  // biasa (lokal/CI) tetap memakai `.next` seperti biasa.
+  distDir: process.env.PLAYWRIGHT_DIST_DIR || ".next",
   experimental: {
     serverActions: {
       // Selaras dengan limit upload blob 5MB di lib/blob.ts, plus overhead

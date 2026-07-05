@@ -1,9 +1,10 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import type { ReactNode } from "react";
 import { IBM_Plex_Sans, Space_Grotesk } from "next/font/google";
 import "./globals.css";
 import { SiteHeader } from "@/components/layout/site-header";
 import { SiteFooter } from "@/components/layout/site-footer";
+import { ServiceWorkerRegister } from "@/components/layout/service-worker-register";
 import { Toaster } from "sonner";
 
 const sans = IBM_Plex_Sans({
@@ -20,7 +21,29 @@ const display = Space_Grotesk({
 
 export const metadata: Metadata = {
   title: "Dipa Katalog",
-  description: "Personal catalog and spending tracker for anime and hobby events."
+  description: "Personal catalog and spending tracker for anime and hobby events.",
+  manifest: "/manifest.json",
+  appleWebApp: {
+    capable: true,
+    statusBarStyle: "default",
+    title: "Dipa Katalog"
+  },
+  icons: {
+    icon: [
+      { url: "/icons/favicon-32.png", sizes: "32x32", type: "image/png" },
+      { url: "/icons/icon-192.png", sizes: "192x192", type: "image/png" },
+      { url: "/icons/icon-512.png", sizes: "512x512", type: "image/png" }
+    ],
+    apple: [{ url: "/icons/apple-touch-icon.png", sizes: "180x180", type: "image/png" }]
+  }
+};
+
+// `themeColor` (dan viewport lainnya) wajib lewat export `viewport` terpisah
+// di Next 15 App Router — menaruhnya di `metadata` sudah deprecated/diabaikan.
+export const viewport: Viewport = {
+  width: "device-width",
+  initialScale: 1,
+  themeColor: "#d46a3a"
 };
 
 export default function RootLayout({ children }: Readonly<{ children: ReactNode }>) {
@@ -33,6 +56,7 @@ export default function RootLayout({ children }: Readonly<{ children: ReactNode 
           <SiteFooter />
         </div>
         <Toaster richColors position="top-right" />
+        <ServiceWorkerRegister />
       </body>
     </html>
   );

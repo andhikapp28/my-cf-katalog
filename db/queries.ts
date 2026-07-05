@@ -12,6 +12,7 @@ import {
   products
 } from "@/db/schema";
 import type { Product } from "@/db/schema";
+import { checklistStatuses, sortChecklistItems } from "@/lib/checklist";
 
 export type ProductListFilters = {
   q?: string;
@@ -386,6 +387,53 @@ export async function hasSeedData() {
   });
 
   return Boolean(existingEvent);
+}
+
+export async function getChecklistData(eventId?: string) {
+  const selectedEvent =
+    (eventId
+      ? await db.query.events.findFirst({ where: eq(events.id, eventId) })
+      : await getActiveEvent()) ?? (await db.query.events.findFirst({ orderBy: [desc(events.startsAt)] }));
+
+  if (!selectedEvent) {
+    return null;
+  }
+
+  const [items, locations] = await Promise.all([
+    db.query.products.findMany({
+      where: and(eq(products.eventId, selectedEvent.id), inArray(products.status, [...checklistStatuses])),
+      with: { circle: true }
+    }),
+    db.query.boothLocations.findMany({
+      where: eq(boothLocations.eventId, selectedEvent.id)
+    })
+  ]);
+
+  const boothByCircle = new Map(locations.map((location) => [location.circleId, location]));
+
+  const enriched = items.map((item) => {
+    const booth = boothByCircle.get(item.circleId);
+    return {
+      id: item.id,
+      name: item.name,
+      imageUrl: item.imageUrl,
+      price: item.price,
+      quantity: item.quantity,
+      priority: item.priority,
+      status: item.status,
+      notes: item.notes,
+      productLink: item.productLink,
+      circleId: item.circleId,
+      circleName: item.circle.name,
+      boothCode: booth?.boothCode ?? null,
+      floorMapId: booth?.floorMapId ?? null
+    };
+  });
+
+  return {
+    event: selectedEvent,
+    items: sortChecklistItems(enriched)
+  };
 }
 
 export async function getUpcomingDeadlines(limit = 8) {

@@ -4,6 +4,7 @@ import { notFound } from "next/navigation";
 import { FloorMapViewer } from "@/components/maps/floor-map-viewer";
 import { Card, CardContent } from "@/components/ui/card";
 import { getMapById, getRelatedProductsByCircle } from "@/db/queries";
+import { isDoneProductStatus } from "@/lib/checklist";
 
 export default async function MapDetailPage({
   params,
@@ -23,18 +24,36 @@ export default async function MapDetailPage({
   }
 
   const markers = await Promise.all(
-    map.boothLocations.map(async (location) => ({
-      id: location.id,
-      circleId: location.circleId,
-      circleName: location.circle.name,
-      boothCode: location.boothCode,
-      posX: location.posX,
-      posY: location.posY,
-      products: (await getRelatedProductsByCircle(map.eventId, location.circleId)).map((product) => ({
-        id: product.id,
-        name: product.name
-      }))
-    }))
+    map.boothLocations.map(async (location) => {
+      const circleProducts = await getRelatedProductsByCircle(map.eventId, location.circleId);
+
+      // Highlight: booth punya produk priority HIGH ATAU masih berstatus
+      // TARGET/PO_OPEN (masih perlu diburu) untuk event map ini.
+      const isHighlighted = circleProducts.some(
+        (product) => product.priority === "HIGH" || product.status === "TARGET" || product.status === "PO_OPEN"
+      );
+      // Selesai: SEMUA produk booth ini sudah PURCHASED/CANCELLED/SOLD_OUT.
+      // `.every()` pada array kosong bernilai true (booth tanpa target produk
+      // dianggap "selesai" karena tidak ada yang perlu diburu di sana).
+      const isDone = circleProducts.every((product) => isDoneProductStatus(product.status));
+
+      return {
+        id: location.id,
+        circleId: location.circleId,
+        circleName: location.circle.name,
+        boothCode: location.boothCode,
+        posX: location.posX,
+        posY: location.posY,
+        isHighlighted,
+        isDone,
+        products: circleProducts
+          .filter((product) => !isDoneProductStatus(product.status))
+          .map((product) => ({
+            id: product.id,
+            name: product.name
+          }))
+      };
+    })
   );
 
   return (
