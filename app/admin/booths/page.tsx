@@ -8,6 +8,8 @@ import { AdminCreateToggle, AdminCreateToggleButton, AdminCreateTogglePanel } fr
 import { AdminField } from "@/components/admin/admin-field";
 import { AdminSectionHeading } from "@/components/admin/admin-section-heading";
 import { ConfirmDeleteButton } from "@/components/admin/confirm-delete-button";
+import { DeleteActionForm } from "@/components/admin/delete-action-form";
+import { ActionStateForm } from "@/components/forms/action-state-form";
 import { SubmitButton } from "@/components/forms/submit-button";
 import { AdminShell } from "@/components/layout/admin-shell";
 import { Button } from "@/components/ui/button";
@@ -43,7 +45,11 @@ export default async function AdminBoothsPage({
         title="Add booth marker"
         description="X dan Y memakai basis persentase terhadap image map, jadi 0 sampai 100 akan lebih mudah dipelihara lintas device."
       >
-        <form action={upsertBoothAction} className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
+        <ActionStateForm
+          action={upsertBoothAction}
+          className="grid gap-4 md:grid-cols-2 xl:grid-cols-3"
+          closeCreateToggleOnSuccess
+        >
           <AdminField label="Event" required>
             <Select name="eventId" required>
               <option value="">Select event</option>
@@ -89,7 +95,7 @@ export default async function AdminBoothsPage({
           <div className="md:col-span-2 xl:col-span-3 flex justify-end">
             <SubmitButton>Save booth</SubmitButton>
           </div>
-        </form>
+        </ActionStateForm>
       </AdminCreateTogglePanel>
 
       <section className="space-y-4">
@@ -116,10 +122,9 @@ export default async function AdminBoothsPage({
                           {isEditing ? "Close" : "Edit"}
                         </Link>
                       </Button>
-                      <form action={deleteBoothAction}>
-                        <input type="hidden" name="id" value={booth.id} />
+                      <DeleteActionForm action={deleteBoothAction} hidden={{ id: booth.id }}>
                         <ConfirmDeleteButton />
-                      </form>
+                      </DeleteActionForm>
                     </div>
                   </div>
 
@@ -144,7 +149,7 @@ export default async function AdminBoothsPage({
 
                   {isEditing ? (
                     <div className="mt-5 border-t border-line/80 pt-5">
-                      <form action={upsertBoothAction} className="grid gap-4 md:grid-cols-2">
+                      <ActionStateForm action={upsertBoothAction} className="grid gap-4 md:grid-cols-2">
                         <input type="hidden" name="id" value={booth.id} />
                         <AdminField label="Event" required>
                           <Select name="eventId" defaultValue={booth.eventId} required>
@@ -191,7 +196,7 @@ export default async function AdminBoothsPage({
                           </Button>
                           <SubmitButton>Save changes</SubmitButton>
                         </div>
-                      </form>
+                      </ActionStateForm>
                     </div>
                   ) : null}
                 </article>

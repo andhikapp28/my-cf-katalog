@@ -12,6 +12,8 @@ import { AdminDataTable, AdminTableCell, AdminTableHead } from "@/components/adm
 import { AdminField } from "@/components/admin/admin-field";
 import { AdminPagination } from "@/components/admin/admin-pagination";
 import { AdminSectionHeading } from "@/components/admin/admin-section-heading";
+import { DeleteActionForm } from "@/components/admin/delete-action-form";
+import { ActionStateForm } from "@/components/forms/action-state-form";
 import { SubmitButton } from "@/components/forms/submit-button";
 import { AdminShell } from "@/components/layout/admin-shell";
 import { Button } from "@/components/ui/button";
@@ -58,7 +60,7 @@ export default async function AdminCirclesPage({
           title="Add circle"
           description="Buat entri circle yang bisa dipakai ulang di berbagai event, produk, dan marker booth."
         >
-          <form action={upsertCircleAction} className="grid gap-4 md:grid-cols-2">
+          <ActionStateForm action={upsertCircleAction} className="grid gap-4 md:grid-cols-2" closeCreateToggleOnSuccess>
             <AdminField label="Circle name" required>
               <Input name="name" placeholder="Atelier Hanami" required />
             </AdminField>
@@ -74,7 +76,7 @@ export default async function AdminCirclesPage({
             <div className="md:col-span-2 flex justify-end">
               <SubmitButton>Create circle</SubmitButton>
             </div>
-          </form>
+          </ActionStateForm>
         </AdminCreateTogglePanel>
 
         <section className="space-y-4">
@@ -100,12 +102,11 @@ export default async function AdminCirclesPage({
                           <AdminActionLink href={isEditing ? buildPathWithQuery("/admin/circles", { page: pageQuery }) : buildPathWithQuery("/admin/circles", { edit: circle.id, page: pageQuery })}>
                             {isEditing ? "Close editor" : "Edit"}
                           </AdminActionLink>
-                          <form action={deleteCircleAction}>
-                            <input type="hidden" name="id" value={circle.id} />
+                          <DeleteActionForm action={deleteCircleAction} hidden={{ id: circle.id }}>
                             <AdminActionButton type="submit" destructive>
                               Delete
                             </AdminActionButton>
-                          </form>
+                          </DeleteActionForm>
                         </AdminActionDropdown>
                       </div>
 
@@ -128,7 +129,7 @@ export default async function AdminCirclesPage({
 
                       {isEditing ? (
                         <div className="mt-4 border-t border-line/80 pt-4">
-                          <form action={upsertCircleAction} className="grid gap-4">
+                          <ActionStateForm action={upsertCircleAction} className="grid gap-4">
                             <input type="hidden" name="id" value={circle.id} />
                             <AdminField label="Circle name" required>
                               <Input name="name" defaultValue={circle.name} required />
@@ -148,7 +149,7 @@ export default async function AdminCirclesPage({
                               </Button>
                               <SubmitButton>Save changes</SubmitButton>
                             </div>
-                          </form>
+                          </ActionStateForm>
                         </div>
                       ) : null}
                     </article>
@@ -192,19 +193,18 @@ export default async function AdminCirclesPage({
                             <AdminActionLink href={isEditing ? buildPathWithQuery("/admin/circles", { page: pageQuery }) : buildPathWithQuery("/admin/circles", { edit: circle.id, page: pageQuery })}>
                               {isEditing ? "Close editor" : "Edit"}
                             </AdminActionLink>
-                            <form action={deleteCircleAction}>
-                              <input type="hidden" name="id" value={circle.id} />
+                            <DeleteActionForm action={deleteCircleAction} hidden={{ id: circle.id }}>
                               <AdminActionButton type="submit" destructive>
                                 Delete
                               </AdminActionButton>
-                            </form>
+                            </DeleteActionForm>
                           </AdminActionDropdown>
                         </AdminTableCell>
                       </tr>,
                       isEditing ? (
                         <tr key={`${circle.id}-edit`}>
                           <td colSpan={4} className="border-b border-line/80 bg-brand-50/35 px-4 py-5">
-                            <form action={upsertCircleAction} className="grid gap-4 md:grid-cols-2">
+                            <ActionStateForm action={upsertCircleAction} className="grid gap-4 md:grid-cols-2">
                               <input type="hidden" name="id" value={circle.id} />
                               <AdminField label="Circle name" required>
                                 <Input name="name" defaultValue={circle.name} required />
@@ -224,7 +224,7 @@ export default async function AdminCirclesPage({
                                 </Button>
                                 <SubmitButton>Save changes</SubmitButton>
                               </div>
-                            </form>
+                            </ActionStateForm>
                           </td>
                         </tr>
                       ) : null

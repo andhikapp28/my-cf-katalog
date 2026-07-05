@@ -1,7 +1,6 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
-import { redirect } from "next/navigation";
 import { and, eq, like } from "drizzle-orm";
 import { db } from "@/db";
 import { boothLocations, circles, floorMaps, productStatusLogs, products } from "@/db/schema";
@@ -9,14 +8,19 @@ import { requireAdmin } from "@/lib/auth";
 import { catalogEntrySchema } from "@/lib/validators";
 import { slugify } from "@/lib/utils";
 
-type CatalogFormState = { error?: string };
+export type CatalogFormState = { error?: string; success?: string };
 
 /**
  * Menambahkan satu entri katalog (circle + booth opsional + 1..n produk) dalam
  * SATU transaksi. Circle bisa dipilih dari yang ada atau dibuat baru (slug
  * auto-unik). Booth di-upsert lewat unique index (event, circle, boothCode)
  * sehingga aman dari double-submit. Dipakai lewat useActionState: mengembalikan
- * { error } saat gagal, dan redirect saat sukses.
+ * `{ error }` saat gagal, `{ success }` saat sukses — TIDAK PERNAH redirect
+ * (baris `redirect(...)` yang dulu ada di sini terbukti membuat client macet
+ * permanen di build produksi, lihat komentar panjang di actions/products.ts).
+ * Caller (`components/admin/catalog-entry-form.tsx`) menampilkan toast dari
+ * state ini dan menyediakan link manual ke /admin/products alih-alih
+ * auto-navigasi.
  */
 export async function addCatalogEntryAction(
   _prev: CatalogFormState,
@@ -138,5 +142,6 @@ export async function addCatalogEntryAction(
   revalidatePath("/admin");
   revalidatePath("/admin/products");
   revalidatePath("/admin/booths");
-  redirect("/admin/products?success=catalog-entry-saved");
+
+  return { success: "Entri katalog berhasil ditambahkan." };
 }

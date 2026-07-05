@@ -9,6 +9,8 @@ import { AdminCreateToggle, AdminCreateToggleButton, AdminCreateTogglePanel } fr
 import { AdminField } from "@/components/admin/admin-field";
 import { AdminSectionHeading } from "@/components/admin/admin-section-heading";
 import { ConfirmDeleteButton } from "@/components/admin/confirm-delete-button";
+import { DeleteActionForm } from "@/components/admin/delete-action-form";
+import { ActionStateForm } from "@/components/forms/action-state-form";
 import { SubmitButton } from "@/components/forms/submit-button";
 import { AdminShell } from "@/components/layout/admin-shell";
 import { Badge } from "@/components/ui/badge";
@@ -40,7 +42,11 @@ export default async function AdminEventsPage({
         title="Create event"
         description="Form utama untuk menambah event baru, menentukan budget, dan memilih event aktif yang muncul di dashboard."
       >
-        <form action={upsertEventAction} className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
+        <ActionStateForm
+          action={upsertEventAction}
+          className="grid gap-4 md:grid-cols-2 xl:grid-cols-3"
+          closeCreateToggleOnSuccess
+        >
           <AdminField label="Event name" required>
             <Input name="name" placeholder="Anime Festival 2026" required />
           </AdminField>
@@ -72,7 +78,7 @@ export default async function AdminEventsPage({
           <div className="md:col-span-2 xl:col-span-3 flex justify-end">
             <SubmitButton>Create event</SubmitButton>
           </div>
-        </form>
+        </ActionStateForm>
       </AdminCreateTogglePanel>
 
       <section className="space-y-4">
@@ -107,10 +113,9 @@ export default async function AdminEventsPage({
                           {isEditing ? "Close" : "Edit"}
                         </Link>
                       </Button>
-                      <form action={deleteEventAction}>
-                        <input type="hidden" name="id" value={event.id} />
+                      <DeleteActionForm action={deleteEventAction} hidden={{ id: event.id }}>
                         <ConfirmDeleteButton />
-                      </form>
+                      </DeleteActionForm>
                     </div>
                   </div>
 
@@ -135,7 +140,7 @@ export default async function AdminEventsPage({
 
                   {isEditing ? (
                     <div className="mt-5 border-t border-line/80 pt-5">
-                      <form action={upsertEventAction} className="grid gap-4 md:grid-cols-2">
+                      <ActionStateForm action={upsertEventAction} className="grid gap-4 md:grid-cols-2">
                         <input type="hidden" name="id" value={event.id} />
                         <AdminField label="Event name" required>
                           <Input name="name" defaultValue={event.name} required />
@@ -171,7 +176,7 @@ export default async function AdminEventsPage({
                           </Button>
                           <SubmitButton>Save changes</SubmitButton>
                         </div>
-                      </form>
+                      </ActionStateForm>
                     </div>
                   ) : null}
                 </article>

@@ -1,6 +1,12 @@
 import type { NextAuthConfig } from "next-auth";
 
 const authConfig: NextAuthConfig = {
+  // Auth.js v5 menolak request dengan header Host yang tidak dikenal ("UntrustedHost")
+  // kecuali `AUTH_URL` di-set atau deployment terdeteksi berjalan di Vercel. Aplikasi ini
+  // self-hosted (next start, bukan Vercel) tanpa `AUTH_URL` tetap di .env, jadi tanpa
+  // `trustHost: true` login gagal total di production build (`next start`) — termuat
+  // saat menulis smoke test e2e (Sprint 2) yang menjalankan build produksi sungguhan.
+  trustHost: true,
   pages: {
     signIn: "/admin/login"
   },

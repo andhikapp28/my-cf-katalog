@@ -1,8 +1,10 @@
 "use client";
 
-import { startTransition, useActionState, useMemo, useState } from "react";
+import { startTransition, useActionState, useEffect, useMemo, useState } from "react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { Plus, Trash2 } from "lucide-react";
+import { toast } from "sonner";
 import { addCatalogEntryAction } from "@/actions/catalog";
 import { AdminField } from "@/components/admin/admin-field";
 import { CircleCombobox, type CircleValue } from "@/components/admin/circle-combobox";
@@ -56,7 +58,8 @@ export function CatalogEntryForm({
   circles: CircleOption[];
   floorMaps: FloorMapOption[];
 }) {
-  const [state, formAction, pending] = useActionState(addCatalogEntryAction, {} as { error?: string });
+  const router = useRouter();
+  const [state, formAction, pending] = useActionState(addCatalogEntryAction, {} as { error?: string; success?: string });
 
   const defaultEventId = events.find((event) => event.isActive)?.id ?? events[0]?.id ?? "";
   const [eventId, setEventId] = useState(defaultEventId);
@@ -65,6 +68,30 @@ export function CatalogEntryForm({
   const [booth, setBooth] = useState({ floorMapId: "", boothCode: "", posX: "", posY: "", notes: "" });
   const [rows, setRows] = useState<ProductRow[]>([createRow()]);
   const [clientError, setClientError] = useState<string | null>(null);
+  const [justSaved, setJustSaved] = useState(false);
+
+  /**
+   * `addCatalogEntryAction` (actions/catalog.ts) SENGAJA TIDAK memanggil
+   * `redirect()` lagi (lihat komentar panjang di actions/products.ts untuk
+   * root cause). Navigasi pasca-sukses ke /admin/products dilakukan di sini
+   * lewat `router.push()` client-side murni, yang sudah diverifikasi aman di
+   * build produksi sungguhan secara terpisah (lihat actions/auth.ts). Form
+   * juga di-reset supaya user bisa langsung menambah entri katalog berikutnya
+   * kalau navigasi belum sempat terjadi / dibatalkan oleh browser back button.
+   */
+  useEffect(() => {
+    if (state.success) {
+      toast.success(state.success);
+      setJustSaved(true);
+      setCircle(null);
+      setBoothEnabled(false);
+      setBooth({ floorMapId: "", boothCode: "", posX: "", posY: "", notes: "" });
+      setRows([createRow()]);
+      setClientError(null);
+      router.push("/admin/products");
+      router.refresh();
+    }
+  }, [state, router]);
 
   const eventMaps = useMemo(
     () => floorMaps.filter((map) => map.eventId === eventId),
@@ -375,6 +402,14 @@ export function CatalogEntryForm({
             <span className="mx-2 text-ink-400">·</span>
             <span>Total estimasi {formatCurrency(total)}</span>
             {message ? <span className="ml-3 text-rose-600">{message}</span> : null}
+            {justSaved ? (
+              <span className="ml-3 text-emerald-600">
+                Tersimpan.{" "}
+                <Link href="/admin/products" className="underline">
+                  Lihat di Products
+                </Link>
+              </span>
+            ) : null}
           </div>
           <div className="flex items-center justify-end gap-3">
             <Button asChild variant="ghost">

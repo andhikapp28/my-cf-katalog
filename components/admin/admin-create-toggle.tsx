@@ -33,6 +33,16 @@ function useAdminCreateToggleContext() {
   return context;
 }
 
+/**
+ * Variant non-throwing dari context di atas, dipakai komponen generik (mis.
+ * `ActionStateForm`) yang mungkin dirender di luar `<AdminCreateToggle>` (form
+ * edit, halaman tanpa toggle panel, dsb). Mengembalikan `null` alih-alih
+ * melempar error kalau tidak ada provider di atasnya.
+ */
+export function useAdminCreateToggleOptional() {
+  return useContext(AdminCreateToggleContext);
+}
+
 export function AdminCreateToggle({ children }: { children: ReactNode }) {
   const panelId = useId();
   const closeTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);

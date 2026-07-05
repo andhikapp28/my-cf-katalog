@@ -1,27 +1,36 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
-import { redirect } from "next/navigation";
 import { eq } from "drizzle-orm";
 import { db } from "@/db";
 import { expenseCategories, expenses } from "@/db/schema";
 import { requireAdmin } from "@/lib/auth";
-import { parseFormData } from "@/lib/form";
+import { safeParseFormData } from "@/lib/form";
 import { expenseCategorySchema, expenseSchema } from "@/lib/validators";
 
-export async function upsertExpenseCategoryAction(formData: FormData) {
+export type ExpenseFormState = {
+  success?: string;
+  error?: string;
+};
+
+export async function upsertExpenseCategoryAction(
+  _prevState: ExpenseFormState,
+  formData: FormData
+): Promise<ExpenseFormState> {
   await requireAdmin();
 
-  const parsed = parseFormData(
-    expenseCategorySchema,
-    {
-      id: formData.get("id") || undefined,
-      name: formData.get("name"),
-      slug: formData.get("slug"),
-      color: formData.get("color") || "#D46A3A"
-    },
-    "/admin/expenses/settings?error=validation"
-  );
+  const parseResult = safeParseFormData(expenseCategorySchema, {
+    id: formData.get("id") || undefined,
+    name: formData.get("name"),
+    slug: formData.get("slug"),
+    color: formData.get("color") || "#D46A3A"
+  });
+
+  if (!parseResult.success) {
+    return { error: parseResult.error };
+  }
+
+  const parsed = parseResult.data;
 
   if (parsed.id) {
     await db
@@ -40,38 +49,48 @@ export async function upsertExpenseCategoryAction(formData: FormData) {
   revalidatePath("/expenses");
   revalidatePath("/admin/expenses");
   revalidatePath("/admin/expenses/settings");
-  redirect("/admin/expenses/settings?success=category-saved");
+
+  return { success: parsed.id ? "Kategori expense disimpan." : "Kategori expense baru berhasil dibuat." };
 }
 
-export async function deleteExpenseCategoryAction(formData: FormData) {
+export async function deleteExpenseCategoryAction(
+  _prevState: ExpenseFormState,
+  formData: FormData
+): Promise<ExpenseFormState> {
   await requireAdmin();
   const id = String(formData.get("id") ?? "");
   await db.delete(expenseCategories).where(eq(expenseCategories.id, id));
   revalidatePath("/expenses");
   revalidatePath("/admin/expenses");
   revalidatePath("/admin/expenses/settings");
-  redirect("/admin/expenses/settings?success=category-deleted");
+
+  return { success: "Kategori expense dihapus." };
 }
 
-export async function upsertExpenseAction(formData: FormData) {
+export async function upsertExpenseAction(
+  _prevState: ExpenseFormState,
+  formData: FormData
+): Promise<ExpenseFormState> {
   await requireAdmin();
 
-  const parsed = parseFormData(
-    expenseSchema,
-    {
-      id: formData.get("id") || undefined,
-      eventId: formData.get("eventId"),
-      productId: formData.get("productId") || undefined,
-      categoryId: formData.get("categoryId"),
-      amount: formData.get("amount"),
-      expenseDate: formData.get("expenseDate"),
-      note: formData.get("note") || undefined,
-      paymentMethod: formData.get("paymentMethod"),
-      isPlanned: formData.get("isPlanned") === "on",
-      isActual: formData.get("isActual") === "on"
-    },
-    "/admin/expenses?error=validation"
-  );
+  const parseResult = safeParseFormData(expenseSchema, {
+    id: formData.get("id") || undefined,
+    eventId: formData.get("eventId"),
+    productId: formData.get("productId") || undefined,
+    categoryId: formData.get("categoryId"),
+    amount: formData.get("amount"),
+    expenseDate: formData.get("expenseDate"),
+    note: formData.get("note") || undefined,
+    paymentMethod: formData.get("paymentMethod"),
+    isPlanned: formData.get("isPlanned") === "on",
+    isActual: formData.get("isActual") === "on"
+  });
+
+  if (!parseResult.success) {
+    return { error: parseResult.error };
+  }
+
+  const parsed = parseResult.data;
 
   const values = {
     eventId: parsed.eventId,
@@ -95,10 +114,14 @@ export async function upsertExpenseAction(formData: FormData) {
   revalidatePath("/expenses");
   revalidatePath("/admin");
   revalidatePath("/admin/expenses");
-  redirect("/admin/expenses?success=expense-saved");
+
+  return { success: parsed.id ? "Expense berhasil disimpan." : "Expense baru berhasil dicatat." };
 }
 
-export async function deleteExpenseAction(formData: FormData) {
+export async function deleteExpenseAction(
+  _prevState: ExpenseFormState,
+  formData: FormData
+): Promise<ExpenseFormState> {
   await requireAdmin();
   const id = String(formData.get("id") ?? "");
   await db.delete(expenses).where(eq(expenses.id, id));
@@ -106,5 +129,6 @@ export async function deleteExpenseAction(formData: FormData) {
   revalidatePath("/expenses");
   revalidatePath("/admin");
   revalidatePath("/admin/expenses");
-  redirect("/admin/expenses?success=expense-deleted");
+
+  return { success: "Expense dihapus." };
 }

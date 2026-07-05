@@ -1,28 +1,37 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
-import { redirect } from "next/navigation";
 import { eq } from "drizzle-orm";
 import { db } from "@/db";
 import { circles } from "@/db/schema";
 import { requireAdmin } from "@/lib/auth";
-import { parseFormData } from "@/lib/form";
+import { safeParseFormData } from "@/lib/form";
 import { circleSchema } from "@/lib/validators";
 
-export async function upsertCircleAction(formData: FormData) {
+export type CircleFormState = {
+  success?: string;
+  error?: string;
+};
+
+export async function upsertCircleAction(
+  _prevState: CircleFormState,
+  formData: FormData
+): Promise<CircleFormState> {
   await requireAdmin();
 
-  const parsed = parseFormData(
-    circleSchema,
-    {
-      id: formData.get("id") || undefined,
-      name: formData.get("name"),
-      slug: formData.get("slug"),
-      socialLink: formData.get("socialLink") || undefined,
-      notes: formData.get("notes") || undefined
-    },
-    "/admin/circles?error=validation"
-  );
+  const parseResult = safeParseFormData(circleSchema, {
+    id: formData.get("id") || undefined,
+    name: formData.get("name"),
+    slug: formData.get("slug"),
+    socialLink: formData.get("socialLink") || undefined,
+    notes: formData.get("notes") || undefined
+  });
+
+  if (!parseResult.success) {
+    return { error: parseResult.error };
+  }
+
+  const parsed = parseResult.data;
 
   if (parsed.id) {
     await db
@@ -47,17 +56,20 @@ export async function upsertCircleAction(formData: FormData) {
   revalidatePath("/circles");
   revalidatePath("/products");
   revalidatePath("/admin/circles");
-  redirect("/admin/circles?success=circle-saved");
+
+  return { success: parsed.id ? "Circle berhasil disimpan." : "Circle baru berhasil dibuat." };
 }
 
-export async function deleteCircleAction(formData: FormData) {
+export async function deleteCircleAction(
+  _prevState: CircleFormState,
+  formData: FormData
+): Promise<CircleFormState> {
   await requireAdmin();
   const id = String(formData.get("id") ?? "");
   await db.delete(circles).where(eq(circles.id, id));
   revalidatePath("/circles");
   revalidatePath("/products");
   revalidatePath("/admin/circles");
-  redirect("/admin/circles?success=circle-deleted");
+
+  return { success: "Circle dihapus." };
 }
-
-

@@ -1,30 +1,39 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
-import { redirect } from "next/navigation";
 import { eq } from "drizzle-orm";
 import { db } from "@/db";
 import { boothLocations, floorMaps } from "@/db/schema";
 import { requireAdmin } from "@/lib/auth";
 import { safeDeleteBlob, uploadImageToBlob } from "@/lib/blob";
-import { parseFormData } from "@/lib/form";
+import { safeParseFormData } from "@/lib/form";
 import { boothLocationSchema, floorMapSchema } from "@/lib/validators";
 
-export async function upsertFloorMapAction(formData: FormData) {
+export type FloorMapFormState = {
+  success?: string;
+  error?: string;
+};
+
+export async function upsertFloorMapAction(
+  _prevState: FloorMapFormState,
+  formData: FormData
+): Promise<FloorMapFormState> {
   await requireAdmin();
 
-  const parsed = parseFormData(
-    floorMapSchema,
-    {
-      id: formData.get("id") || undefined,
-      eventId: formData.get("eventId"),
-      name: formData.get("name"),
-      width: formData.get("width"),
-      height: formData.get("height"),
-      previousImageUrl: formData.get("previousImageUrl") || undefined
-    },
-    "/admin/floor-maps?error=validation"
-  );
+  const parseResult = safeParseFormData(floorMapSchema, {
+    id: formData.get("id") || undefined,
+    eventId: formData.get("eventId"),
+    name: formData.get("name"),
+    width: formData.get("width"),
+    height: formData.get("height"),
+    previousImageUrl: formData.get("previousImageUrl") || undefined
+  });
+
+  if (!parseResult.success) {
+    return { error: parseResult.error };
+  }
+
+  const parsed = parseResult.data;
 
   const image = formData.get("image");
   let imageUrl = parsed.previousImageUrl || null;
@@ -34,7 +43,7 @@ export async function upsertFloorMapAction(formData: FormData) {
   }
 
   if (!imageUrl) {
-    redirect("/admin/floor-maps?error=image-required");
+    return { error: "Floor map wajib memiliki gambar." };
   }
 
   if (parsed.id) {
@@ -61,10 +70,14 @@ export async function upsertFloorMapAction(formData: FormData) {
 
   revalidatePath("/maps");
   revalidatePath("/admin/floor-maps");
-  redirect("/admin/floor-maps?success=floor-map-saved");
+
+  return { success: parsed.id ? "Floor map berhasil disimpan." : "Floor map baru berhasil diunggah." };
 }
 
-export async function deleteFloorMapAction(formData: FormData) {
+export async function deleteFloorMapAction(
+  _prevState: FloorMapFormState,
+  formData: FormData
+): Promise<FloorMapFormState> {
   await requireAdmin();
   const id = String(formData.get("id") ?? "");
   const imageUrl = String(formData.get("imageUrl") ?? "");
@@ -72,26 +85,32 @@ export async function deleteFloorMapAction(formData: FormData) {
   await safeDeleteBlob(imageUrl);
   revalidatePath("/maps");
   revalidatePath("/admin/floor-maps");
-  redirect("/admin/floor-maps?success=floor-map-deleted");
+
+  return { success: "Floor map dihapus." };
 }
 
-export async function upsertBoothAction(formData: FormData) {
+export async function upsertBoothAction(
+  _prevState: FloorMapFormState,
+  formData: FormData
+): Promise<FloorMapFormState> {
   await requireAdmin();
 
-  const parsed = parseFormData(
-    boothLocationSchema,
-    {
-      id: formData.get("id") || undefined,
-      eventId: formData.get("eventId"),
-      circleId: formData.get("circleId"),
-      floorMapId: formData.get("floorMapId"),
-      boothCode: formData.get("boothCode"),
-      posX: formData.get("posX"),
-      posY: formData.get("posY"),
-      notes: formData.get("notes") || undefined
-    },
-    "/admin/booths?error=validation"
-  );
+  const parseResult = safeParseFormData(boothLocationSchema, {
+    id: formData.get("id") || undefined,
+    eventId: formData.get("eventId"),
+    circleId: formData.get("circleId"),
+    floorMapId: formData.get("floorMapId"),
+    boothCode: formData.get("boothCode"),
+    posX: formData.get("posX"),
+    posY: formData.get("posY"),
+    notes: formData.get("notes") || undefined
+  });
+
+  if (!parseResult.success) {
+    return { error: parseResult.error };
+  }
+
+  const parsed = parseResult.data;
 
   if (parsed.id) {
     await db
@@ -114,17 +133,20 @@ export async function upsertBoothAction(formData: FormData) {
   revalidatePath("/maps");
   revalidatePath("/products");
   revalidatePath("/admin/booths");
-  redirect("/admin/booths?success=booth-saved");
+
+  return { success: parsed.id ? "Booth berhasil disimpan." : "Booth marker baru berhasil ditambahkan." };
 }
 
-export async function deleteBoothAction(formData: FormData) {
+export async function deleteBoothAction(
+  _prevState: FloorMapFormState,
+  formData: FormData
+): Promise<FloorMapFormState> {
   await requireAdmin();
   const id = String(formData.get("id") ?? "");
   await db.delete(boothLocations).where(eq(boothLocations.id, id));
   revalidatePath("/maps");
   revalidatePath("/products");
   revalidatePath("/admin/booths");
-  redirect("/admin/booths?success=booth-deleted");
+
+  return { success: "Booth dihapus." };
 }
-
-

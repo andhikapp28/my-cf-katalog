@@ -9,6 +9,8 @@ import { AdminCreateToggle, AdminCreateToggleButton, AdminCreateTogglePanel } fr
 import { AdminField } from "@/components/admin/admin-field";
 import { AdminSectionHeading } from "@/components/admin/admin-section-heading";
 import { ConfirmDeleteButton } from "@/components/admin/confirm-delete-button";
+import { DeleteActionForm } from "@/components/admin/delete-action-form";
+import { ActionStateForm } from "@/components/forms/action-state-form";
 import { ImageFileInput } from "@/components/forms/image-file-input";
 import { SubmitButton } from "@/components/forms/submit-button";
 import { AdminShell } from "@/components/layout/admin-shell";
@@ -39,7 +41,11 @@ export default async function AdminFloorMapsPage({
         title="Upload floor map"
         description="Gunakan panel ini untuk menambah floor map baru lengkap dengan ukuran kanvas aslinya."
       >
-        <form action={upsertFloorMapAction} className="grid gap-4 lg:grid-cols-2 xl:grid-cols-4">
+        <ActionStateForm
+          action={upsertFloorMapAction}
+          className="grid gap-4 lg:grid-cols-2 xl:grid-cols-4"
+          closeCreateToggleOnSuccess
+        >
           <AdminField label="Event" required className="xl:col-span-2">
             <Select name="eventId" required>
               <option value="">Select event</option>
@@ -65,7 +71,7 @@ export default async function AdminFloorMapsPage({
           <div className="lg:col-span-2 xl:col-span-4 flex justify-end">
             <SubmitButton>Save floor map</SubmitButton>
           </div>
-        </form>
+        </ActionStateForm>
       </AdminCreateTogglePanel>
 
       <section className="space-y-4">
@@ -92,11 +98,12 @@ export default async function AdminFloorMapsPage({
                           {isEditing ? "Close" : "Edit"}
                         </Link>
                       </Button>
-                      <form action={deleteFloorMapAction}>
-                        <input type="hidden" name="id" value={map.id} />
-                        <input type="hidden" name="imageUrl" value={map.imageUrl} />
+                      <DeleteActionForm
+                        action={deleteFloorMapAction}
+                        hidden={{ id: map.id, imageUrl: map.imageUrl }}
+                      >
                         <ConfirmDeleteButton />
-                      </form>
+                      </DeleteActionForm>
                     </div>
                   </div>
 
@@ -117,7 +124,7 @@ export default async function AdminFloorMapsPage({
 
                   {isEditing ? (
                     <div className="mt-5 border-t border-line/80 pt-5">
-                      <form action={upsertFloorMapAction} className="grid gap-4 md:grid-cols-2">
+                      <ActionStateForm action={upsertFloorMapAction} className="grid gap-4 md:grid-cols-2">
                         <input type="hidden" name="id" value={map.id} />
                         <input type="hidden" name="previousImageUrl" value={map.imageUrl} />
                         <AdminField label="Event" required>
@@ -147,7 +154,7 @@ export default async function AdminFloorMapsPage({
                           </Button>
                           <SubmitButton>Save changes</SubmitButton>
                         </div>
-                      </form>
+                      </ActionStateForm>
                     </div>
                   ) : null}
                 </article>

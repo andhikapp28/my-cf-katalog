@@ -1,7 +1,7 @@
 export const dynamic = "force-dynamic";
 
 import Link from "next/link";
-import { deleteProductAction, quickUpdateProductStatusAction, upsertProductAction } from "@/actions/products";
+import { deleteProductAction, upsertProductAction } from "@/actions/products";
 import {
   AdminActionButton,
   AdminActionDivider,
@@ -14,8 +14,11 @@ import { AdminCreateToggle, AdminCreateToggleButton, AdminCreateTogglePanel } fr
 import { AdminField } from "@/components/admin/admin-field";
 import { AdminPagination } from "@/components/admin/admin-pagination";
 import { AdminSectionHeading } from "@/components/admin/admin-section-heading";
+import { DeleteActionForm } from "@/components/admin/delete-action-form";
 import { ProductImage } from "@/components/products/product-image";
 import { ProductImageUrlField } from "@/components/products/product-image-url-field";
+import { QuickStatusForm } from "@/components/products/quick-status-form";
+import { ActionStateForm } from "@/components/forms/action-state-form";
 import { SubmitButton } from "@/components/forms/submit-button";
 import { AdminShell } from "@/components/layout/admin-shell";
 import { Badge } from "@/components/ui/badge";
@@ -116,7 +119,11 @@ export default async function AdminProductsPage({
         title="Add product"
         description="Panel utama untuk menambah target item baru. Image produk sekarang cukup memakai direct image URL agar lebih ringan dan mudah dikelola."
       >
-        <form action={upsertProductAction} className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
+        <ActionStateForm
+          action={upsertProductAction}
+          className="grid gap-4 md:grid-cols-2 xl:grid-cols-3"
+          closeCreateToggleOnSuccess
+        >
           <AdminField label="Event" required>
             <Select name="eventId" required>
               <option value="">Select event</option>
@@ -188,7 +195,7 @@ export default async function AdminProductsPage({
           <div className="md:col-span-2 xl:col-span-3 flex justify-end">
             <SubmitButton>Save product</SubmitButton>
           </div>
-        </form>
+        </ActionStateForm>
       </AdminCreateTogglePanel>
 
       <section className="panel p-5 sm:p-6">
@@ -251,7 +258,7 @@ export default async function AdminProductsPage({
           title={`Edit product: ${selectedProduct.name}`}
           description="Panel edit dipisah dari grid supaya daftar produk tetap bersih dan visual."
         >
-          <form action={upsertProductAction} className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
+          <ActionStateForm action={upsertProductAction} className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
             <input type="hidden" name="id" value={selectedProduct.id} />
             <AdminField label="Event" required>
               <Select name="eventId" defaultValue={selectedProduct.eventId} required>
@@ -337,7 +344,7 @@ export default async function AdminProductsPage({
                 <SubmitButton>Save changes</SubmitButton>
               </div>
             </div>
-          </form>
+          </ActionStateForm>
         </AdminCreatePanel>
       ) : null}
 
@@ -373,26 +380,13 @@ export default async function AdminProductsPage({
                       <AdminActionLink href={`/products/${product.id}`}>Open public detail</AdminActionLink>
                       <AdminActionDivider />
                       <AdminActionLabel>Quick status</AdminActionLabel>
-                      <form action={quickUpdateProductStatusAction} className="space-y-2 px-2 pb-2 pt-1">
-                        <input type="hidden" name="productId" value={product.id} />
-                        <Select name="status" defaultValue={product.status} className="h-10 rounded-xl text-sm">
-                          {productStatuses.map((item) => (
-                            <option key={item} value={item}>
-                              {item}
-                            </option>
-                          ))}
-                        </Select>
-                        <Button type="submit" className="w-full justify-center rounded-xl">
-                          Apply status
-                        </Button>
-                      </form>
+                      <QuickStatusForm productId={product.id} currentStatus={product.status} />
                       <AdminActionDivider />
-                      <form action={deleteProductAction}>
-                        <input type="hidden" name="id" value={product.id} />
+                      <DeleteActionForm action={deleteProductAction} hidden={{ id: product.id }}>
                         <AdminActionButton type="submit" destructive>
                           Delete
                         </AdminActionButton>
-                      </form>
+                      </DeleteActionForm>
                     </AdminActionDropdown>
                   </div>
 

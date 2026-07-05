@@ -13,7 +13,9 @@ import { AdminDataTable, AdminTableCell, AdminTableHead } from "@/components/adm
 import { AdminField } from "@/components/admin/admin-field";
 import { AdminPagination } from "@/components/admin/admin-pagination";
 import { AdminSectionHeading } from "@/components/admin/admin-section-heading";
+import { DeleteActionForm } from "@/components/admin/delete-action-form";
 import { SummaryCard } from "@/components/dashboard/summary-card";
+import { ActionStateForm } from "@/components/forms/action-state-form";
 import { SubmitButton } from "@/components/forms/submit-button";
 import { AdminShell } from "@/components/layout/admin-shell";
 import { Badge } from "@/components/ui/badge";
@@ -137,7 +139,11 @@ export default async function AdminExpensesPage({
           description="Fokus halaman ini hanya untuk expense record. Pengaturan kategori dipisah ke halaman settings agar area kerja tetap bersih."
           className="scroll-mt-24"
         >
-          <form action={upsertExpenseAction} className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
+          <ActionStateForm
+            action={upsertExpenseAction}
+            className="grid gap-4 md:grid-cols-2 xl:grid-cols-3"
+            closeCreateToggleOnSuccess
+          >
             <AdminField label="Event" required>
               <Select name="eventId" defaultValue={eventId} required>
                 <option value="">Select event</option>
@@ -197,7 +203,7 @@ export default async function AdminExpensesPage({
             <div className="md:col-span-2 xl:col-span-3 flex justify-end">
               <SubmitButton>Save expense</SubmitButton>
             </div>
-          </form>
+          </ActionStateForm>
         </AdminCreateTogglePanel>
 
         {selectedExpense ? (
@@ -205,7 +211,7 @@ export default async function AdminExpensesPage({
             title={`Edit expense: ${selectedExpense.product?.name ?? selectedExpense.category.name}`}
             description="Edit dilakukan di panel terpisah agar daftar record tetap tenang dan fokus."
           >
-            <form action={upsertExpenseAction} className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
+            <ActionStateForm action={upsertExpenseAction} className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
               <input type="hidden" name="id" value={selectedExpense.id} />
               <AdminField label="Event" required>
                 <Select name="eventId" defaultValue={selectedExpense.eventId} required>
@@ -267,7 +273,7 @@ export default async function AdminExpensesPage({
                 </Button>
                 <SubmitButton>Save changes</SubmitButton>
               </div>
-            </form>
+            </ActionStateForm>
           </AdminCreatePanel>
         ) : null}
 
@@ -300,12 +306,11 @@ export default async function AdminExpensesPage({
                         <AdminActionLink href={buildPathWithQuery("/admin/expenses", { ...sharedQuery, edit: expense.id })}>
                           Edit
                         </AdminActionLink>
-                        <form action={deleteExpenseAction}>
-                          <input type="hidden" name="id" value={expense.id} />
+                        <DeleteActionForm action={deleteExpenseAction} hidden={{ id: expense.id }}>
                           <AdminActionButton type="submit" destructive>
                             Delete
                           </AdminActionButton>
-                        </form>
+                        </DeleteActionForm>
                       </AdminActionDropdown>
                     </div>
 
@@ -390,12 +395,11 @@ export default async function AdminExpensesPage({
                           <AdminActionLink href={buildPathWithQuery("/admin/expenses", { ...sharedQuery, edit: expense.id })}>
                             Edit
                           </AdminActionLink>
-                          <form action={deleteExpenseAction}>
-                            <input type="hidden" name="id" value={expense.id} />
+                          <DeleteActionForm action={deleteExpenseAction} hidden={{ id: expense.id }}>
                             <AdminActionButton type="submit" destructive>
                               Delete
                             </AdminActionButton>
-                          </form>
+                          </DeleteActionForm>
                         </AdminActionDropdown>
                       </AdminTableCell>
                     </tr>

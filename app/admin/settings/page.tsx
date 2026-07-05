@@ -2,6 +2,8 @@ export const dynamic = "force-dynamic";
 
 import { syncAdminFromEnvAction } from "@/actions/settings";
 import { auth } from "@/auth";
+import { ActionStateForm } from "@/components/forms/action-state-form";
+import { SubmitButton } from "@/components/forms/submit-button";
 import { AdminShell } from "@/components/layout/admin-shell";
 import { Card, CardContent } from "@/components/ui/card";
 
@@ -27,9 +29,11 @@ export default async function AdminSettingsPage() {
           <CardContent className="space-y-4">
             <h2 className="font-[var(--font-display)] text-2xl font-semibold">Admin account</h2>
             <p className="text-sm text-ink-500">Session aktif: {session?.user.email}</p>
-            <form action={syncAdminFromEnvAction}>
-              <button type="submit" className="rounded-full bg-brand-500 px-5 py-3 text-sm font-medium text-white">Sync admin from env</button>
-            </form>
+            <ActionStateForm action={syncAdminFromEnvAction}>
+              <SubmitButton className="rounded-full bg-brand-500 px-5 py-3 text-sm font-medium text-white">
+                Sync admin from env
+              </SubmitButton>
+            </ActionStateForm>
           </CardContent>
         </Card>
       </div>

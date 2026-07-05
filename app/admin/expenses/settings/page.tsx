@@ -7,6 +7,8 @@ import { AdminDataTable, AdminTableCell, AdminTableHead } from "@/components/adm
 import { AdminField } from "@/components/admin/admin-field";
 import { AdminSectionHeading } from "@/components/admin/admin-section-heading";
 import { ConfirmDeleteButton } from "@/components/admin/confirm-delete-button";
+import { DeleteActionForm } from "@/components/admin/delete-action-form";
+import { ActionStateForm } from "@/components/forms/action-state-form";
 import { SubmitButton } from "@/components/forms/submit-button";
 import { AdminShell } from "@/components/layout/admin-shell";
 import { Button } from "@/components/ui/button";
@@ -35,7 +37,11 @@ export default async function AdminExpenseSettingsPage({
           title="Add category"
           description="Tambahkan kategori baru dengan slug dan warna yang konsisten untuk summary pengeluaran."
         >
-          <form action={upsertExpenseCategoryAction} className="grid gap-4 md:grid-cols-3">
+          <ActionStateForm
+            action={upsertExpenseCategoryAction}
+            className="grid gap-4 md:grid-cols-3"
+            closeCreateToggleOnSuccess
+          >
             <AdminField label="Name" required>
               <Input name="name" placeholder="Merchandise" required />
             </AdminField>
@@ -48,7 +54,7 @@ export default async function AdminExpenseSettingsPage({
             <div className="md:col-span-3 flex justify-end">
               <SubmitButton>Save category</SubmitButton>
             </div>
-          </form>
+          </ActionStateForm>
         </AdminCreateTogglePanel>
 
         <section className="space-y-4">
@@ -97,17 +103,16 @@ export default async function AdminExpenseSettingsPage({
                               {isEditing ? "Close" : "Edit"}
                             </Link>
                           </Button>
-                          <form action={deleteExpenseCategoryAction}>
-                            <input type="hidden" name="id" value={category.id} />
+                          <DeleteActionForm action={deleteExpenseCategoryAction} hidden={{ id: category.id }}>
                             <ConfirmDeleteButton />
-                          </form>
+                          </DeleteActionForm>
                         </div>
                       </AdminTableCell>
                     </tr>,
                     isEditing ? (
                       <tr key={`${category.id}-edit`}>
                         <td colSpan={4} className="border-b border-line/80 bg-brand-50/35 px-4 py-5">
-                          <form action={upsertExpenseCategoryAction} className="grid gap-4 md:grid-cols-3">
+                          <ActionStateForm action={upsertExpenseCategoryAction} className="grid gap-4 md:grid-cols-3">
                             <input type="hidden" name="id" value={category.id} />
                             <AdminField label="Name" required>
                               <Input name="name" defaultValue={category.name} required />
@@ -124,7 +129,7 @@ export default async function AdminExpenseSettingsPage({
                               </Button>
                               <SubmitButton>Save changes</SubmitButton>
                             </div>
-                          </form>
+                          </ActionStateForm>
                         </td>
                       </tr>
                     ) : null

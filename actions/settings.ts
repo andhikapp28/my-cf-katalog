@@ -1,13 +1,19 @@
 "use server";
 
-import { redirect } from "next/navigation";
 import { ensureAdminUser } from "@/lib/bootstrap";
 import { requireAdmin } from "@/lib/auth";
 
-export async function syncAdminFromEnvAction() {
+export type SyncAdminState = {
+  success?: string;
+  error?: string;
+};
+
+export async function syncAdminFromEnvAction(
+  _prevState: SyncAdminState,
+  _formData: FormData
+): Promise<SyncAdminState> {
   await requireAdmin();
   await ensureAdminUser();
-  redirect("/admin/settings?success=admin-synced-from-env");
+
+  return { success: "Admin disinkronkan dari environment." };
 }
-
-
