@@ -1,5 +1,6 @@
 node_modules
 .next
+.next-e2e
 dist
 coverage
 .vercel
@@ -8,3 +9,7 @@ coverage
 logs
 *.log
 tsconfig.tsbuildinfo
+test-results
+playwright-report
+blob-report
+playwright/.cache
