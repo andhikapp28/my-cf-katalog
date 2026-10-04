@@ -38,8 +38,8 @@ test.describe("Public dashboard", () => {
     await expect(page.getByText("OFFLINE READY", { exact: true })).toBeVisible();
 
     await expect(page.getByRole("heading", { level: 2, name: "COMIFURO 22 CIRCLES & EDITIONS" })).toBeVisible();
-    await expect(page.getByText("Comic Frontier 23")).toBeVisible();
-    await expect(page.getByText("Comic Frontier 22")).toBeVisible();
+    await expect(page.getByText("Comic Frontier 23", { exact: true })).toBeVisible();
+    await expect(page.getByText("Comic Frontier 22", { exact: true })).toBeVisible();
     await expect(page.getByRole("link", { name: "LIHAT SEMUA CIRCLE" })).toBeVisible();
     await expect(page.getByRole("link", { name: "SEMUA EVENT" })).toBeVisible();
 
