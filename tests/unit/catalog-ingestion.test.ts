@@ -16,12 +16,16 @@ describe("catalog-ingestion", () => {
       expect(mapComifuroDay("Day 1")).toBe("DAY_1");
       expect(mapComifuroDay("day1")).toBe("DAY_1");
       expect(mapComifuroDay("1")).toBe("DAY_1");
+      expect(mapComifuroDay("SAT")).toBe("DAY_1");
+      expect(mapComifuroDay("Saturday")).toBe("DAY_1");
     });
 
     it("memetakan 'Day 2' ke 'DAY_2'", () => {
       expect(mapComifuroDay("Day 2")).toBe("DAY_2");
       expect(mapComifuroDay("day 2")).toBe("DAY_2");
       expect(mapComifuroDay("2")).toBe("DAY_2");
+      expect(mapComifuroDay("SUN")).toBe("DAY_2");
+      expect(mapComifuroDay("Sunday")).toBe("DAY_2");
     });
 
     it("memetakan 'Both Days' / 'Day 1 & Day 2' ke 'ALL_DAYS'", () => {

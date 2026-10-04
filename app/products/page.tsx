@@ -5,7 +5,9 @@ import { EmptyState } from "@/components/ui/empty-state";
 import { Input } from "@/components/ui/input";
 import { Select } from "@/components/ui/select";
 import { ProductCard } from "@/components/products/product-card";
+import { AdminPagination } from "@/components/admin/admin-pagination";
 import { getBooths, getCircleList, getEventList, getProducts } from "@/db/queries";
+import { getPageParam, paginateItems, type SearchParams } from "@/lib/admin-ui";
 
 export default async function ProductsPage({
   searchParams
@@ -29,6 +31,9 @@ export default async function ProductsPage({
     getEventList(),
     getBooths(eventId)
   ]);
+
+  const pageParam = getPageParam(params as SearchParams);
+  const pagination = paginateItems(products, pageParam, 24);
 
   const boothMap = new Map(booths.map((item) => [`${item.eventId}:${item.circleId}`, item.boothCode]));
 
@@ -104,39 +109,59 @@ export default async function ProductsPage({
         </Link>
       </div>
 
-      {products.length ? (
-        view === "list" ? (
-          <div className="space-y-3">
-            {products.map((product) => (
-              <Link
-                key={product.id}
-                href={`/products/${product.id}`}
-                className="panel flex items-center justify-between gap-4 p-4 hover:border-brand-300"
-              >
-                <div>
-                  <p className="font-semibold text-ink-900">{product.name}</p>
-                  <p className="mt-1 text-sm text-ink-500">
-                    {product.circle.name} - Booth {boothMap.get(`${product.eventId}:${product.circleId}`) || "-"}
-                  </p>
-                </div>
-                <div className="text-right text-sm text-ink-700">
-                  <p>{product.status}</p>
-                  <p className="mt-1 font-medium">{product.price.toLocaleString("id-ID")}</p>
-                </div>
-              </Link>
-            ))}
-          </div>
-        ) : (
-          <div className="grid gap-5 md:grid-cols-2 xl:grid-cols-3">
-            {products.map((product) => (
-              <ProductCard
-                key={product.id}
-                product={product}
-                boothCode={boothMap.get(`${product.eventId}:${product.circleId}`) || null}
-              />
-            ))}
-          </div>
-        )
+      {pagination.totalItems ? (
+        <>
+          {view === "list" ? (
+            <div className="space-y-3">
+              {pagination.items.map((product) => (
+                <Link
+                  key={product.id}
+                  href={`/products/${product.id}`}
+                  className="panel flex items-center justify-between gap-4 p-4 hover:border-brand-300"
+                >
+                  <div>
+                    <p className="font-semibold text-ink-900">{product.name}</p>
+                    <p className="mt-1 text-sm text-ink-500">
+                      {product.circle.name} - Booth {boothMap.get(`${product.eventId}:${product.circleId}`) || "-"}
+                    </p>
+                  </div>
+                  <div className="text-right text-sm text-ink-700">
+                    <p>{product.status}</p>
+                    <p className="mt-1 font-medium">{product.price.toLocaleString("id-ID")}</p>
+                  </div>
+                </Link>
+              ))}
+            </div>
+          ) : (
+            <div className="grid gap-5 md:grid-cols-2 xl:grid-cols-3">
+              {pagination.items.map((product) => (
+                <ProductCard
+                  key={product.id}
+                  product={product}
+                  boothCode={boothMap.get(`${product.eventId}:${product.circleId}`) || null}
+                />
+              ))}
+            </div>
+          )}
+
+          <AdminPagination
+            page={pagination.page}
+            pageSize={pagination.pageSize}
+            totalItems={pagination.totalItems}
+            pathname="/products"
+            query={{
+              q,
+              status,
+              priority,
+              circle: circleId,
+              event: eventId,
+              day: targetDay,
+              rush: isRush ? "true" : undefined,
+              sort,
+              view
+            }}
+          />
+        </>
       ) : (
         <EmptyState title="Produk tidak ditemukan" description="Coba ubah keyword pencarian atau filter yang sedang aktif." />
       )}

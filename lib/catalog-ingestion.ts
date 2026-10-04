@@ -91,11 +91,25 @@ export function mapComifuroDay(dayStr?: string | null): EventDay {
   if (!dayStr) return "ALL_DAYS";
   const normalized = dayStr.trim().toLowerCase();
 
-  if (normalized === "day 1" || normalized === "day1" || normalized === "1") {
+  if (
+    normalized === "day 1" ||
+    normalized === "day1" ||
+    normalized === "1" ||
+    normalized === "sat" ||
+    normalized === "saturday" ||
+    normalized === "sabtu"
+  ) {
     return "DAY_1";
   }
 
-  if (normalized === "day 2" || normalized === "day2" || normalized === "2") {
+  if (
+    normalized === "day 2" ||
+    normalized === "day2" ||
+    normalized === "2" ||
+    normalized === "sun" ||
+    normalized === "sunday" ||
+    normalized === "minggu"
+  ) {
     return "DAY_2";
   }
 
