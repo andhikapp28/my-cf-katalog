@@ -159,11 +159,7 @@ export default async function HomePage() {
               <HeroEntranceItem>
                 <div className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/5 px-3.5 py-1 text-xs font-mono font-semibold tracking-wider text-[#FF6B4A] uppercase backdrop-blur-sm">
                   <span className="h-1.5 w-1.5 rounded-full bg-[#FF6B4A] animate-pulse" />
-                  <span>COMIPOCKET GUIDE</span>
-                  <span className="text-white/30">/</span>
-                  <span>COMIC FRONTIER 22</span>
-                  <span className="text-white/30">/</span>
-                  <span>HALL 8 & 9</span>
+                  <span>COMIFURO COMPANION GUIDE</span>
                 </div>
               </HeroEntranceItem>
 
@@ -364,7 +360,7 @@ export default async function HomePage() {
                   COMIFURO EDITIONS & ARCHIVES
                 </p>
                 <h2 className="mt-1 font-[var(--font-display)] text-3xl sm:text-4xl lg:text-5xl font-extrabold tracking-tight uppercase text-white">
-                  COMIFURO 22 CIRCLES & EDITIONS
+                  COMIFURO EDITIONS
                 </h2>
                 <p className="mt-2 text-sm text-white/60 max-w-xl">
                   Arsip direktori katalog dan denah booth Comic Frontier lintas edisi di ICE BSD City.

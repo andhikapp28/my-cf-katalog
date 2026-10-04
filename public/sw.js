@@ -25,7 +25,7 @@
  *   login live dan mutasi data tidak boleh silently menampilkan data basi.
  */
 
-const CACHE_VERSION = "v1";
+const CACHE_VERSION = "v2";
 const STATIC_CACHE = `comipocket-static-${CACHE_VERSION}`;
 const PAGES_CACHE = `comipocket-pages-${CACHE_VERSION}`;
 const IMAGE_CACHE = `comipocket-images-${CACHE_VERSION}`;

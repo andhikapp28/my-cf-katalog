@@ -18,9 +18,7 @@ test.describe("Public dashboard", () => {
     expect(response?.ok()).toBe(true);
 
     // Elemen kunci landing page: banner event aktif, hero headline, infograph pulse metrics, banner section
-    await expect(page.getByText("COMIPOCKET GUIDE")).toBeVisible();
-    await expect(page.getByText("COMIC FRONTIER 22", { exact: true })).toBeVisible();
-    await expect(page.getByText("HALL 8 & 9", { exact: true })).toBeVisible();
+    await expect(page.getByText("COMIFURO COMPANION GUIDE")).toBeVisible();
 
     const heroHeading = page.getByRole("heading", { level: 1 });
     await expect(heroHeading).toBeVisible();
@@ -37,7 +35,7 @@ test.describe("Public dashboard", () => {
     await expect(page.getByText("HALL VENUE", { exact: true })).toBeVisible();
     await expect(page.getByText("OFFLINE READY", { exact: true })).toBeVisible();
 
-    await expect(page.getByRole("heading", { level: 2, name: "COMIFURO 22 CIRCLES & EDITIONS" })).toBeVisible();
+    await expect(page.getByRole("heading", { level: 2, name: "COMIFURO EDITIONS" })).toBeVisible();
     await expect(page.getByText("Comic Frontier 23", { exact: true })).toBeVisible();
     await expect(page.getByText("Comic Frontier 22", { exact: true })).toBeVisible();
     await expect(page.getByRole("link", { name: "LIHAT SEMUA CIRCLE" })).toBeVisible();
