@@ -1,5 +1,6 @@
 import { describe, expect, it } from "vitest";
 import {
+  filterChecklistItemsByDay,
   filterChecklistItemsByStatus,
   isChecklistStatus,
   isDoneProductStatus,
@@ -66,6 +67,19 @@ describe("sortChecklistItems", () => {
     sortChecklistItems(items);
     expect(items).toEqual(original);
   });
+
+  it("mengutamakan item RUSH di atas item non-rush meskipun keduanya prioritas HIGH", () => {
+    const items = [
+      { priority: "HIGH" as const, circleName: "Circle A", name: "Bukan Rush", isRush: false },
+      { priority: "HIGH" as const, circleName: "Circle B", name: "Barang Rush", isRush: true },
+      { priority: "LOW" as const, circleName: "Circle C", name: "Item Santai", isRush: false }
+    ];
+
+    const sorted = sortChecklistItems(items);
+    expect(sorted[0].name).toBe("Barang Rush");
+    expect(sorted[1].name).toBe("Bukan Rush");
+    expect(sorted[2].name).toBe("Item Santai");
+  });
 });
 
 describe("filterChecklistItemsByStatus", () => {
@@ -83,5 +97,33 @@ describe("filterChecklistItemsByStatus", () => {
     const result = filterChecklistItemsByStatus(items, "PO_OPEN");
     expect(result).toHaveLength(1);
     expect(result[0].name).toBe("b");
+  });
+});
+
+describe("filterChecklistItemsByDay", () => {
+  const items = [
+    { name: "Day 1 Item", targetDay: "DAY_1", isRush: true },
+    { name: "Day 2 Item", targetDay: "DAY_2", isRush: false },
+    { name: "Both Days Item", targetDay: "ALL_DAYS", isRush: true },
+    { name: "Default Item", isRush: false }
+  ];
+
+  it("mengembalikan semua item saat filter ALL", () => {
+    expect(filterChecklistItemsByDay(items, "ALL")).toHaveLength(4);
+  });
+
+  it("memfilter item Day 1 dan yang hadir All Days", () => {
+    const result = filterChecklistItemsByDay(items, "DAY_1");
+    expect(result.map((i) => i.name)).toEqual(["Day 1 Item", "Both Days Item", "Default Item"]);
+  });
+
+  it("memfilter item Day 2 dan yang hadir All Days", () => {
+    const result = filterChecklistItemsByDay(items, "DAY_2");
+    expect(result.map((i) => i.name)).toEqual(["Day 2 Item", "Both Days Item", "Default Item"]);
+  });
+
+  it("memfilter hanya item RUSH saat filter RUSH_ONLY", () => {
+    const result = filterChecklistItemsByDay(items, "RUSH_ONLY");
+    expect(result.map((i) => i.name)).toEqual(["Day 1 Item", "Both Days Item"]);
   });
 });

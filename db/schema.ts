@@ -14,6 +14,7 @@ import {
 import { relations } from "drizzle-orm";
 
 export const userRoleEnum = pgEnum("user_role", ["ADMIN"]);
+export const eventDayEnum = pgEnum("event_day", ["DAY_1", "DAY_2", "ALL_DAYS"]);
 export const productStatusEnum = pgEnum("product_status", [
   "TARGET",
   "PO_OPEN",
@@ -95,6 +96,7 @@ export const floorMaps = pgTable(
       .notNull()
       .references(() => events.id, { onDelete: "cascade" }),
     name: varchar("name", { length: 160 }).notNull(),
+    hall: varchar("hall", { length: 60 }),
     imageUrl: text("image_url").notNull(),
     width: integer("width").notNull(),
     height: integer("height").notNull(),
@@ -117,6 +119,7 @@ export const boothLocations = pgTable(
       .notNull()
       .references(() => floorMaps.id, { onDelete: "cascade" }),
     boothCode: varchar("booth_code", { length: 32 }).notNull(),
+    day: eventDayEnum("day").notNull().default("ALL_DAYS"),
     posX: integer("pos_x").notNull(),
     posY: integer("pos_y").notNull(),
     notes: text("notes"),
@@ -125,6 +128,7 @@ export const boothLocations = pgTable(
   (table) => [
     index("booth_locations_event_idx").on(table.eventId),
     index("booth_locations_circle_idx").on(table.circleId),
+    index("booth_locations_day_idx").on(table.day),
     uniqueIndex("booth_locations_event_circle_booth_unique").on(
       table.eventId,
       table.circleId,
@@ -150,6 +154,9 @@ export const products = pgTable(
     productLink: text("product_link"),
     status: productStatusEnum("status").notNull().default("TARGET"),
     priority: priorityEnum("priority").notNull().default("MEDIUM"),
+    targetDay: eventDayEnum("target_day").notNull().default("ALL_DAYS"),
+    isRush: boolean("is_rush").notNull().default(false),
+    poPickupNotes: text("po_pickup_notes"),
     quantity: integer("quantity").notNull().default(1),
     notes: text("notes"),
     purchaseType: purchaseTypeEnum("purchase_type").notNull().default("ON_THE_SPOT"),
@@ -160,7 +167,9 @@ export const products = pgTable(
     index("products_circle_idx").on(table.circleId),
     index("products_status_idx").on(table.status),
     index("products_priority_idx").on(table.priority),
-    index("products_deadline_idx").on(table.poDeadline)
+    index("products_deadline_idx").on(table.poDeadline),
+    index("products_target_day_idx").on(table.targetDay),
+    index("products_is_rush_idx").on(table.isRush)
   ]
 );
 
@@ -309,3 +318,4 @@ export type BoothLocation = typeof boothLocations.$inferSelect;
 export type Product = typeof products.$inferSelect;
 export type ExpenseCategory = typeof expenseCategories.$inferSelect;
 export type Expense = typeof expenses.$inferSelect;
+export type EventDay = (typeof eventDayEnum.enumValues)[number];

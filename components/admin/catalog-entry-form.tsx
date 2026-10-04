@@ -12,7 +12,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Select } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
-import { priorities, productStatuses, purchaseTypes } from "@/lib/constants";
+import { eventDayLabels, eventDays, priorities, productStatuses, purchaseTypes } from "@/lib/constants";
 import { formatCurrency } from "@/lib/format";
 
 type EventOption = { id: string; name: string; isActive: boolean };
@@ -27,6 +27,9 @@ type ProductRow = {
   productLink: string;
   status: string;
   priority: string;
+  targetDay: string;
+  isRush: boolean;
+  poPickupNotes: string;
   quantity: string;
   notes: string;
   purchaseType: string;
@@ -41,6 +44,9 @@ function createRow(): ProductRow {
     productLink: "",
     status: "TARGET",
     priority: "MEDIUM",
+    targetDay: "ALL_DAYS",
+    isRush: false,
+    poPickupNotes: "",
     quantity: "1",
     notes: "",
     purchaseType: "ON_THE_SPOT"
@@ -65,7 +71,7 @@ export function CatalogEntryForm({
   const [eventId, setEventId] = useState(defaultEventId);
   const [circle, setCircle] = useState<CircleValue | null>(null);
   const [boothEnabled, setBoothEnabled] = useState(false);
-  const [booth, setBooth] = useState({ floorMapId: "", boothCode: "", posX: "", posY: "", notes: "" });
+  const [booth, setBooth] = useState({ floorMapId: "", boothCode: "", day: "ALL_DAYS", posX: "", posY: "", notes: "" });
   const [rows, setRows] = useState<ProductRow[]>([createRow()]);
   const [clientError, setClientError] = useState<string | null>(null);
   const [justSaved, setJustSaved] = useState(false);
@@ -85,7 +91,7 @@ export function CatalogEntryForm({
       setJustSaved(true);
       setCircle(null);
       setBoothEnabled(false);
-      setBooth({ floorMapId: "", boothCode: "", posX: "", posY: "", notes: "" });
+      setBooth({ floorMapId: "", boothCode: "", day: "ALL_DAYS", posX: "", posY: "", notes: "" });
       setRows([createRow()]);
       setClientError(null);
       router.push("/admin/products");
@@ -162,6 +168,7 @@ export function CatalogEntryForm({
         ? {
             floorMapId: booth.floorMapId,
             boothCode: booth.boothCode.trim(),
+            day: booth.day,
             posX: Number(booth.posX),
             posY: Number(booth.posY),
             notes: booth.notes || undefined
@@ -175,6 +182,9 @@ export function CatalogEntryForm({
         productLink: row.productLink.trim() || undefined,
         status: row.status,
         priority: row.priority,
+        targetDay: row.targetDay,
+        isRush: row.isRush,
+        poPickupNotes: row.poPickupNotes.trim() || undefined,
         quantity: Number(row.quantity) || 1,
         notes: row.notes.trim() || undefined,
         purchaseType: row.purchaseType
@@ -250,9 +260,21 @@ export function CatalogEntryForm({
               <AdminField label="Booth code" required>
                 <Input
                   value={booth.boothCode}
-                  placeholder="A-12"
+                  placeholder="A-15a / TC-12"
                   onChange={(event) => setBooth((current) => ({ ...current, boothCode: event.target.value }))}
                 />
+              </AdminField>
+              <AdminField label="Jadwal Booth">
+                <Select
+                  value={booth.day}
+                  onChange={(event) => setBooth((current) => ({ ...current, day: event.target.value }))}
+                >
+                  {eventDays.map((day) => (
+                    <option key={day} value={day}>
+                      {eventDayLabels[day]}
+                    </option>
+                  ))}
+                </Select>
               </AdminField>
               <AdminField label="Marker X" hint="0-100%">
                 <Input
@@ -352,14 +374,43 @@ export function CatalogEntryForm({
                     ))}
                   </Select>
                 </AdminField>
-                {row.purchaseType === "PO" ? (
-                  <AdminField label="PO deadline">
-                    <Input
-                      type="date"
-                      value={row.poDeadline}
-                      onChange={(event) => updateRow(index, { poDeadline: event.target.value })}
+                <AdminField label="Jadwal Beli (Day)">
+                  <Select value={row.targetDay} onChange={(event) => updateRow(index, { targetDay: event.target.value })}>
+                    {eventDays.map((day) => (
+                      <option key={day} value={day}>
+                        {eventDayLabels[day]}
+                      </option>
+                    ))}
+                  </Select>
+                </AdminField>
+                <div className="flex items-center gap-2 pt-6">
+                  <label className="flex cursor-pointer items-center gap-2 text-sm font-semibold text-rose-700">
+                    <input
+                      type="checkbox"
+                      checked={row.isRush}
+                      onChange={(event) => updateRow(index, { isRush: event.target.checked })}
+                      className="h-4 w-4 rounded border-line text-rose-600 focus:ring-rose-500"
                     />
-                  </AdminField>
+                    <span>⚡ Rush Item (Rebutan Pagi)</span>
+                  </label>
+                </div>
+                {row.purchaseType === "PO" ? (
+                  <>
+                    <AdminField label="PO deadline">
+                      <Input
+                        type="date"
+                        value={row.poDeadline}
+                        onChange={(event) => updateRow(index, { poDeadline: event.target.value })}
+                      />
+                    </AdminField>
+                    <AdminField label="Data Ambil PO" className="md:col-span-2" hint="Nama / WA / No Order">
+                      <Input
+                        value={row.poPickupNotes}
+                        placeholder="Contoh: Nama: Dipa / WA: 08123456789 / Slot #2"
+                        onChange={(event) => updateRow(index, { poPickupNotes: event.target.value })}
+                      />
+                    </AdminField>
+                  </>
                 ) : null}
                 <AdminField label="Image URL" className="md:col-span-2 xl:col-span-3">
                   <Input

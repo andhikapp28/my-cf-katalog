@@ -2,10 +2,12 @@ export const revalidate = 120;
 
 import Image from "next/image";
 import Link from "next/link";
+import { Banknote, Calendar, Zap } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
 import { EmptyState } from "@/components/ui/empty-state";
 import { SummaryCard } from "@/components/dashboard/summary-card";
+import { PreloadOfflineButton } from "@/components/dashboard/preload-offline-button";
 import { getDashboardData } from "@/db/queries";
 import { formatCurrency, formatDate } from "@/lib/format";
 import { priorityStyles, statusStyles } from "@/lib/constants";
@@ -71,13 +73,17 @@ export default async function HomePage() {
               </div>
 
               <div className="flex flex-wrap items-end justify-between gap-5">
-                <div className="flex flex-wrap gap-3">
+                <div className="flex flex-wrap items-center gap-3">
                   <Link href={`/events/${dashboard.selectedEvent.slug}`} className="rounded-full bg-white px-5 py-3 text-sm font-medium text-ink-900">
                     Open event hub
                   </Link>
                   <Link href="/products" className="rounded-full border border-white/20 bg-white/10 px-5 py-3 text-sm font-medium text-white">
                     Browse products
                   </Link>
+                  <PreloadOfflineButton
+                    productIds={dashboard.products.map((p) => p.id)}
+                    circleIds={dashboard.locations.map((l) => l.circleId)}
+                  />
                 </div>
                 <div className="text-right text-sm text-white/80">
                   <p>{dashboard.selectedEvent.venue || "Venue belum diisi"}</p>
@@ -136,6 +142,47 @@ export default async function HomePage() {
               </div>
             </div>
           </div>
+        </div>
+      </section>
+
+      {/* Comifuro Day-H Prep Section */}
+      <section className="panel grid gap-4 p-5 sm:grid-cols-2 lg:grid-cols-4">
+        <div className="rounded-2xl border border-amber-200/80 bg-amber-50/70 p-4">
+          <div className="flex items-center justify-between">
+            <span className="text-xs font-semibold uppercase tracking-wider text-amber-800">Kesiapan Tunai ICE BSD</span>
+            <Banknote className="h-4 w-4 text-amber-700" />
+          </div>
+          <p className="mt-2 text-2xl font-bold text-amber-950">{formatCurrency(dashboard.cashNeeded)}</p>
+          <p className="mt-1 text-xs text-amber-800/80">
+            Estimasi cash on-the-spot. Sinyal ICE BSD rawan down & QRIS sering error!
+          </p>
+        </div>
+
+        <div className="rounded-2xl border border-rose-200/80 bg-rose-50/70 p-4">
+          <div className="flex items-center justify-between">
+            <span className="text-xs font-semibold uppercase tracking-wider text-rose-800">⚡ Incaran Rush Pagi</span>
+            <Zap className="h-4 w-4 text-rose-600" />
+          </div>
+          <p className="mt-2 text-2xl font-bold text-rose-950">{dashboard.rushItems.length} Item</p>
+          <p className="mt-1 text-xs text-rose-800/80">Barang fast sell-out yang wajib diserbu jam 10:00–11:00.</p>
+        </div>
+
+        <div className="rounded-2xl border border-blue-200/80 bg-blue-50/70 p-4">
+          <div className="flex items-center justify-between">
+            <span className="text-xs font-semibold uppercase tracking-wider text-blue-800">Target Day 1 (Sabtu)</span>
+            <Calendar className="h-4 w-4 text-blue-600" />
+          </div>
+          <p className="mt-2 text-2xl font-bold text-blue-950">{formatCurrency(dashboard.day1Estimated)}</p>
+          <p className="mt-1 text-xs text-blue-800/80">Estimasi total belanja hunting Day 1.</p>
+        </div>
+
+        <div className="rounded-2xl border border-purple-200/80 bg-purple-50/70 p-4">
+          <div className="flex items-center justify-between">
+            <span className="text-xs font-semibold uppercase tracking-wider text-purple-800">Target Day 2 (Minggu)</span>
+            <Calendar className="h-4 w-4 text-purple-600" />
+          </div>
+          <p className="mt-2 text-2xl font-bold text-purple-950">{formatCurrency(dashboard.day2Estimated)}</p>
+          <p className="mt-1 text-xs text-purple-800/80">Estimasi total belanja hunting Day 2.</p>
         </div>
       </section>
 

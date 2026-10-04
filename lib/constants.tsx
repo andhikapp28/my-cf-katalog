@@ -1,4 +1,4 @@
-import type { ReactNode } from "react";
+import React, { type ReactNode } from "react";
 import {
   Banknote,
   Boxes,
@@ -24,6 +24,26 @@ export const productStatuses = [
 export const priorities = ["HIGH", "MEDIUM", "LOW"] as const;
 export const purchaseTypes = ["PO", "ON_THE_SPOT"] as const;
 export const paymentMethods = ["CASH", "QRIS", "CARD", "BANK_TRANSFER", "E_WALLET", "OTHER"] as const;
+export const eventDays = ["DAY_1", "DAY_2", "ALL_DAYS"] as const;
+export type EventDay = (typeof eventDays)[number];
+
+export const eventDayLabels: Record<EventDay, string> = {
+  DAY_1: "Day 1 (Sabtu)",
+  DAY_2: "Day 2 (Minggu)",
+  ALL_DAYS: "Day 1 & 2"
+};
+
+export const eventDayShortLabels: Record<EventDay, string> = {
+  DAY_1: "Day 1",
+  DAY_2: "Day 2",
+  ALL_DAYS: "Both Days"
+};
+
+export const eventDayBadgeStyles: Record<EventDay, string> = {
+  DAY_1: "bg-blue-500/10 text-blue-700 ring-blue-600/20",
+  DAY_2: "bg-purple-500/10 text-purple-700 ring-purple-600/20",
+  ALL_DAYS: "bg-teal-500/10 text-teal-700 ring-teal-600/20"
+};
 
 export const statusStyles: Record<(typeof productStatuses)[number], string> = {
   TARGET: "bg-stone-100 text-stone-800",

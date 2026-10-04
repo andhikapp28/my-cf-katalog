@@ -1,8 +1,15 @@
 import Link from "next/link";
+import { Zap } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
 import { ProductImage } from "@/components/products/product-image";
-import { priorityStyles, statusStyles } from "@/lib/constants";
+import {
+  eventDayBadgeStyles,
+  eventDayShortLabels,
+  eventDays,
+  priorityStyles,
+  statusStyles
+} from "@/lib/constants";
 import { formatCurrency, formatDate } from "@/lib/format";
 
 export function ProductCard({
@@ -20,6 +27,9 @@ export function ProductCard({
     status: keyof typeof statusStyles;
     priority: keyof typeof priorityStyles;
     purchaseType: string;
+    targetDay?: (typeof eventDays)[number];
+    isRush?: boolean;
+    poPickupNotes?: string | null;
     circle: { id: string; name: string };
     event: { id: string; name: string };
   };
@@ -37,6 +47,17 @@ export function ProductCard({
       <CardContent className="space-y-4">
         <div className="space-y-2">
           <div className="flex flex-wrap gap-2">
+            {product.isRush ? (
+              <Badge className="bg-rose-500 text-white font-bold animate-pulse">
+                <Zap className="mr-1 h-3 w-3 fill-white" />
+                RUSH
+              </Badge>
+            ) : null}
+            {product.targetDay ? (
+              <Badge className={eventDayBadgeStyles[product.targetDay]}>
+                {eventDayShortLabels[product.targetDay]}
+              </Badge>
+            ) : null}
             <Badge className={statusStyles[product.status]}>{product.status.replace("_", " ")}</Badge>
             <Badge className={priorityStyles[product.priority]}>{product.priority}</Badge>
           </div>

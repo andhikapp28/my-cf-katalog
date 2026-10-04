@@ -92,6 +92,7 @@ export async function addCatalogEntryAction(
           circleId,
           floorMapId: data.booth.floorMapId,
           boothCode: data.booth.boothCode,
+          day: data.booth.day ?? "ALL_DAYS",
           posX: data.booth.posX,
           posY: data.booth.posY,
           notes: data.booth.notes || null
@@ -100,6 +101,7 @@ export async function addCatalogEntryAction(
           target: [boothLocations.eventId, boothLocations.circleId, boothLocations.boothCode],
           set: {
             floorMapId: data.booth.floorMapId,
+            day: data.booth.day ?? "ALL_DAYS",
             posX: data.booth.posX,
             posY: data.booth.posY,
             notes: data.booth.notes || null,
@@ -122,6 +124,9 @@ export async function addCatalogEntryAction(
           productLink: item.productLink || null,
           status: item.status,
           priority: item.priority,
+          targetDay: item.targetDay ?? "ALL_DAYS",
+          isRush: item.isRush ?? false,
+          poPickupNotes: item.poPickupNotes || null,
           quantity: item.quantity,
           notes: item.notes || null,
           purchaseType: item.purchaseType
@@ -142,6 +147,7 @@ export async function addCatalogEntryAction(
   revalidatePath("/admin");
   revalidatePath("/admin/products");
   revalidatePath("/admin/booths");
+  revalidatePath("/admin/checklist");
 
   return { success: "Entri katalog berhasil ditambahkan." };
 }

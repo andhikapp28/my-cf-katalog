@@ -1,6 +1,7 @@
 export const dynamic = "force-dynamic";
 
 import Link from "next/link";
+import { Zap } from "lucide-react";
 import { deleteProductAction, upsertProductAction } from "@/actions/products";
 import {
   AdminActionButton,
@@ -37,7 +38,17 @@ import {
   paginateItems,
   type SearchParams
 } from "@/lib/admin-ui";
-import { priorities, priorityStyles, productStatuses, purchaseTypes, statusStyles } from "@/lib/constants";
+import {
+  eventDayBadgeStyles,
+  eventDayLabels,
+  eventDayShortLabels,
+  eventDays,
+  priorities,
+  priorityStyles,
+  productStatuses,
+  purchaseTypes,
+  statusStyles
+} from "@/lib/constants";
 import { formatCurrency, formatDate } from "@/lib/format";
 
 const notesClampStyle = {
@@ -58,6 +69,8 @@ export default async function AdminProductsPage({
   const eventId = getSearchParam(params, "event");
   const circleId = getSearchParam(params, "circle");
   const priority = getSearchParam(params, "priority");
+  const day = getSearchParam(params, "day");
+  const rush = getSearchParam(params, "rush");
   const editId = getSearchParam(params, "edit");
   const pageParam = getPageParam(params);
 
@@ -84,6 +97,14 @@ export default async function AdminProductsPage({
       return false;
     }
 
+    if (day && product.targetDay !== day) {
+      return false;
+    }
+
+    if (rush === "true" && !product.isRush) {
+      return false;
+    }
+
     return true;
   });
 
@@ -93,7 +114,9 @@ export default async function AdminProductsPage({
     status,
     event: eventId,
     circle: circleId,
-    priority
+    priority,
+    day,
+    rush
   };
   const sharedQuery = {
     ...baseQuery,
@@ -189,6 +212,29 @@ export default async function AdminProductsPage({
               ))}
             </Select>
           </AdminField>
+          <AdminField label="Jadwal Beli (Day)">
+            <Select name="targetDay" defaultValue="ALL_DAYS">
+              {eventDays.map((item) => (
+                <option key={item} value={item}>
+                  {eventDayLabels[item]}
+                </option>
+              ))}
+            </Select>
+          </AdminField>
+          <div className="flex items-center gap-2 pt-6">
+            <label className="flex cursor-pointer items-center gap-2 text-sm font-semibold text-rose-700">
+              <input
+                type="checkbox"
+                name="isRush"
+                value="true"
+                className="h-4 w-4 rounded border-line text-rose-600 focus:ring-rose-500"
+              />
+              <span>⚡ Rush Item (Rebutan Pagi)</span>
+            </label>
+          </div>
+          <AdminField label="Data Ambil PO" className="md:col-span-2 xl:col-span-3" hint="Nama / WA / No Order saat isi GForm">
+            <Input name="poPickupNotes" placeholder="Contoh: Nama: Dipa / WA: 08123456789 / Slot #2" />
+          </AdminField>
           <AdminField label="Notes" className="md:col-span-2 xl:col-span-3">
             <Textarea name="notes" placeholder="Catatan produk, reminder pembayaran, atau bundle info." />
           </AdminField>
@@ -242,6 +288,22 @@ export default async function AdminProductsPage({
                   {item}
                 </option>
               ))}
+            </Select>
+          </AdminField>
+          <AdminField label="Filter day">
+            <Select name="day" defaultValue={day}>
+              <option value="">All days</option>
+              {eventDays.map((item) => (
+                <option key={item} value={item}>
+                  {eventDayLabels[item]}
+                </option>
+              ))}
+            </Select>
+          </AdminField>
+          <AdminField label="Filter rush">
+            <Select name="rush" defaultValue={rush}>
+              <option value="">Semua item</option>
+              <option value="true">⚡ Rush Only</option>
             </Select>
           </AdminField>
           <div className="flex items-end gap-3 xl:col-span-2">
@@ -323,6 +385,30 @@ export default async function AdminProductsPage({
                 ))}
               </Select>
             </AdminField>
+            <AdminField label="Jadwal Beli (Day)">
+              <Select name="targetDay" defaultValue={selectedProduct.targetDay}>
+                {eventDays.map((item) => (
+                  <option key={item} value={item}>
+                    {eventDayLabels[item]}
+                  </option>
+                ))}
+              </Select>
+            </AdminField>
+            <div className="flex items-center gap-2 pt-6">
+              <label className="flex cursor-pointer items-center gap-2 text-sm font-semibold text-rose-700">
+                <input
+                  type="checkbox"
+                  name="isRush"
+                  value="true"
+                  defaultChecked={selectedProduct.isRush}
+                  className="h-4 w-4 rounded border-line text-rose-600 focus:ring-rose-500"
+                />
+                <span>⚡ Rush Item (Rebutan Pagi)</span>
+              </label>
+            </div>
+            <AdminField label="Data Ambil PO" className="md:col-span-2 xl:col-span-3" hint="Nama / WA / No Order saat isi GForm">
+              <Input name="poPickupNotes" defaultValue={selectedProduct.poPickupNotes ?? ""} placeholder="Contoh: Nama: Dipa / WA: 08123456789 / Slot #2" />
+            </AdminField>
             <AdminField label="Notes" className="md:col-span-2 xl:col-span-3">
               <Textarea name="notes" defaultValue={selectedProduct.notes ?? ""} />
             </AdminField>
@@ -362,6 +448,15 @@ export default async function AdminProductsPage({
                   <div className="flex items-start justify-between gap-3">
                     <div className="min-w-0 flex-1">
                       <div className="flex flex-wrap gap-2">
+                        {product.isRush ? (
+                          <Badge className="bg-rose-500 text-white font-bold animate-pulse">
+                            <Zap className="mr-1 h-3 w-3 fill-white" />
+                            RUSH
+                          </Badge>
+                        ) : null}
+                        <Badge className={eventDayBadgeStyles[product.targetDay]}>
+                          {eventDayShortLabels[product.targetDay]}
+                        </Badge>
                         <Badge className={statusStyles[product.status]}>{product.status}</Badge>
                         <Badge className={priorityStyles[product.priority]}>{product.priority}</Badge>
                       </div>
@@ -416,6 +511,13 @@ export default async function AdminProductsPage({
                       <p className="mt-1 truncate font-medium text-brand-700">{compactUrl(product.productLink, 24)}</p>
                     </div>
                   </div>
+
+                  {product.poPickupNotes ? (
+                    <div className="mt-4 rounded-2xl border border-sky-200/80 bg-sky-50/70 px-4 py-3 text-xs text-sky-950">
+                      <p className="font-semibold uppercase tracking-wider text-sky-800">📦 Data Ambil PO</p>
+                      <p className="mt-1 font-mono">{product.poPickupNotes}</p>
+                    </div>
+                  ) : null}
 
                   <div className="mt-4 rounded-2xl border border-line bg-white/60 px-4 py-3">
                     <p className="text-xs uppercase tracking-[0.16em] text-ink-500">Notes</p>

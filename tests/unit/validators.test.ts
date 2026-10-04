@@ -107,6 +107,14 @@ describe("floorMapSchema", () => {
     expect(result.success).toBe(true);
   });
 
+  it("menerima hall opsional untuk multi-hall venue (e.g. Hall 8, Hall 9)", () => {
+    const result = floorMapSchema.safeParse({ ...base, hall: "Hall 8" });
+    expect(result.success).toBe(true);
+    if (result.success) {
+      expect(result.data.hall).toBe("Hall 8");
+    }
+  });
+
   it("menolak eventId yang bukan uuid", () => {
     const result = floorMapSchema.safeParse({ ...base, eventId: "not-a-uuid" });
     expect(result.success).toBe(false);
@@ -147,6 +155,20 @@ describe("boothLocationSchema", () => {
     const result = boothLocationSchema.safeParse({ ...base, boothCode: "" });
     expect(result.success).toBe(false);
   });
+
+  it("menerima pilihan day DAY_1, DAY_2, atau ALL_DAYS", () => {
+    const resultD1 = boothLocationSchema.safeParse({ ...base, day: "DAY_1" });
+    expect(resultD1.success).toBe(true);
+    if (resultD1.success) {
+      expect(resultD1.data.day).toBe("DAY_1");
+    }
+
+    const resultDefault = boothLocationSchema.safeParse(base);
+    expect(resultDefault.success).toBe(true);
+    if (resultDefault.success) {
+      expect(resultDefault.data.day).toBe("ALL_DAYS");
+    }
+  });
 });
 
 describe("productSchema", () => {
@@ -184,6 +206,30 @@ describe("productSchema", () => {
   it("menolak purchaseType yang tidak valid", () => {
     const result = productSchema.safeParse({ ...base, purchaseType: "SUBSCRIPTION" });
     expect(result.success).toBe(false);
+  });
+
+  it("menerima targetDay, isRush, dan poPickupNotes untuk keperluan Comifuro", () => {
+    const result = productSchema.safeParse({
+      ...base,
+      targetDay: "DAY_1",
+      isRush: true,
+      poPickupNotes: "Nama: Dipa / WA: 08123456789 / Slot 2"
+    });
+    expect(result.success).toBe(true);
+    if (result.success) {
+      expect(result.data.targetDay).toBe("DAY_1");
+      expect(result.data.isRush).toBe(true);
+      expect(result.data.poPickupNotes).toBe("Nama: Dipa / WA: 08123456789 / Slot 2");
+    }
+  });
+
+  it("memberikan default targetDay ALL_DAYS dan isRush false jika tidak diisi", () => {
+    const result = productSchema.safeParse(base);
+    expect(result.success).toBe(true);
+    if (result.success) {
+      expect(result.data.targetDay).toBe("ALL_DAYS");
+      expect(result.data.isRush).toBe(false);
+    }
   });
 });
 

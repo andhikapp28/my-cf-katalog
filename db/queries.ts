@@ -21,6 +21,8 @@ export type ProductListFilters = {
   circleId?: string;
   eventId?: string;
   sort?: string;
+  targetDay?: string;
+  isRush?: boolean;
 };
 
 export async function getActiveEvent() {
@@ -45,7 +47,7 @@ export async function getCircleList() {
 export async function getFloorMapsList(eventId?: string) {
   return db.query.floorMaps.findMany({
     where: eventId ? eq(floorMaps.eventId, eventId) : undefined,
-    orderBy: [asc(floorMaps.name)],
+    orderBy: [asc(floorMaps.hall), asc(floorMaps.name)],
     with: {
       event: true
     }
@@ -79,6 +81,14 @@ export async function getProducts(filters: ProductListFilters = {}) {
 
   if (filters.eventId) {
     conditions.push(eq(products.eventId, filters.eventId));
+  }
+
+  if (filters.targetDay) {
+    conditions.push(eq(products.targetDay, filters.targetDay as Product["targetDay"]));
+  }
+
+  if (typeof filters.isRush === "boolean") {
+    conditions.push(eq(products.isRush, filters.isRush));
   }
 
   const orderBy =
@@ -238,12 +248,36 @@ export async function getDashboardData(eventId?: string) {
     ).values()
   ).slice(0, 5);
 
+  const cashNeeded = eventProducts
+    .filter(
+      (item) =>
+        item.purchaseType === "ON_THE_SPOT" &&
+        (item.status === "TARGET" || item.status === "PO_OPEN" || item.status === "PO_DONE")
+    )
+    .reduce((sum, item) => sum + item.price * item.quantity, 0);
+
+  const rushItems = eventProducts.filter(
+    (item) => item.isRush && (item.status === "TARGET" || item.status === "PO_OPEN" || item.status === "PO_DONE")
+  );
+
+  const day1Estimated = eventProducts
+    .filter((item) => item.targetDay === "DAY_1" || item.targetDay === "ALL_DAYS")
+    .reduce((sum, item) => sum + item.price * item.quantity, 0);
+
+  const day2Estimated = eventProducts
+    .filter((item) => item.targetDay === "DAY_2" || item.targetDay === "ALL_DAYS")
+    .reduce((sum, item) => sum + item.price * item.quantity, 0);
+
   return {
     selectedEvent,
     totalItems: eventProducts.length,
     totalEstimated,
     totalActual,
     remainingBudget: selectedEvent.budget - totalActual,
+    cashNeeded,
+    rushItems,
+    day1Estimated,
+    day2Estimated,
     statusCounts,
     highPriorityItems,
     upcomingDeadlines,
@@ -421,6 +455,9 @@ export async function getChecklistData(eventId?: string) {
       quantity: item.quantity,
       priority: item.priority,
       status: item.status,
+      targetDay: item.targetDay,
+      isRush: item.isRush,
+      poPickupNotes: item.poPickupNotes,
       notes: item.notes,
       productLink: item.productLink,
       circleId: item.circleId,

@@ -30,6 +30,9 @@ export async function upsertProductAction(
     productLink: formData.get("productLink") || undefined,
     status: formData.get("status"),
     priority: formData.get("priority"),
+    targetDay: formData.get("targetDay") || "ALL_DAYS",
+    isRush: formData.get("isRush") === "true" || formData.get("isRush") === "on",
+    poPickupNotes: formData.get("poPickupNotes") || undefined,
     quantity: formData.get("quantity"),
     notes: formData.get("notes") || undefined,
     purchaseType: formData.get("purchaseType")
@@ -59,6 +62,9 @@ export async function upsertProductAction(
         productLink: parsed.productLink || null,
         status: parsed.status,
         priority: parsed.priority,
+        targetDay: parsed.targetDay,
+        isRush: parsed.isRush,
+        poPickupNotes: parsed.poPickupNotes || null,
         quantity: parsed.quantity,
         notes: parsed.notes,
         purchaseType: parsed.purchaseType,
@@ -87,6 +93,9 @@ export async function upsertProductAction(
         productLink: parsed.productLink || null,
         status: parsed.status,
         priority: parsed.priority,
+        targetDay: parsed.targetDay,
+        isRush: parsed.isRush,
+        poPickupNotes: parsed.poPickupNotes || null,
         quantity: parsed.quantity,
         notes: parsed.notes,
         purchaseType: parsed.purchaseType
@@ -104,6 +113,7 @@ export async function upsertProductAction(
   revalidatePath("/products");
   revalidatePath("/admin");
   revalidatePath("/admin/products");
+  revalidatePath("/admin/checklist");
 
   return { success: parsed.id ? "Produk berhasil disimpan." : "Produk baru berhasil ditambahkan." };
 }

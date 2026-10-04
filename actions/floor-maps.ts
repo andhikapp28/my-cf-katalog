@@ -24,6 +24,7 @@ export async function upsertFloorMapAction(
     id: formData.get("id") || undefined,
     eventId: formData.get("eventId"),
     name: formData.get("name"),
+    hall: formData.get("hall") || undefined,
     width: formData.get("width"),
     height: formData.get("height"),
     previousImageUrl: formData.get("previousImageUrl") || undefined
@@ -52,6 +53,7 @@ export async function upsertFloorMapAction(
       .set({
         eventId: parsed.eventId,
         name: parsed.name,
+        hall: parsed.hall || null,
         width: parsed.width,
         height: parsed.height,
         imageUrl,
@@ -62,6 +64,7 @@ export async function upsertFloorMapAction(
     await db.insert(floorMaps).values({
       eventId: parsed.eventId,
       name: parsed.name,
+      hall: parsed.hall || null,
       width: parsed.width,
       height: parsed.height,
       imageUrl
@@ -101,6 +104,7 @@ export async function upsertBoothAction(
     circleId: formData.get("circleId"),
     floorMapId: formData.get("floorMapId"),
     boothCode: formData.get("boothCode"),
+    day: formData.get("day") || "ALL_DAYS",
     posX: formData.get("posX"),
     posY: formData.get("posY"),
     notes: formData.get("notes") || undefined
@@ -120,6 +124,7 @@ export async function upsertBoothAction(
         circleId: parsed.circleId,
         floorMapId: parsed.floorMapId,
         boothCode: parsed.boothCode,
+        day: parsed.day,
         posX: parsed.posX,
         posY: parsed.posY,
         notes: parsed.notes,
@@ -133,6 +138,7 @@ export async function upsertBoothAction(
   revalidatePath("/maps");
   revalidatePath("/products");
   revalidatePath("/admin/booths");
+  revalidatePath("/admin/checklist");
 
   return { success: parsed.id ? "Booth berhasil disimpan." : "Booth marker baru berhasil ditambahkan." };
 }

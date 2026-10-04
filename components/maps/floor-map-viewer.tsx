@@ -4,8 +4,9 @@ import { useCallback, useMemo, useRef, useState } from "react";
 import type { PointerEvent as ReactPointerEvent, WheelEvent as ReactWheelEvent } from "react";
 import Image from "next/image";
 import Link from "next/link";
-import { Minus, Navigation, Plus, RotateCcw } from "lucide-react";
+import { Minus, Navigation, Plus, RotateCcw, Zap } from "lucide-react";
 import { clampScale, computeFocalTranslate, pickNextBooth, FLOOR_MAP_MIN_SCALE } from "@/lib/floor-map";
+import { eventDayBadgeStyles, eventDayShortLabels, type EventDay } from "@/lib/constants";
 import { cn } from "@/lib/utils";
 
 type Marker = {
@@ -13,11 +14,13 @@ type Marker = {
   circleId: string;
   circleName: string;
   boothCode: string;
+  day?: string;
+  hasRush?: boolean;
   posX: number;
   posY: number;
   isHighlighted: boolean;
   isDone: boolean;
-  products: Array<{ id: string; name: string }>;
+  products: Array<{ id: string; name: string; isRush?: boolean }>;
 };
 
 type Transform = { scale: number; x: number; y: number };
@@ -42,7 +45,8 @@ export function FloorMapViewer({
   width,
   height,
   markers,
-  initialCircleId
+  initialCircleId,
+  halls
 }: {
   name: string;
   imageUrl: string;
@@ -50,6 +54,7 @@ export function FloorMapViewer({
   height: number;
   markers: Marker[];
   initialCircleId?: string;
+  halls?: Array<{ id: string; name: string; hall?: string | null }>;
 }) {
   const [activeId, setActiveId] = useState<string | undefined>(initialCircleId ?? markers[0]?.circleId);
   const [transform, setTransform] = useState<Transform>({ scale: 1, x: 0, y: 0 });
@@ -259,9 +264,30 @@ export function FloorMapViewer({
   const pendingHighlightCount = markers.filter((marker) => marker.isHighlighted && !marker.isDone).length;
 
   return (
-    <div className="grid gap-5 lg:grid-cols-[minmax(0,1fr)_320px]">
-      <div className="panel overflow-hidden p-4">
-        <div className="mb-3 flex flex-wrap items-center justify-between gap-2">
+    <div className="space-y-4">
+      {halls && halls.length > 1 ? (
+        <div className="panel flex flex-wrap items-center gap-2 p-3 sm:p-4">
+          <span className="text-xs font-semibold uppercase tracking-wider text-ink-500">Pilih Hall Venue:</span>
+          {halls.map((h) => (
+            <Link
+              key={h.id}
+              href={`/maps/${h.id}`}
+              className={cn(
+                "rounded-full px-3.5 py-1.5 text-xs font-semibold transition border",
+                h.name === name
+                  ? "bg-brand-500 text-white border-brand-600 shadow-sm"
+                  : "bg-white/80 text-ink-700 border-line hover:bg-brand-50"
+              )}
+            >
+              {h.hall ? `${h.hall} · ${h.name}` : h.name}
+            </Link>
+          ))}
+        </div>
+      ) : null}
+
+      <div className="grid gap-5 lg:grid-cols-[minmax(0,1fr)_320px]">
+        <div className="panel overflow-hidden p-4">
+          <div className="mb-3 flex flex-wrap items-center justify-between gap-2">
           <p className="text-sm text-ink-500">
             {pendingHighlightCount > 0
               ? `${pendingHighlightCount} booth target belum selesai`
@@ -352,13 +378,28 @@ export function FloorMapViewer({
               <div>
                 <p className="text-xs uppercase tracking-[0.24em] text-ink-500">Selected Booth</p>
                 <h3 className="mt-1 font-[var(--font-display)] text-2xl font-semibold">{activeMarker.circleName}</h3>
-                <p className="mt-1 text-sm text-ink-500">Booth {activeMarker.boothCode}</p>
+                <div className="mt-1 flex flex-wrap items-center gap-2">
+                  <span className="text-sm font-semibold text-ink-700">Booth {activeMarker.boothCode}</span>
+                  {activeMarker.day ? (
+                    <span className={cn("rounded-full px-2 py-0.5 text-[11px] font-semibold ring-1 ring-inset", eventDayBadgeStyles[activeMarker.day as EventDay])}>
+                      {eventDayShortLabels[activeMarker.day as EventDay]}
+                    </span>
+                  ) : null}
+                </div>
               </div>
-              {activeMarker.isHighlighted && !activeMarker.isDone ? (
-                <span className="rounded-full bg-rose-500/10 px-3 py-1 text-xs font-semibold text-rose-700 ring-1 ring-inset ring-rose-600/20">
-                  Target
-                </span>
-              ) : null}
+              <div className="flex flex-col items-end gap-1">
+                {activeMarker.hasRush ? (
+                  <span className="inline-flex items-center gap-1 rounded-full bg-rose-500 px-2.5 py-0.5 text-xs font-bold text-white shadow-sm animate-pulse">
+                    <Zap className="h-3 w-3 fill-white" />
+                    RUSH
+                  </span>
+                ) : null}
+                {activeMarker.isHighlighted && !activeMarker.isDone ? (
+                  <span className="rounded-full bg-rose-500/10 px-3 py-1 text-xs font-semibold text-rose-700 ring-1 ring-inset ring-rose-600/20">
+                    Target
+                  </span>
+                ) : null}
+              </div>
             </div>
             <div>
               <p className="text-sm font-medium text-ink-700">Target products</p>
@@ -368,9 +409,15 @@ export function FloorMapViewer({
                     <Link
                       key={product.id}
                       href={`/products/${product.id}`}
-                      className="block rounded-2xl border border-line bg-white/70 px-4 py-3 text-sm text-ink-700 transition hover:border-brand-300 hover:bg-brand-50"
+                      className="flex items-center justify-between rounded-2xl border border-line bg-white/70 px-4 py-3 text-sm text-ink-700 transition hover:border-brand-300 hover:bg-brand-50"
                     >
-                      {product.name}
+                      <span>{product.name}</span>
+                      {product.isRush ? (
+                        <span className="inline-flex items-center gap-1 rounded-full bg-rose-100 px-2 py-0.5 text-[11px] font-bold text-rose-700">
+                          <Zap className="h-3 w-3 fill-current" />
+                          RUSH
+                        </span>
+                      ) : null}
                     </Link>
                   ))
                 ) : (
@@ -383,6 +430,7 @@ export function FloorMapViewer({
           <p className="text-sm text-ink-500">Belum ada marker booth untuk map ini.</p>
         )}
       </div>
+    </div>
     </div>
   );
 }

@@ -3,7 +3,7 @@ export const revalidate = 120;
 import { notFound } from "next/navigation";
 import { FloorMapViewer } from "@/components/maps/floor-map-viewer";
 import { Card, CardContent } from "@/components/ui/card";
-import { getMapById, getRelatedProductsByCircle } from "@/db/queries";
+import { getFloorMapsList, getMapById, getRelatedProductsByCircle } from "@/db/queries";
 import { isDoneProductStatus } from "@/lib/checklist";
 
 export default async function MapDetailPage({
@@ -17,7 +17,10 @@ export default async function MapDetailPage({
   const query = await searchParams;
   const selectedCircleId = typeof query.circleId === "string" ? query.circleId : undefined;
 
-  const map = await getMapById(id);
+  const [map, allMaps] = await Promise.all([
+    getMapById(id),
+    getMapById(id).then((m) => (m ? getFloorMapsList(m.eventId) : []))
+  ]);
 
   if (!map) {
     notFound();
@@ -33,15 +36,16 @@ export default async function MapDetailPage({
         (product) => product.priority === "HIGH" || product.status === "TARGET" || product.status === "PO_OPEN"
       );
       // Selesai: SEMUA produk booth ini sudah PURCHASED/CANCELLED/SOLD_OUT.
-      // `.every()` pada array kosong bernilai true (booth tanpa target produk
-      // dianggap "selesai" karena tidak ada yang perlu diburu di sana).
       const isDone = circleProducts.every((product) => isDoneProductStatus(product.status));
+      const hasRush = circleProducts.some((p) => p.isRush && !isDoneProductStatus(p.status));
 
       return {
         id: location.id,
         circleId: location.circleId,
         circleName: location.circle.name,
         boothCode: location.boothCode,
+        day: location.day,
+        hasRush,
         posX: location.posX,
         posY: location.posY,
         isHighlighted,
@@ -50,7 +54,8 @@ export default async function MapDetailPage({
           .filter((product) => !isDoneProductStatus(product.status))
           .map((product) => ({
             id: product.id,
-            name: product.name
+            name: product.name,
+            isRush: product.isRush
           }))
       };
     })
@@ -70,6 +75,7 @@ export default async function MapDetailPage({
         height={map.height}
         markers={markers}
         initialCircleId={selectedCircleId}
+        halls={allMaps.map((m) => ({ id: m.id, name: m.name, hall: m.hall }))}
       />
       <Card>
         <CardContent className="space-y-3">

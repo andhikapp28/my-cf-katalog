@@ -2,12 +2,19 @@ export const revalidate = 120;
 
 import Link from "next/link";
 import { notFound } from "next/navigation";
+import { Zap } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
 import { ProductImage } from "@/components/products/product-image";
 import { getBoothLocationForCircle, getProductById } from "@/db/queries";
-import { formatCurrency, formatDate, formatDateTime } from "@/lib/format";
-import { priorityStyles, statusStyles } from "@/lib/constants";
+import { formatCurrency, formatDateTime } from "@/lib/format";
+import {
+  eventDayBadgeStyles,
+  eventDayLabels,
+  eventDayShortLabels,
+  priorityStyles,
+  statusStyles
+} from "@/lib/constants";
 
 export default async function ProductDetailPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
@@ -33,6 +40,15 @@ export default async function ProductDetailPage({ params }: { params: Promise<{ 
         </div>
         <div className="panel p-6">
           <div className="flex flex-wrap gap-2">
+            {product.isRush ? (
+              <Badge className="bg-rose-500 text-white font-bold animate-pulse">
+                <Zap className="mr-1 h-3 w-3 fill-white" />
+                RUSH
+              </Badge>
+            ) : null}
+            <Badge className={eventDayBadgeStyles[product.targetDay]}>
+              {eventDayShortLabels[product.targetDay]}
+            </Badge>
             <Badge className={statusStyles[product.status]}>{product.status.replace("_", " ")}</Badge>
             <Badge className={priorityStyles[product.priority]}>{product.priority}</Badge>
           </div>
@@ -57,14 +73,20 @@ export default async function ProductDetailPage({ params }: { params: Promise<{ 
               <p className="mt-1 font-medium">{product.quantity}</p>
             </div>
             <div>
-              <p className="text-ink-500">PO Deadline</p>
-              <p className="mt-1 font-medium">{formatDate(product.poDeadline)}</p>
+              <p className="text-ink-500">Jadwal Hunting</p>
+              <p className="mt-1 font-medium">{eventDayLabels[product.targetDay]}</p>
             </div>
             <div>
               <p className="text-ink-500">Purchase type</p>
               <p className="mt-1 font-medium">{product.purchaseType}</p>
             </div>
           </div>
+          {product.poPickupNotes ? (
+            <div className="mt-5 rounded-2xl border border-sky-200/80 bg-sky-50/70 p-4 text-sm text-sky-950">
+              <p className="font-semibold uppercase tracking-wider text-sky-800">📦 Data Ambil PO (Tunjukkan ke Seller):</p>
+              <p className="mt-1 font-mono text-base font-semibold">{product.poPickupNotes}</p>
+            </div>
+          ) : null}
           <div className="mt-5 flex flex-wrap gap-3">
             {product.productLink ? (
               <Link href={product.productLink} target="_blank" className="rounded-full bg-brand-500 px-5 py-3 text-sm font-medium text-white">

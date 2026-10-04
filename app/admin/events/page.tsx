@@ -4,7 +4,6 @@ import Image from "next/image";
 import Link from "next/link";
 import { deleteEventAction, upsertEventAction } from "@/actions/events";
 import { AdminCardGrid } from "@/components/admin/admin-card-grid";
-import { AdminCreatePanel } from "@/components/admin/admin-create-panel";
 import { AdminCreateToggle, AdminCreateToggleButton, AdminCreateTogglePanel } from "@/components/admin/admin-create-toggle";
 import { AdminField } from "@/components/admin/admin-field";
 import { AdminSectionHeading } from "@/components/admin/admin-section-heading";

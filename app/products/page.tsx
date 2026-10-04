@@ -18,11 +18,13 @@ export default async function ProductsPage({
   const priority = typeof params.priority === "string" ? params.priority : undefined;
   const circleId = typeof params.circle === "string" ? params.circle : undefined;
   const eventId = typeof params.event === "string" ? params.event : undefined;
+  const targetDay = typeof params.day === "string" ? params.day : undefined;
+  const isRush = params.rush === "true" ? true : undefined;
   const sort = typeof params.sort === "string" ? params.sort : undefined;
   const view = typeof params.view === "string" ? params.view : "grid";
 
   const [products, circles, events, booths] = await Promise.all([
-    getProducts({ q, status, priority, circleId, eventId, sort }),
+    getProducts({ q, status, priority, circleId, eventId, sort, targetDay, isRush }),
     getCircleList(),
     getEventList(),
     getBooths(eventId)
@@ -69,6 +71,15 @@ export default async function ProductsPage({
               {event.name}
             </option>
           ))}
+        </Select>
+        <Select name="day" defaultValue={targetDay}>
+          <option value="">Semua hari (D1 & D2)</option>
+          <option value="DAY_1">Day 1 (Sabtu)</option>
+          <option value="DAY_2">Day 2 (Minggu)</option>
+        </Select>
+        <Select name="rush" defaultValue={isRush ? "true" : ""}>
+          <option value="">Semua item</option>
+          <option value="true">⚡ Incaran Rush Pagi</option>
         </Select>
         <div className="flex gap-3">
           <Select name="sort" defaultValue={sort}>

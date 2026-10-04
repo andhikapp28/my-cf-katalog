@@ -23,15 +23,24 @@ export type SortableChecklistItem = {
   priority: (typeof priorities)[number];
   circleName: string;
   name: string;
+  isRush?: boolean;
 };
 
 /**
- * Urutan checklist: prioritas HIGH dulu (paling penting diburu duluan saat
- * jalan di venue), lalu dikelompokkan per circle (biar belanja per booth
- * tidak bolak-balik), lalu nama produk untuk urutan stabil.
+ * Urutan checklist:
+ * 1. Item "RUSH" (rebutan pagi hari-H) didahulukan paling awal agar tidak kehabisan.
+ * 2. Prioritas HIGH dulu (paling penting diburu saat jalan di venue).
+ * 3. Dikelompokkan per circle (biar belanja per booth tidak bolak-balik).
+ * 4. Nama produk untuk urutan stabil.
  */
 export function sortChecklistItems<T extends SortableChecklistItem>(items: T[]): T[] {
   return [...items].sort((a, b) => {
+    const aRush = a.isRush ? 1 : 0;
+    const bRush = b.isRush ? 1 : 0;
+    if (aRush !== bRush) {
+      return bRush - aRush;
+    }
+
     const weightDiff = priorityWeight[a.priority] - priorityWeight[b.priority];
     if (weightDiff !== 0) {
       return weightDiff;
@@ -44,6 +53,21 @@ export function sortChecklistItems<T extends SortableChecklistItem>(items: T[]):
 
     return a.name.localeCompare(b.name);
   });
+}
+
+export type ChecklistDayFilter = "ALL" | "DAY_1" | "DAY_2" | "RUSH_ONLY";
+
+export function filterChecklistItemsByDay<T extends { targetDay?: string; isRush?: boolean }>(
+  items: T[],
+  filter: ChecklistDayFilter
+): T[] {
+  if (filter === "ALL") {
+    return items;
+  }
+  if (filter === "RUSH_ONLY") {
+    return items.filter((item) => Boolean(item.isRush));
+  }
+  return items.filter((item) => !item.targetDay || item.targetDay === "ALL_DAYS" || item.targetDay === filter);
 }
 
 export type ChecklistStatusFilter = "ALL" | ChecklistStatus;

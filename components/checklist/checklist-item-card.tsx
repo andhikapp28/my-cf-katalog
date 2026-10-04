@@ -3,11 +3,20 @@
 import { useOptimistic, useState, useTransition } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { RotateCcw, ShoppingBag } from "lucide-react";
+import { RotateCcw, ShoppingBag, Zap } from "lucide-react";
+import { toast } from "sonner";
 import { quickUpdateProductStatusAction } from "@/actions/products";
 import { Badge } from "@/components/ui/badge";
 import { ProductImage } from "@/components/products/product-image";
-import { priorities, priorityStyles, productStatuses, statusStyles } from "@/lib/constants";
+import {
+  eventDayBadgeStyles,
+  eventDayShortLabels,
+  eventDays,
+  priorities,
+  priorityStyles,
+  productStatuses,
+  statusStyles
+} from "@/lib/constants";
 import { isDoneProductStatus } from "@/lib/checklist";
 import { formatCurrency } from "@/lib/format";
 import { cn } from "@/lib/utils";
@@ -20,6 +29,9 @@ export type ChecklistProduct = {
   quantity: number;
   priority: (typeof priorities)[number];
   status: (typeof productStatuses)[number];
+  targetDay?: (typeof eventDays)[number];
+  isRush?: boolean;
+  poPickupNotes?: string | null;
   notes: string | null;
   productLink: string | null;
   circleId: string;
@@ -99,6 +111,17 @@ export function ChecklistItemCard({ product }: { product: ChecklistProduct }) {
 
       <div className="min-w-0 flex-1">
         <div className="flex flex-wrap items-center gap-2">
+          {product.isRush ? (
+            <Badge className="bg-rose-500 text-white font-bold animate-pulse shadow-sm">
+              <Zap className="mr-1 h-3 w-3 fill-white" />
+              RUSH
+            </Badge>
+          ) : null}
+          {product.targetDay ? (
+            <Badge className={eventDayBadgeStyles[product.targetDay]}>
+              {eventDayShortLabels[product.targetDay]}
+            </Badge>
+          ) : null}
           <Badge className={priorityStyles[product.priority]}>{product.priority}</Badge>
           <Badge className={statusStyles[optimisticStatus]}>{optimisticStatus}</Badge>
         </div>
@@ -119,6 +142,27 @@ export function ChecklistItemCard({ product }: { product: ChecklistProduct }) {
           {formatCurrency(product.price)}
           <span className="font-normal text-ink-500"> x{product.quantity}</span>
         </p>
+
+        {product.poPickupNotes ? (
+          <div className="mt-2 rounded-xl border border-sky-200/80 bg-sky-50/70 p-2.5 text-xs text-sky-900">
+            <div className="flex items-center justify-between gap-2">
+              <span className="font-semibold text-sky-950">📦 Data Ambil PO:</span>
+              <button
+                type="button"
+                onClick={() => {
+                  if (typeof navigator !== "undefined" && product.poPickupNotes) {
+                    navigator.clipboard.writeText(product.poPickupNotes);
+                    toast.success("Catatan PO disalin!");
+                  }
+                }}
+                className="rounded bg-sky-200/70 px-2 py-0.5 text-[11px] font-medium text-sky-900 transition hover:bg-sky-300"
+              >
+                Salin
+              </button>
+            </div>
+            <p className="mt-1 font-mono text-xs">{product.poPickupNotes}</p>
+          </div>
+        ) : null}
 
         {errorMessage ? <p className="mt-1 text-xs text-rose-600">{errorMessage}</p> : null}
 

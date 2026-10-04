@@ -4,7 +4,6 @@ import Image from "next/image";
 import Link from "next/link";
 import { deleteFloorMapAction, upsertFloorMapAction } from "@/actions/floor-maps";
 import { AdminCardGrid } from "@/components/admin/admin-card-grid";
-import { AdminCreatePanel } from "@/components/admin/admin-create-panel";
 import { AdminCreateToggle, AdminCreateToggleButton, AdminCreateTogglePanel } from "@/components/admin/admin-create-toggle";
 import { AdminField } from "@/components/admin/admin-field";
 import { AdminSectionHeading } from "@/components/admin/admin-section-heading";
@@ -57,7 +56,10 @@ export default async function AdminFloorMapsPage({
             </Select>
           </AdminField>
           <AdminField label="Floor map name" required className="xl:col-span-2">
-            <Input name="name" placeholder="Hall A Main Floor" required />
+            <Input name="name" placeholder="Hall 8 Artist Alley" required />
+          </AdminField>
+          <AdminField label="Hall (Venue)">
+            <Input name="hall" placeholder="Hall 8 / Hall 9 / Hall 10" />
           </AdminField>
           <AdminField label="Width" required>
             <Input type="number" name="width" placeholder="1200" required />
@@ -89,7 +91,14 @@ export default async function AdminFloorMapsPage({
                 <article key={map.id} className="panel overflow-hidden p-5 sm:p-6">
                   <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
                     <div>
-                      <h3 className="font-[var(--font-display)] text-2xl font-semibold text-ink-900">{map.name}</h3>
+                      <div className="flex items-center gap-2">
+                        <h3 className="font-[var(--font-display)] text-2xl font-semibold text-ink-900">{map.name}</h3>
+                        {map.hall ? (
+                          <span className="rounded-full bg-brand-50 px-2.5 py-0.5 text-xs font-semibold text-brand-700">
+                            {map.hall}
+                          </span>
+                        ) : null}
+                      </div>
                       <p className="mt-2 text-sm text-ink-500">{map.event.name}</p>
                     </div>
                     <div className="flex flex-wrap gap-2">
@@ -138,6 +147,9 @@ export default async function AdminFloorMapsPage({
                         </AdminField>
                         <AdminField label="Floor map name" required>
                           <Input name="name" defaultValue={map.name} required />
+                        </AdminField>
+                        <AdminField label="Hall (Venue)">
+                          <Input name="hall" defaultValue={map.hall ?? ""} placeholder="Hall 8 / Hall 9 / Hall 10" />
                         </AdminField>
                         <AdminField label="Width" required>
                           <Input type="number" name="width" defaultValue={map.width} required />

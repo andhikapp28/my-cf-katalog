@@ -1,7 +1,7 @@
 {
-  "name": "Dipa Katalog",
-  "short_name": "Dipa Katalog",
-  "description": "Katalog belanja event dan pelacak pengeluaran personal untuk anime/hobby event.",
+  "name": "Dipa Katalog · Comifuro Edition",
+  "short_name": "Comifuro Katalog",
+  "description": "Katalog belanja event dan pelacak pengeluaran personal khusus Comic Frontier (Comifuro).",
   "start_url": "/",
   "scope": "/",
   "display": "standalone",

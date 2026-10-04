@@ -3,7 +3,6 @@ export const dynamic = "force-dynamic";
 import Link from "next/link";
 import { deleteBoothAction, upsertBoothAction } from "@/actions/floor-maps";
 import { AdminCardGrid } from "@/components/admin/admin-card-grid";
-import { AdminCreatePanel } from "@/components/admin/admin-create-panel";
 import { AdminCreateToggle, AdminCreateToggleButton, AdminCreateTogglePanel } from "@/components/admin/admin-create-toggle";
 import { AdminField } from "@/components/admin/admin-field";
 import { AdminSectionHeading } from "@/components/admin/admin-section-heading";
@@ -19,6 +18,8 @@ import { Select } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
 import { getBooths, getCircleList, getEventList, getFloorMapsList } from "@/db/queries";
 import { buildPathWithQuery, getSearchParam, truncateText, type SearchParams } from "@/lib/admin-ui";
+import { eventDayBadgeStyles, eventDayLabels, eventDayShortLabels, eventDays } from "@/lib/constants";
+import { cn } from "@/lib/utils";
 
 export default async function AdminBoothsPage({
   searchParams
@@ -81,7 +82,16 @@ export default async function AdminBoothsPage({
             </Select>
           </AdminField>
           <AdminField label="Booth code" required>
-            <Input name="boothCode" placeholder="A-12" required />
+            <Input name="boothCode" placeholder="A-15a / TC-12" required />
+          </AdminField>
+          <AdminField label="Jadwal Booth">
+            <Select name="day" defaultValue="ALL_DAYS">
+              {eventDays.map((day) => (
+                <option key={day} value={day}>
+                  {eventDayLabels[day]}
+                </option>
+              ))}
+            </Select>
           </AdminField>
           <AdminField label="Marker X" required hint="0-100%">
             <Input type="number" name="posX" placeholder="28" required />
@@ -113,7 +123,12 @@ export default async function AdminBoothsPage({
                 <article key={booth.id} className="panel p-5 sm:p-6">
                   <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
                     <div>
-                      <h3 className="font-[var(--font-display)] text-2xl font-semibold text-ink-900">{booth.boothCode}</h3>
+                      <div className="flex items-center gap-2">
+                        <h3 className="font-[var(--font-display)] text-2xl font-semibold text-ink-900">{booth.boothCode}</h3>
+                        <span className={cn("rounded-full px-2.5 py-0.5 text-xs font-semibold ring-1 ring-inset", eventDayBadgeStyles[booth.day])}>
+                          {eventDayShortLabels[booth.day]}
+                        </span>
+                      </div>
                       <p className="mt-2 text-sm text-ink-500">{booth.circle.name}</p>
                     </div>
                     <div className="flex flex-wrap gap-2">
@@ -180,6 +195,15 @@ export default async function AdminBoothsPage({
                         </AdminField>
                         <AdminField label="Booth code" required>
                           <Input name="boothCode" defaultValue={booth.boothCode} required />
+                        </AdminField>
+                        <AdminField label="Jadwal Booth">
+                          <Select name="day" defaultValue={booth.day}>
+                            {eventDays.map((day) => (
+                              <option key={day} value={day}>
+                                {eventDayLabels[day]}
+                              </option>
+                            ))}
+                          </Select>
                         </AdminField>
                         <AdminField label="Marker X" required hint="0-100%">
                           <Input type="number" name="posX" defaultValue={booth.posX} required />

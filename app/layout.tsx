@@ -20,13 +20,13 @@ const display = Space_Grotesk({
 });
 
 export const metadata: Metadata = {
-  title: "Dipa Katalog",
-  description: "Personal catalog and spending tracker for anime and hobby events.",
+  title: "Dipa Katalog — Comifuro Event Planner & Catalog",
+  description: "Personal catalog, floor map route, and cash-prepared spending tracker for Comic Frontier (Comifuro).",
   manifest: "/manifest.json",
   appleWebApp: {
     capable: true,
     statusBarStyle: "default",
-    title: "Dipa Katalog"
+    title: "Dipa Katalog · Comifuro"
   },
   icons: {
     icon: [
