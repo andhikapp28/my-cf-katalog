@@ -208,7 +208,7 @@ async function main() {
         priority: "HIGH",
         targetDay: "DAY_1",
         isRush: false,
-        poPickupNotes: "Nama: Andhika Dipa / WA: 081299887766 / Order #CF20-042",
+        poPickupNotes: "Nama: Budi Santoso / WA: 081299887766 / Order #CF20-042",
         quantity: 1,
         notes: "PO sudah lunas transfer. Tinggal tunjukkan kartu ini ke penjaga booth A-15a.",
         purchaseType: "PO"

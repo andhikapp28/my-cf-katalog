@@ -1,7 +1,7 @@
 {
-  "name": "Dipa Katalog · Comifuro Edition",
-  "short_name": "Comifuro Katalog",
-  "description": "Katalog belanja event dan pelacak pengeluaran personal khusus Comic Frontier (Comifuro).",
+  "name": "ComiPocket · Comifuro Edition",
+  "short_name": "ComiPocket",
+  "description": "Katalog belanja event, floor map, wishlist, dan pelacak pengeluaran komunitas Comic Frontier (Comifuro).",
   "start_url": "/",
   "scope": "/",
   "display": "standalone",

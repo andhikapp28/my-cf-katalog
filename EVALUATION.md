@@ -1,11 +1,11 @@
-# Evaluasi Produk — Dipa Katalog
+# Evaluasi Produk — ComiPocket
 **Ditulis oleh**: Alex (PM) · **Tanggal**: 2026-07-05 · **Konteks**: evaluasi menyeluruh pasca Sprint 1–3, sebelum commit/push Sprint 2 & 3
 
 ---
 
 ## 1. Ringkasan Eksekutif
 
-Dipa Katalog sudah jauh lebih matang dari "aplikasi personal yang rapi" menjadi produk dengan disiplin rekayasa yang sungguh-sungguh: validasi konsisten, security headers, test suite (94 unit + E2E), CI, dan — yang paling relevan untuk tujuan intinya — sudah punya PWA offline-first, floor map interaktif, dan mode checklist yang secara spesifik dirancang untuk kondisi pemakaian nyata di venue (jalan/berdiri, sinyal jelek, tap cepat berulang).
+ComiPocket sudah jauh lebih matang dari "aplikasi personal yang rapi" menjadi produk dengan disiplin rekayasa yang sungguh-sungguh: validasi konsisten, security headers, test suite (94 unit + E2E), CI, dan — yang paling relevan untuk tujuan intinya — sudah punya PWA offline-first, floor map interaktif, dan mode checklist yang secara spesifik dirancang untuk kondisi pemakaian nyata di venue (jalan/berdiri, sinyal jelek, tap cepat berulang).
 
 Tapi ada **satu kesenjangan fatal** antara "sudah dibangun" dan "aman dipakai hari-H": sebagian besar Server Action (yaitu SEMUA CRUD selain checklist) masih memakai pola yang TERBUKTI macet permanen di build produksi sungguhan. Aplikasi ini secara arsitektur SUDAH SIAP untuk pemakaian offline-tolerant, tapi jalur admin (tempat kamu benar-benar mencatat pembelian, menghapus produk salah input, menambah expense di tempat) berisiko besar hang total kalau dijalankan lewat `next start` — dan ini belum diverifikasi apakah Vercel juga kena.
 

@@ -17,7 +17,7 @@ export function SiteHeader() {
         <div className="flex items-center gap-6">
           <Link href="/" className="flex items-center gap-2">
             <span className="font-[var(--font-display)] text-lg font-semibold tracking-tight text-ink-900">
-              Dipa Katalog
+              ComiPocket
             </span>
             <span className="rounded-full bg-brand-500/10 px-2.5 py-0.5 text-xs font-semibold text-brand-700 ring-1 ring-inset ring-brand-600/20">
               Comifuro

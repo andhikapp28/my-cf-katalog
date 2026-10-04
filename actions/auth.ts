@@ -80,7 +80,7 @@ export type LogoutState = {
  * button.tsx`) menavigasi ke /admin/login lewat `router.push()` client-side
  * setelah menerima `{ success: true }`.
  */
-export async function logoutAction(_: LogoutState, _formData: FormData): Promise<LogoutState> {
+export async function logoutAction(_prevState: LogoutState, _formData: FormData): Promise<LogoutState> {
   await requireAdmin();
   await signOut({ redirect: false });
   return { success: true };

@@ -1,4 +1,4 @@
-# Rencana Pengembangan Dipa Katalog
+# Rencana Pengembangan ComiPocket
 
 > **Konteks kunci:** aplikasi ini dipakai personal saat *hari-H event* di venue — sering
 > dengan sinyal buruk dan sambil berdiri/jalan. Itu jadi lensa utama untuk prioritas:
@@ -100,7 +100,7 @@ Codebase ini **PostgreSQL-only** pada kondisi saat ini:
 - `db/client.ts` memakai driver `postgres` (postgres.js) + penanganan koneksi khusus Neon.
 - `drizzle.config.ts` dialect Postgres; migrasi di `drizzle/*.sql` bersintaks Postgres.
 
-Untuk menjalankan dengan database MySQL `dipakatalog`, dibutuhkan migrasi lapisan data ke
+Untuk menjalankan dengan database MySQL `comipocket`, dibutuhkan migrasi lapisan data ke
 MySQL (schema → `mysql-core`, driver → `mysql2`, penyesuaian `uuid`/`enum`, dan tulis ulang
 migrasi). Alternatifnya adalah menyediakan PostgreSQL lokal agar codebase tetap utuh.
 Keputusan ini menentukan langkah setup lokal.

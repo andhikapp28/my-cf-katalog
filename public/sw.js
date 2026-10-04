@@ -1,5 +1,5 @@
 /**
- * Service worker hand-rolled (tanpa Workbox/next-pwa) untuk Dipa Katalog.
+ * Service worker hand-rolled (tanpa Workbox/next-pwa) untuk ComiPocket.
  *
  * next-pwa TIDAK dipakai: proyek ini pakai Next 15 App Router, dan next-pwa
  * (dibangun di atas workbox-webpack-plugin) punya riwayat kompatibilitas yang
@@ -26,9 +26,9 @@
  */
 
 const CACHE_VERSION = "v1";
-const STATIC_CACHE = `dipa-katalog-static-${CACHE_VERSION}`;
-const PAGES_CACHE = `dipa-katalog-pages-${CACHE_VERSION}`;
-const IMAGE_CACHE = `dipa-katalog-images-${CACHE_VERSION}`;
+const STATIC_CACHE = `comipocket-static-${CACHE_VERSION}`;
+const PAGES_CACHE = `comipocket-pages-${CACHE_VERSION}`;
+const IMAGE_CACHE = `comipocket-images-${CACHE_VERSION}`;
 const KNOWN_CACHES = [STATIC_CACHE, PAGES_CACHE, IMAGE_CACHE];
 
 const PUBLIC_PAGE_PATTERNS = [
@@ -85,7 +85,6 @@ async function staleWhileRevalidate(request, cacheName) {
 
   if (cached) {
     // Refresh di background, tapi langsung balas dari cache supaya instan.
-    networkFetch;
     return cached;
   }
 

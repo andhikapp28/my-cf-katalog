@@ -406,7 +406,7 @@ export function CatalogEntryForm({
                     <AdminField label="Data Ambil PO" className="md:col-span-2" hint="Nama / WA / No Order">
                       <Input
                         value={row.poPickupNotes}
-                        placeholder="Contoh: Nama: Dipa / WA: 08123456789 / Slot #2"
+                        placeholder="Contoh: Nama: Budi / WA: 08123456789 / Slot #2"
                         onChange={(event) => updateRow(index, { poPickupNotes: event.target.value })}
                       />
                     </AdminField>

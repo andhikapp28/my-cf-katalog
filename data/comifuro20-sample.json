@@ -1,0 +1,185 @@
+[
+  {
+    "circle_code": "A-15a",
+    "name": "Atelier Hanami",
+    "circle_cut": "https://images.unsplash.com/photo-1544716278-ca5e3f4abd8c?auto=format&fit=crop&w=800&q=80",
+    "fandom": "Original",
+    "other_fandom": "Hololive",
+    "day": "Day 1",
+    "rating": "GA",
+    "circle_twitter": "https://twitter.com/atelierhanami",
+    "circle_instagram": "https://instagram.com/atelierhanami",
+    "circle_facebook": null,
+    "sampleworks_images": [
+      "https://images.unsplash.com/photo-1544716278-ca5e3f4abd8c?auto=format&fit=crop&w=800&q=80",
+      "https://images.unsplash.com/photo-1607604276583-eef5d076aa5f?auto=format&fit=crop&w=800&q=80"
+    ],
+    "SellsArtbook": true,
+    "SellsGoods": true,
+    "SellsComic": false
+  },
+  {
+    "circle_code": "C-02b",
+    "name": "Mikan Press",
+    "circle_cut": "https://images.unsplash.com/photo-1579783900882-c0d3dad7b119?auto=format&fit=crop&w=800&q=80",
+    "fandom": "Original",
+    "other_fandom": "Catgirl Maid",
+    "day": "Both Days",
+    "rating": "GA",
+    "circle_twitter": "https://twitter.com/mikanpress",
+    "circle_instagram": null,
+    "circle_facebook": "https://facebook.com/mikanpress",
+    "sampleworks_images": [
+      "https://images.unsplash.com/photo-1579783900882-c0d3dad7b119?auto=format&fit=crop&w=800&q=80"
+    ],
+    "SellsArtbook": false,
+    "SellsGoods": true,
+    "SellsComic": true
+  },
+  {
+    "circle_code": "G-08",
+    "name": "Hoshizora Project",
+    "circle_cut": "https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?auto=format&fit=crop&w=800&q=80",
+    "fandom": "Genshin Impact",
+    "other_fandom": "Honkai: Star Rail",
+    "day": "Day 2",
+    "rating": "GA",
+    "circle_twitter": null,
+    "circle_instagram": "https://instagram.com/hoshizoraproject",
+    "circle_facebook": null,
+    "sampleworks_images": [
+      "https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?auto=format&fit=crop&w=800&q=80"
+    ],
+    "SellsArtbook": false,
+    "SellsGoods": true,
+    "SellsComic": false
+  },
+  {
+    "circle_code": "TC-12",
+    "name": "NekoWorks ID",
+    "circle_cut": "https://images.unsplash.com/photo-1579783902614-a3fb3927b675?auto=format&fit=crop&w=800&q=80",
+    "fandom": "Original",
+    "other_fandom": "Nekopara",
+    "day": "Both Days",
+    "rating": "GA",
+    "circle_twitter": "https://twitter.com/nekoworksid",
+    "circle_instagram": "https://instagram.com/nekoworksid",
+    "circle_facebook": null,
+    "sampleworks_images": [
+      "https://images.unsplash.com/photo-1579783902614-a3fb3927b675?auto=format&fit=crop&w=800&q=80"
+    ],
+    "SellsArtbook": true,
+    "SellsGoods": true,
+    "SellsComic": false
+  },
+  {
+    "circle_code": "B-04a",
+    "name": "Starlight Reverie",
+    "circle_cut": "https://images.unsplash.com/photo-1563089145-599997674d42?auto=format&fit=crop&w=800&q=80",
+    "fandom": "Bocchi the Rock!",
+    "other_fandom": "K-On!",
+    "day": "Day 1",
+    "rating": "GA",
+    "circle_twitter": "@starlight_reverie",
+    "circle_instagram": "@starlight_reverie",
+    "circle_facebook": null,
+    "sampleworks_images": [
+      "https://images.unsplash.com/photo-1563089145-599997674d42?auto=format&fit=crop&w=800&q=80"
+    ],
+    "SellsArtbook": false,
+    "SellsGoods": true,
+    "SellsComic": true
+  },
+  {
+    "circle_code": "D-11",
+    "name": "Azure Blossom",
+    "circle_cut": "https://images.unsplash.com/photo-1534447677768-be436bb09401?auto=format&fit=crop&w=800&q=80",
+    "fandom": "Blue Archive",
+    "other_fandom": "Arknights",
+    "day": "Both Days",
+    "rating": "GA",
+    "circle_twitter": "https://twitter.com/azureblossom_art",
+    "circle_instagram": null,
+    "circle_facebook": null,
+    "sampleworks_images": [
+      "https://images.unsplash.com/photo-1534447677768-be436bb09401?auto=format&fit=crop&w=800&q=80"
+    ],
+    "SellsArtbook": true,
+    "SellsGoods": true,
+    "SellsComic": false
+  },
+  {
+    "circle_code": "M-22b",
+    "name": "Kurogane Atelier",
+    "circle_cut": "https://images.unsplash.com/photo-1518709268805-4e9042af9f23?auto=format&fit=crop&w=800&q=80",
+    "fandom": "Fate/Grand Order",
+    "other_fandom": "Tsukihime",
+    "day": "Day 1",
+    "rating": "M",
+    "circle_twitter": "https://twitter.com/kurogane_atelier",
+    "circle_instagram": null,
+    "circle_facebook": null,
+    "sampleworks_images": [
+      "https://images.unsplash.com/photo-1518709268805-4e9042af9f23?auto=format&fit=crop&w=800&q=80"
+    ],
+    "SellsArtbook": true,
+    "SellsGoods": false,
+    "SellsComic": true
+  },
+  {
+    "circle_code": "N-03",
+    "name": "Pixel Forge",
+    "circle_cut": "https://images.unsplash.com/photo-1550745165-9bc0b252726f?auto=format&fit=crop&w=800&q=80",
+    "fandom": "Indie Games",
+    "other_fandom": "Touhou Project",
+    "day": "Day 2",
+    "rating": "GA",
+    "circle_twitter": "https://twitter.com/pixelforge_id",
+    "circle_instagram": "https://instagram.com/pixelforge_id",
+    "circle_facebook": null,
+    "sampleworks_images": [
+      "https://images.unsplash.com/photo-1550745165-9bc0b252726f?auto=format&fit=crop&w=800&q=80"
+    ],
+    "SellsArtbook": false,
+    "SellsGoods": true,
+    "SellsComic": false,
+    "SellsGame": true
+  },
+  {
+    "circle_code": "P-18a",
+    "name": "Astral Symphony",
+    "circle_cut": "https://images.unsplash.com/photo-1511671782779-c97d3d27a1d4?auto=format&fit=crop&w=800&q=80",
+    "fandom": "Vocaloid",
+    "other_fandom": "Project Sekai",
+    "day": "Both Days",
+    "rating": "GA",
+    "circle_twitter": "https://twitter.com/astralsymphony",
+    "circle_instagram": null,
+    "circle_facebook": null,
+    "sampleworks_images": [
+      "https://images.unsplash.com/photo-1511671782779-c97d3d27a1d4?auto=format&fit=crop&w=800&q=80"
+    ],
+    "SellsArtbook": false,
+    "SellsGoods": true,
+    "SellsComic": false,
+    "SellsMusic": true
+  },
+  {
+    "circle_code": "Z-01",
+    "name": "Chroma Craft",
+    "circle_cut": "https://images.unsplash.com/photo-1579783901586-d88db74b4fe4?auto=format&fit=crop&w=800&q=80",
+    "fandom": "Hololive",
+    "other_fandom": "Nijisanji",
+    "day": "Both Days",
+    "rating": "GA",
+    "circle_twitter": "https://twitter.com/chromacraft_id",
+    "circle_instagram": "https://instagram.com/chromacraft_id",
+    "circle_facebook": null,
+    "sampleworks_images": [
+      "https://images.unsplash.com/photo-1579783901586-d88db74b4fe4?auto=format&fit=crop&w=800&q=80"
+    ],
+    "SellsArtbook": false,
+    "SellsGoods": true,
+    "SellsComic": false
+  }
+]

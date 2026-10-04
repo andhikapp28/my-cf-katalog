@@ -1,5 +1,5 @@
 {
-  "name": "dipa-katalog",
+  "name": "comipocket",
   "version": "0.1.0",
   "private": true,
   "scripts": {
@@ -11,6 +11,7 @@
     "db:migrate": "node --env-file-if-exists=.env --import tsx scripts/migrate.ts",
     "db:studio": "drizzle-kit studio",
     "db:seed": "node --conditions=react-server --env-file-if-exists=.env --import tsx db/seed.ts",
+    "db:import": "node --conditions=react-server --env-file-if-exists=.env --import tsx scripts/import-cf-catalog.ts",
     "typecheck": "tsc --noEmit",
     "test": "vitest run",
     "test:watch": "vitest",

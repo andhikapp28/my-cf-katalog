@@ -213,13 +213,13 @@ describe("productSchema", () => {
       ...base,
       targetDay: "DAY_1",
       isRush: true,
-      poPickupNotes: "Nama: Dipa / WA: 08123456789 / Slot 2"
+      poPickupNotes: "Nama: Budi / WA: 08123456789 / Slot 2"
     });
     expect(result.success).toBe(true);
     if (result.success) {
       expect(result.data.targetDay).toBe("DAY_1");
       expect(result.data.isRush).toBe(true);
-      expect(result.data.poPickupNotes).toBe("Nama: Dipa / WA: 08123456789 / Slot 2");
+      expect(result.data.poPickupNotes).toBe("Nama: Budi / WA: 08123456789 / Slot 2");
     }
   });
 

@@ -1,6 +1,6 @@
-# Dipa Katalog
+# ComiPocket
 
-Aplikasi web katalog belanja event anime berbasis event untuk penggunaan personal jangka panjang. Stack utama: Next.js App Router, TypeScript strict, Tailwind CSS, PostgreSQL, Drizzle ORM, Auth.js credentials login, dan Vercel Blob untuk floor map.
+Aplikasi web companion event dan katalog belanja Comic Frontier (Comifuro) untuk komunitas dan attendee. Dilengkapi dengan offline-first PWA, floor map interaktif, guest wishlist, checklist belanja venue, dan cash-prepared tracker. Stack utama: Next.js App Router, TypeScript strict, Tailwind CSS, PostgreSQL, Drizzle ORM, Auth.js credentials login, dan Vercel Blob untuk floor map.
 
 ## Arsitektur Singkat
 - Satu project full-stack Next.js tanpa backend terpisah.
@@ -73,7 +73,7 @@ Aplikasi web katalog belanja event anime berbasis event untuk penggunaan persona
 Gunakan `.env.example` untuk local development:
 
 ```env
-DATABASE_URL=postgres://user:password@host:5432/dipa_katalog
+DATABASE_URL=postgres://user:***@host:5432/comipocket
 BLOB_READ_WRITE_TOKEN=
 ADMIN_EMAIL=admin@example.com
 ADMIN_PASSWORD=change-this-now
@@ -152,7 +152,7 @@ npm run start
 Contoh template:
 
 ```env
-DATABASE_URL=postgres://user:password@host:5432/dipa_katalog
+DATABASE_URL=postgres://user:***@host:5432/comipocket
 BLOB_READ_WRITE_TOKEN=vercel_blob_rw_token
 ADMIN_EMAIL=admin@example.com
 ADMIN_PASSWORD=use-a-long-random-password

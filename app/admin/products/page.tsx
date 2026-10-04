@@ -233,7 +233,7 @@ export default async function AdminProductsPage({
             </label>
           </div>
           <AdminField label="Data Ambil PO" className="md:col-span-2 xl:col-span-3" hint="Nama / WA / No Order saat isi GForm">
-            <Input name="poPickupNotes" placeholder="Contoh: Nama: Dipa / WA: 08123456789 / Slot #2" />
+            <Input name="poPickupNotes" placeholder="Contoh: Nama: Budi / WA: 08123456789 / Slot #2" />
           </AdminField>
           <AdminField label="Notes" className="md:col-span-2 xl:col-span-3">
             <Textarea name="notes" placeholder="Catatan produk, reminder pembayaran, atau bundle info." />
@@ -407,7 +407,7 @@ export default async function AdminProductsPage({
               </label>
             </div>
             <AdminField label="Data Ambil PO" className="md:col-span-2 xl:col-span-3" hint="Nama / WA / No Order saat isi GForm">
-              <Input name="poPickupNotes" defaultValue={selectedProduct.poPickupNotes ?? ""} placeholder="Contoh: Nama: Dipa / WA: 08123456789 / Slot #2" />
+              <Input name="poPickupNotes" defaultValue={selectedProduct.poPickupNotes ?? ""} placeholder="Contoh: Nama: Budi / WA: 08123456789 / Slot #2" />
             </AdminField>
             <AdminField label="Notes" className="md:col-span-2 xl:col-span-3">
               <Textarea name="notes" defaultValue={selectedProduct.notes ?? ""} />
