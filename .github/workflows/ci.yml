@@ -1,10 +1,9 @@
 name: CI
 
+# Dinonaktifkan sementara untuk push/PR agar tidak memakan runner quota.
+# Untuk menjalankan secara manual, gunakan tombol "Run workflow" di tab Actions GitHub.
 on:
-  push:
-    branches:
-      - main
-  pull_request:
+  workflow_dispatch:
 
 # Env dummy khusus CI — BUKAN credential produksi. AUTH_SECRET dummy aman karena
 # tidak pernah dipakai untuk sesi/produk sungguhan, dan ADMIN_EMAIL/ADMIN_PASSWORD
