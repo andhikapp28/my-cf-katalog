@@ -135,44 +135,45 @@ export default async function HomePage() {
   const { stats, featuredCircles, featuredProducts } = data;
 
   return (
-    <div className="relative min-h-screen bg-[#07090E] text-white selection:bg-[#FF6B4A]/30 selection:text-white">
-      {/* Background Seamless Ambient Atmosphere (No solid color cuts) */}
-      <div className="pointer-events-none absolute inset-0 overflow-hidden">
-        {/* Subtle grid pattern */}
-        <div className="absolute inset-0 bg-[linear-gradient(to_right,rgba(255,255,255,0.02)_1px,transparent_1px),linear-gradient(to_bottom,rgba(255,255,255,0.02)_1px,transparent_1px)] bg-[size:4rem_4rem]" />
-        {/* Top radial ambient glow */}
-        <div className="absolute -top-40 left-1/2 h-[560px] w-[800px] -translate-x-1/2 rounded-full bg-[#1E56C8]/18 blur-[140px]" />
-        {/* Mid-right warm accent glow */}
-        <div className="absolute top-[32rem] right-0 h-[480px] w-[480px] rounded-full bg-[#FF6B4A]/10 blur-[130px]" />
-        {/* Bottom-left cool glow */}
-        <div className="absolute bottom-40 left-0 h-[500px] w-[500px] rounded-full bg-[#1E56C8]/10 blur-[140px]" />
-      </div>
+    <div className="relative min-h-screen selection:bg-[#D6F834] selection:text-[#111215]">
+      {/* ========================================================================= */}
+      {/* SECTION 1: HERO SECTION - TANALOKA SKY BLUE PALETTE (#5398DA / #4F93E6)   */}
+      {/* Acid Lime (#D6F834) Display Typography & CTA, Pure White text, Red Asterisk */}
+      {/* Spacious Layered Mascot Canvas on the right side                           */}
+      {/* ========================================================================= */}
+      <section className="relative z-10 overflow-hidden bg-gradient-to-b from-[#5398DA] via-[#5398DA] to-[#4F93E6] px-4 pt-10 pb-16 sm:px-6 md:pt-14 md:pb-24 lg:px-8 text-white">
+        {/* Subtle grid and ambient lighting overlays */}
+        <div className="pointer-events-none absolute inset-0">
+          <div className="absolute inset-0 bg-[linear-gradient(to_right,rgba(255,255,255,0.06)_1px,transparent_1px),linear-gradient(to_bottom,rgba(255,255,255,0.06)_1px,transparent_1px)] bg-[size:4rem_4rem]" />
+          <div className="absolute -top-32 left-1/3 h-96 w-96 rounded-full bg-white/10 blur-[120px]" />
+          <div className="absolute -bottom-24 right-1/4 h-80 w-80 rounded-full bg-[#D6F834]/15 blur-[100px]" />
+        </div>
 
-      {/* ========================================================================= */}
-      {/* SECTION 1: HERO SECTION (Spacious Composition + Clean Global Focus)        */}
-      {/* ========================================================================= */}
-      <section className="relative z-10 px-4 pt-12 pb-16 sm:px-6 md:pt-16 md:pb-24 lg:px-8">
-        <div className="container-shell max-w-7xl mx-auto">
-          <div className="grid gap-10 lg:grid-cols-12 lg:items-center">
-            {/* Left Column: Bold Typography, Subtext & Quick Action CTAs with Staggered Entrance */}
+        <div className="container-shell max-w-7xl mx-auto relative z-10">
+          <div className="grid gap-12 lg:grid-cols-12 lg:items-center">
+            {/* Left Column: Bold TANALOKA Typography & Quick CTAs */}
             <HeroEntranceMotion className="space-y-6 lg:col-span-7">
               <HeroEntranceItem>
-                <div className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/5 px-3.5 py-1 text-xs font-mono font-semibold tracking-wider text-[#FF6B4A] uppercase backdrop-blur-sm">
-                  <span className="h-1.5 w-1.5 rounded-full bg-[#FF6B4A] animate-pulse" />
+                <div className="inline-flex items-center gap-2 rounded-full border border-white/30 bg-white/15 px-4 py-1.5 text-xs font-mono font-bold tracking-widest text-white uppercase backdrop-blur-md shadow-xs">
+                  <span className="h-2 w-2 rounded-full bg-[#D6F834] animate-pulse" />
                   <span>COMIFURO COMPANION GUIDE</span>
+                  <span className="text-[#F84632] font-black">*</span>
                 </div>
               </HeroEntranceItem>
 
               <HeroEntranceItem>
-                <h1 className="font-[var(--font-display)] text-5xl font-black tracking-tight uppercase sm:text-6xl md:text-7xl lg:text-7xl leading-[0.94] text-white">
+                <h1 className="font-[var(--font-display)] text-5xl font-black tracking-tight uppercase sm:text-6xl md:text-7xl lg:text-[5.5rem] leading-[0.92] text-white">
                   HUNTING <br />
-                  <span className="text-white">COMIFURO</span> <br />
-                  <span className="text-[#FF6B4A]">TANPA MATI SINYAL</span>*
+                  <span className="text-[#D6F834]">COMIFURO</span><span className="text-[#F84632]">*</span> <br />
+                  <span>TANPA MATI SINYAL</span>
                 </h1>
+                <div className="pt-2 font-mono text-base sm:text-xl lg:text-2xl font-black tracking-wider text-[#D6F834] uppercase">
+                  WHERE EVERY CREATOR GATHERS
+                </div>
               </HeroEntranceItem>
 
               <HeroEntranceItem>
-                <p className="max-w-xl text-base sm:text-lg font-normal leading-relaxed text-white/75">
+                <p className="max-w-xl text-base sm:text-lg font-normal leading-relaxed text-white/95">
                   Katalog personal untuk menjelajahi ribuan circle kreator, denah booth ICE BSD, kalkulator cash ATM, dan checklist belanja yang aktif 100% saat offline.
                 </p>
               </HeroEntranceItem>
@@ -181,55 +182,79 @@ export default async function HomePage() {
                 <div className="flex flex-wrap items-center gap-3 pt-2">
                   <Link
                     href="/products"
-                    className="inline-flex items-center justify-center rounded-full bg-[#FF6B4A] px-7 py-3.5 text-sm font-bold text-white transition hover:bg-[#ff5733] active:scale-[0.98] shadow-lg shadow-[#FF6B4A]/25"
+                    className="inline-flex items-center justify-center rounded-full bg-[#D6F834] px-8 py-3.5 text-sm font-black text-[#111215] transition-all hover:bg-[#cef338] active:scale-[0.98] shadow-lg shadow-black/15 uppercase tracking-wide"
                   >
                     Jelajahi 1.400+ Circle
                   </Link>
                   <Link
                     href="/maps"
-                    className="inline-flex items-center justify-center rounded-full border border-white/20 bg-white/5 backdrop-blur px-6 py-3.5 text-sm font-semibold text-white transition hover:bg-white/10 hover:border-white/30 active:scale-[0.98]"
+                    className="inline-flex items-center justify-center rounded-full border border-white/35 bg-white/15 backdrop-blur-md px-6 py-3.5 text-sm font-bold text-white transition hover:bg-white/25 active:scale-[0.98]"
                   >
                     Peta Denah Hall
                   </Link>
                   <PreloadOfflineButton
                     productIds={featuredProducts.map((p) => p.id)}
                     circleIds={featuredCircles.map((c) => c.id)}
+                    className="border-white/35 bg-white/15 backdrop-blur-md px-5 py-3.5 text-xs font-bold text-white hover:bg-white/25 hover:text-white"
                   />
                 </div>
               </HeroEntranceItem>
             </HeroEntranceMotion>
 
-            {/* Right Column: Spacious Mascot Staging Canvas with Viewport Entrance */}
+            {/* Right Column: Layered Mascot Staging Canvas (TANALOKA Masked Dancer Style) */}
             <FadeInView delay={0.15} duration={0.6} className="lg:col-span-5 flex items-center justify-center">
-              <div className="relative flex w-full min-h-[340px] sm:min-h-[400px] lg:min-h-[440px] items-center justify-center rounded-3xl border border-white/10 bg-gradient-to-b from-white/[0.05] via-white/[0.02] to-transparent p-8 backdrop-blur-sm group overflow-hidden">
-                {/* Visual Halo & Comic Frame Accents */}
-                <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(255,107,74,0.12),transparent_70%)]" />
-                <div className="pointer-events-none absolute inset-x-8 bottom-0 h-px bg-gradient-to-r from-transparent via-[#FF6B4A]/40 to-transparent" />
-                <div className="pointer-events-none absolute -bottom-12 left-1/2 h-24 w-48 -translate-x-1/2 rounded-full bg-[#FF6B4A]/20 blur-2xl" />
+              <div className="relative flex w-full min-h-[380px] sm:min-h-[440px] lg:min-h-[480px] items-center justify-center rounded-3xl border border-white/25 bg-white/10 p-8 backdrop-blur-md group overflow-hidden shadow-2xl shadow-black/10">
+                {/* Visual Halo & Stage Radial Rings */}
+                <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(214,248,52,0.18),transparent_65%)]" />
+                <div className="pointer-events-none absolute -top-16 -right-16 h-48 w-48 rounded-full bg-white/10 blur-2xl" />
+                <div className="pointer-events-none absolute -bottom-16 -left-16 h-48 w-48 rounded-full bg-[#F84632]/15 blur-2xl" />
 
-                {/* Frame Corner Accents */}
-                <div className="absolute top-4 left-4 h-3 w-3 border-t-2 border-l-2 border-white/30" />
-                <div className="absolute top-4 right-4 h-3 w-3 border-t-2 border-r-2 border-white/30" />
-                <div className="absolute bottom-4 left-4 h-3 w-3 border-b-2 border-l-2 border-white/30" />
-                <div className="absolute bottom-4 right-4 h-3 w-3 border-b-2 border-r-2 border-white/30" />
+                {/* Stage Framing Guidelines & Corner Accents */}
+                <div className="absolute top-4 left-4 h-4 w-4 border-t-2 border-l-2 border-white/40" />
+                <div className="absolute top-4 right-4 h-4 w-4 border-t-2 border-r-2 border-white/40" />
+                <div className="absolute bottom-4 left-4 h-4 w-4 border-b-2 border-l-2 border-white/40" />
+                <div className="absolute bottom-4 right-4 h-4 w-4 border-b-2 border-r-2 border-white/40" />
 
-                {/* Mascot Stage Slot: Leluasa untuk penempatan aset maskot resmi user */}
+                {/* Technical Coordinate Indicators */}
+                <div className="absolute top-4 inset-x-0 flex justify-center">
+                  <span className="font-mono text-[10px] tracking-widest text-white/60 uppercase">
+                    STAGE CANVAS · LAYER 01
+                  </span>
+                </div>
+
+                {/* Multi-layer Rotating Backdrop Ring */}
+                <div className="pointer-events-none absolute h-64 w-64 rounded-full border border-white/20 border-dashed animate-[spin_40s_linear_infinite]" />
+                <div className="pointer-events-none absolute h-80 w-80 rounded-full border border-white/10" />
+
+                {/* Mascot Stage Slot: Spasial bertingkat untuk maskot resmi */}
                 <div className="relative z-10 flex max-w-xs flex-col items-center text-center space-y-4">
-                  <div className="relative flex h-28 w-28 sm:h-32 sm:w-32 items-center justify-center rounded-full border border-white/20 bg-gradient-to-b from-white/10 to-white/5 shadow-inner backdrop-blur-md">
-                    <span className="font-[var(--font-display)] text-3xl sm:text-4xl font-black tracking-tighter text-[#FF6B4A]">
+                  {/* Central Mascot Badge Container */}
+                  <div className="relative flex h-32 w-32 sm:h-36 sm:w-36 items-center justify-center rounded-full border-2 border-white/40 bg-white/20 shadow-xl backdrop-blur-lg">
+                    <span className="font-[var(--font-display)] text-4xl sm:text-5xl font-black tracking-tighter text-[#D6F834] drop-shadow-sm">
                       CP
                     </span>
-                    <div className="pointer-events-none absolute inset-0 rounded-full border border-[#FF6B4A]/30 animate-pulse" />
+                    <div className="pointer-events-none absolute inset-0 rounded-full border-2 border-[#D6F834]/40 animate-ping opacity-30" />
                   </div>
 
                   <div className="space-y-1.5">
-                    <div className="inline-flex items-center gap-1.5 rounded-full border border-white/10 bg-white/10 px-3 py-1 text-xs font-mono font-semibold tracking-wider text-white/90">
-                      <span className="h-1.5 w-1.5 rounded-full bg-[#FF6B4A]" />
+                    <div className="inline-flex items-center gap-2 rounded-full border border-white/30 bg-white/20 px-3.5 py-1 text-xs font-mono font-bold tracking-wider text-white shadow-xs">
+                      <span className="h-1.5 w-1.5 rounded-full bg-[#D6F834]" />
                       <span>MASCOT STAGE</span>
+                      <span className="text-[#F84632]">*</span>
                     </div>
-                    <p className="text-xs leading-relaxed text-white/50 pt-1">
-                      Ruang spasial terbuka siap pakai untuk penempatan ilustrasi maskot resmi ComiPocket.
+                    <p className="text-xs leading-relaxed text-white/80 pt-1">
+                      Area spasial bertingkat siap pakai untuk ilustrasi maskot resmi ComiPocket.
                     </p>
+                  </div>
+
+                  {/* Floating Meta Chips */}
+                  <div className="flex items-center gap-2 pt-1">
+                    <span className="rounded-full bg-black/25 px-2.5 py-0.5 font-mono text-[10px] font-semibold text-white/90 border border-white/15">
+                      RATIO 3:4 / 16:9
+                    </span>
+                    <span className="rounded-full bg-[#D6F834]/25 px-2.5 py-0.5 font-mono text-[10px] font-semibold text-[#D6F834] border border-[#D6F834]/30">
+                      ICE BSD STAGE
+                    </span>
                   </div>
                 </div>
               </div>
@@ -239,107 +264,115 @@ export default async function HomePage() {
       </section>
 
       {/* ========================================================================= */}
-      {/* SECTION 2: DATA PULSE INFOGRAPH (AISUM Style - Image 2 Exact Replication)  */}
-      {/* 2-Column Header (Left tag + Bold Heading, Right clean white desc)          */}
-      {/* 4 Portrait Metric Cards with MetricCardMotion Natural Spring & Glow       */}
+      {/* SECTION 2: DATA PULSE INFOGRAPH (AISUM Style inside Dark #111215 Container)*/}
+      {/* 2-Column Header: Left Coral Red (#F84632) tag + White heading with red asterisk*/}
+      {/* 4 Metric Cards: Background #1B1D24, Big white numbers, Coral Red icons/labels*/}
       {/* ========================================================================= */}
-      <section className="relative z-10 border-t border-white/10 px-4 py-16 text-white sm:px-6 md:py-24 lg:px-8">
-        <div className="container-shell max-w-7xl mx-auto space-y-10">
+      <section className="relative z-10 bg-[#111215] px-4 py-20 text-white sm:px-6 md:py-28 lg:px-8 border-t border-black">
+        <div className="container-shell max-w-7xl mx-auto space-y-12">
           {/* 2-Column Header AISUM Style */}
           <FadeInView>
             <div className="grid gap-6 lg:grid-cols-12 lg:items-end border-b border-white/10 pb-8">
-              <div className="lg:col-span-7 space-y-2.5">
-                <div className="inline-flex items-center gap-2 text-xs font-mono font-bold tracking-widest text-[#FF6B4A] uppercase">
+              <div className="lg:col-span-7 space-y-3">
+                <div className="inline-flex items-center gap-2 text-xs font-mono font-bold tracking-widest text-[#F84632] uppercase">
                   <Sparkles className="h-3.5 w-3.5" />
                   <span>EVENT PULSE & METRICS</span>
                 </div>
-                <h2 className="font-[var(--font-display)] text-3xl font-extrabold tracking-tight sm:text-4xl md:text-5xl text-white uppercase">
-                  CONVENTION MEETS ACTION<span className="text-[#FF6B4A]">*</span>
+                <h2 className="font-[var(--font-display)] text-3xl font-black tracking-tight sm:text-4xl md:text-5xl text-white uppercase">
+                  CONVENTION MEETS ACTION<span className="text-[#F84632]">*</span>
                 </h2>
               </div>
               <div className="lg:col-span-5">
-                <p className="text-sm sm:text-base leading-relaxed text-white/70">
-                  Direktori komprehensif ribuan kreator independen dan booth karya. Diindeks ke dalam arsitektur offline-first untuk keandalan maksimal di dalam hall konvensi.
+                <p className="text-sm sm:text-base leading-relaxed text-zinc-300">
+                  Direktori komprehensif ribuan kreator independen dan booth karya. Diindeks ke dalam arsitektur offline-first untuk keandalan maksimal di dalam hall konvensi tanpa ketergantungan sinyal.
                 </p>
               </div>
             </div>
           </FadeInView>
 
-          {/* 4 Portrait Metric Cards (AISUM Style) with MetricCardMotion */}
+          {/* 4 Metric Cards (AISUM Style) with MetricCardMotion on #1B1D24 */}
           <div className="grid grid-cols-2 gap-4 sm:gap-6 lg:grid-cols-4">
             {/* Metric 1: Circles */}
             <MetricCardMotion
               delay={0.05}
-              className="group flex flex-col justify-between rounded-2xl border border-white/10 bg-[#151922] p-6 sm:p-7 min-h-[220px]"
+              glowColor="rgba(248, 70, 50, 0.25)"
+              borderColor="rgba(248, 70, 50, 0.45)"
+              className="group flex flex-col justify-between rounded-2xl border border-white/10 bg-[#1B1D24] p-6 sm:p-8 min-h-[230px]"
             >
               <div>
-                <div className="font-mono text-4xl sm:text-5xl lg:text-6xl font-black tracking-tight text-white group-hover:text-[#FF6B4A] transition-colors">
-                  {stats.totalCircles ? stats.totalCircles.toLocaleString("id-ID") : "1.478"}
+                <div className="font-mono text-4xl sm:text-5xl lg:text-6xl font-black tracking-tight text-white group-hover:text-[#F84632] transition-colors">
+                  {stats.totalCircles ? stats.totalCircles.toLocaleString("id-ID") : "1.487"}
                 </div>
               </div>
               <div className="pt-6 border-t border-white/10">
-                <div className="flex items-center gap-2 text-xs font-mono font-bold tracking-wider text-[#FF6B4A] uppercase">
+                <div className="flex items-center gap-2 text-xs font-mono font-bold tracking-wider text-[#F84632] uppercase">
                   <Users2 className="h-3.5 w-3.5 shrink-0" />
                   <span>CIRCLES</span>
                 </div>
-                <p className="mt-1 text-[11px] text-white/40">Artist Alley & Creator Alley</p>
+                <p className="mt-1 text-[11px] text-zinc-400">Artist Alley & Creator Alley</p>
               </div>
             </MetricCardMotion>
 
             {/* Metric 2: Sampel Karya */}
             <MetricCardMotion
               delay={0.1}
-              className="group flex flex-col justify-between rounded-2xl border border-white/10 bg-[#151922] p-6 sm:p-7 min-h-[220px]"
+              glowColor="rgba(248, 70, 50, 0.25)"
+              borderColor="rgba(248, 70, 50, 0.45)"
+              className="group flex flex-col justify-between rounded-2xl border border-white/10 bg-[#1B1D24] p-6 sm:p-8 min-h-[230px]"
             >
               <div>
-                <div className="font-mono text-4xl sm:text-5xl lg:text-6xl font-black tracking-tight text-white group-hover:text-[#FF6B4A] transition-colors">
+                <div className="font-mono text-4xl sm:text-5xl lg:text-6xl font-black tracking-tight text-white group-hover:text-[#F84632] transition-colors">
                   {stats.totalProducts ? stats.totalProducts.toLocaleString("id-ID") : "5.144"}
                 </div>
               </div>
               <div className="pt-6 border-t border-white/10">
-                <div className="flex items-center gap-2 text-xs font-mono font-bold tracking-wider text-[#FF6B4A] uppercase">
+                <div className="flex items-center gap-2 text-xs font-mono font-bold tracking-wider text-[#F84632] uppercase">
                   <BookOpen className="h-3.5 w-3.5 shrink-0" />
                   <span>SAMPEL KARYA</span>
                 </div>
-                <p className="mt-1 text-[11px] text-white/40">Artbook, Merch, Standee & Zine</p>
+                <p className="mt-1 text-[11px] text-zinc-400">Artbook, Merch, Standee & Zine</p>
               </div>
             </MetricCardMotion>
 
             {/* Metric 3: Hall Venue */}
             <MetricCardMotion
               delay={0.15}
-              className="group flex flex-col justify-between rounded-2xl border border-white/10 bg-[#151922] p-6 sm:p-7 min-h-[220px]"
+              glowColor="rgba(248, 70, 50, 0.25)"
+              borderColor="rgba(248, 70, 50, 0.45)"
+              className="group flex flex-col justify-between rounded-2xl border border-white/10 bg-[#1B1D24] p-6 sm:p-8 min-h-[230px]"
             >
               <div>
-                <div className="font-mono text-4xl sm:text-5xl lg:text-6xl font-black tracking-tight text-white group-hover:text-[#FF6B4A] transition-colors">
+                <div className="font-mono text-4xl sm:text-5xl lg:text-6xl font-black tracking-tight text-white group-hover:text-[#F84632] transition-colors">
                   0{stats.totalHalls || 2}
                 </div>
               </div>
               <div className="pt-6 border-t border-white/10">
-                <div className="flex items-center gap-2 text-xs font-mono font-bold tracking-wider text-[#FF6B4A] uppercase">
+                <div className="flex items-center gap-2 text-xs font-mono font-bold tracking-wider text-[#F84632] uppercase">
                   <Layers className="h-3.5 w-3.5 shrink-0" />
                   <span>HALL VENUE</span>
                 </div>
-                <p className="mt-1 text-[11px] text-white/40">Hall 8 & Hall 9 ICE BSD</p>
+                <p className="mt-1 text-[11px] text-zinc-400">Hall 8 & Hall 9 ICE BSD</p>
               </div>
             </MetricCardMotion>
 
             {/* Metric 4: Offline Ready */}
             <MetricCardMotion
               delay={0.2}
-              className="group flex flex-col justify-between rounded-2xl border border-white/10 bg-[#151922] p-6 sm:p-7 min-h-[220px]"
+              glowColor="rgba(248, 70, 50, 0.25)"
+              borderColor="rgba(248, 70, 50, 0.45)"
+              className="group flex flex-col justify-between rounded-2xl border border-white/10 bg-[#1B1D24] p-6 sm:p-8 min-h-[230px]"
             >
               <div>
-                <div className="font-mono text-4xl sm:text-5xl lg:text-6xl font-black tracking-tight text-white group-hover:text-[#FF6B4A] transition-colors">
+                <div className="font-mono text-4xl sm:text-5xl lg:text-6xl font-black tracking-tight text-white group-hover:text-[#F84632] transition-colors">
                   100%
                 </div>
               </div>
               <div className="pt-6 border-t border-white/10">
-                <div className="flex items-center gap-2 text-xs font-mono font-bold tracking-wider text-[#FF6B4A] uppercase">
+                <div className="flex items-center gap-2 text-xs font-mono font-bold tracking-wider text-[#F84632] uppercase">
                   <WifiOff className="h-3.5 w-3.5 shrink-0" />
                   <span>OFFLINE READY</span>
                 </div>
-                <p className="mt-1 text-[11px] text-white/40">Service Worker & Local Storage</p>
+                <p className="mt-1 text-[11px] text-zinc-400">Service Worker & Local Storage</p>
               </div>
             </MetricCardMotion>
           </div>
@@ -347,36 +380,37 @@ export default async function HomePage() {
       </section>
 
       {/* ========================================================================= */}
-      {/* SECTION 3: COMIFURO EDITIONS 16:9 LANDSCAPE BANNERS (CF 23 s/d CF 18)     */}
-      {/* 16:9 Landscape cards with BannerCardMotion (Image Zoom & Badge Lift)      */}
+      {/* SECTION 3: COMIFURO EDITIONS 16:9 LANDSCAPE BANNERS (PURE WHITE #FFFFFF)  */}
+      {/* Judul Section Besar Coral Red (#F84632): 'COMIFURO EDITIONS'              */}
+      {/* 6 Kartu banner berasio 16:9 Landscape (aspect-video) CF 23 s/d CF 18      */}
       {/* ========================================================================= */}
-      <section className="relative z-10 border-t border-white/10 px-4 py-16 text-white sm:px-6 md:py-24 lg:px-8">
-        <div className="container-shell max-w-7xl mx-auto space-y-10">
+      <section className="relative z-10 bg-[#FFFFFF] px-4 py-20 text-[#111215] sm:px-6 md:py-28 lg:px-8 border-t border-zinc-200">
+        <div className="container-shell max-w-7xl mx-auto space-y-12">
           {/* Section Header */}
           <FadeInView>
-            <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between border-b border-white/10 pb-6">
+            <div className="flex flex-col gap-6 sm:flex-row sm:items-end sm:justify-between border-b border-zinc-200 pb-8">
               <div>
-                <p className="text-xs font-mono font-bold tracking-widest text-[#FF6B4A] uppercase">
+                <p className="text-xs font-mono font-bold tracking-widest text-[#F84632] uppercase">
                   COMIFURO EDITIONS & ARCHIVES
                 </p>
-                <h2 className="mt-1 font-[var(--font-display)] text-3xl sm:text-4xl lg:text-5xl font-extrabold tracking-tight uppercase text-white">
+                <h2 className="mt-2 font-[var(--font-display)] text-3xl sm:text-4xl lg:text-6xl font-black tracking-tight uppercase text-[#F84632]">
                   COMIFURO EDITIONS
                 </h2>
-                <p className="mt-2 text-sm text-white/60 max-w-xl">
+                <p className="mt-2 text-sm text-zinc-600 max-w-xl">
                   Arsip direktori katalog dan denah booth Comic Frontier lintas edisi di ICE BSD City.
                 </p>
               </div>
               <div className="flex items-center gap-3">
                 <Link
                   href="/circles"
-                  className="inline-flex items-center gap-1.5 rounded-full border border-white/20 bg-white/5 px-5 py-2.5 text-xs font-bold font-mono text-white transition hover:bg-white/10 shadow-xs"
+                  className="inline-flex items-center gap-1.5 rounded-full border border-zinc-300 bg-zinc-100 px-5 py-2.5 text-xs font-bold font-mono text-[#111215] transition hover:bg-[#111215] hover:text-white shadow-xs"
                 >
                   <span>LIHAT SEMUA CIRCLE</span>
                   <ArrowUpRight className="h-3.5 w-3.5" />
                 </Link>
                 <Link
                   href="/events"
-                  className="inline-flex items-center gap-1.5 rounded-full border border-white/20 bg-white/5 px-5 py-2.5 text-xs font-bold font-mono text-white transition hover:bg-white/10 shadow-xs"
+                  className="inline-flex items-center gap-1.5 rounded-full border border-zinc-300 bg-zinc-100 px-5 py-2.5 text-xs font-bold font-mono text-[#111215] transition hover:bg-[#111215] hover:text-white shadow-xs"
                 >
                   <span>SEMUA EVENT</span>
                   <ArrowUpRight className="h-3.5 w-3.5" />
@@ -385,11 +419,11 @@ export default async function HomePage() {
             </div>
           </FadeInView>
 
-          {/* 6 Event Banner Cards in 16:9 Landscape Aspect Ratio with BannerCardMotion */}
+          {/* 6 Event Banner Cards in 16:9 Landscape Aspect Ratio */}
           <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
             {comifuroEditions.map((edition, idx) => (
               <FadeInView key={edition.id} delay={idx * 0.08} duration={0.45}>
-                <article className="group relative flex flex-col justify-between overflow-hidden rounded-2xl border border-white/10 bg-[#121620] transition duration-300 hover:border-[#FF6B4A]/50 hover:shadow-xl hover:shadow-[#FF6B4A]/10 h-full">
+                <article className="group relative flex flex-col justify-between overflow-hidden rounded-2xl border border-zinc-200 bg-white transition duration-300 hover:border-[#F84632]/50 hover:shadow-xl hover:shadow-[#F84632]/10 h-full">
                   {/* 16:9 Thumbnail Banner with BannerCardMotion */}
                   <BannerCardMotion
                     imageSrc={edition.bannerImage}
@@ -401,18 +435,18 @@ export default async function HomePage() {
                     }
                     className="rounded-t-2xl rounded-b-none border-0"
                   >
-                    {/* Subtle Gradient Scrim for Contrast */}
-                    <div className="absolute inset-0 bg-gradient-to-t from-[#121620] via-black/35 to-transparent pointer-events-none" />
+                    {/* Contrast scrim */}
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/30 to-transparent pointer-events-none" />
 
-                    {/* Top Right Status Badge with BannerBadgeMotion */}
+                    {/* Top Right Status Badge: CF 23 Coral Red, others dark charcoal */}
                     <div className="absolute top-3 right-3 z-20">
                       <BannerBadgeMotion>
                         <span
                           className={cn(
-                            "rounded-full px-2.5 py-0.5 text-[11px] font-mono font-bold backdrop-blur-md shadow-md",
+                            "rounded-full px-3 py-0.5 text-[11px] font-mono font-bold backdrop-blur-md shadow-md",
                             edition.status === "Coming Soon"
-                              ? "bg-[#FF6B4A] text-white"
-                              : "bg-white/15 text-white/90 border border-white/15"
+                              ? "bg-[#F84632] text-white"
+                              : "bg-[#111215]/80 text-white border border-white/20"
                           )}
                         >
                           {edition.status}
@@ -422,41 +456,41 @@ export default async function HomePage() {
 
                     {/* Title overlay on bottom of banner */}
                     <div className="absolute bottom-3 left-3 right-3 z-20">
-                      <p className="font-[var(--font-display)] text-lg font-bold text-white group-hover:text-[#FF6B4A] transition-colors drop-shadow-md">
+                      <p className="font-[var(--font-display)] text-lg font-bold text-white group-hover:text-[#D6F834] transition-colors drop-shadow-md">
                         {edition.title}
                       </p>
                     </div>
                   </BannerCardMotion>
 
-                  {/* Card Content & Metadata */}
+                  {/* Card Content & Metadata on White Background */}
                   <div className="p-5 flex flex-col justify-between flex-1 space-y-4">
                     <div className="space-y-2">
-                      <div className="flex flex-wrap items-center gap-x-3 gap-y-1 text-xs font-mono text-white/60">
-                        <div className="flex items-center gap-1 text-white/80">
-                          <Calendar className="h-3 w-3 text-[#FF6B4A]" />
+                      <div className="flex flex-wrap items-center gap-x-3 gap-y-1 text-xs font-mono text-zinc-500">
+                        <div className="flex items-center gap-1 text-zinc-800 font-medium">
+                          <Calendar className="h-3 w-3 text-[#F84632]" />
                           <span>{edition.date}</span>
                         </div>
                         <span>·</span>
                         <div className="flex items-center gap-1 truncate">
-                          <MapPin className="h-3 w-3 text-white/40" />
+                          <MapPin className="h-3 w-3 text-zinc-400" />
                           <span className="truncate">{edition.venue}</span>
                         </div>
                       </div>
-                      <p className="text-xs text-white/50 line-clamp-2 leading-relaxed">
+                      <p className="text-xs text-zinc-600 line-clamp-2 leading-relaxed">
                         {edition.description}
                       </p>
                     </div>
 
                     {/* Card Bottom Link */}
-                    <div className="pt-3 border-t border-white/10 flex items-center justify-between text-xs font-mono">
+                    <div className="pt-3 border-t border-zinc-100 flex items-center justify-between text-xs font-mono">
                       <Link
                         href={edition.linkHref}
-                        className="font-bold text-[#FF6B4A] group-hover:underline inline-flex items-center gap-1"
+                        className="font-bold text-[#F84632] group-hover:underline inline-flex items-center gap-1"
                       >
                         <span>{edition.linkText}</span>
                         <ArrowUpRight className="h-3 w-3" />
                       </Link>
-                      <span className="text-[11px] text-white/30 font-mono uppercase">
+                      <span className="text-[11px] text-zinc-400 font-mono uppercase">
                         {edition.editionBadge}
                       </span>
                     </div>
@@ -466,14 +500,14 @@ export default async function HomePage() {
             ))}
           </div>
 
-          {/* Quick Fandom & Category Tags */}
+          {/* Quick Fandom & Category Tags on White Background */}
           <FadeInView delay={0.2}>
-            <div className="rounded-2xl border border-white/10 bg-[#121620] p-6 space-y-4">
+            <div className="rounded-2xl border border-zinc-200 bg-zinc-50 p-6 space-y-4">
               <div className="flex flex-wrap items-center justify-between gap-3">
-                <span className="text-xs font-mono font-bold uppercase tracking-wider text-white/50">
+                <span className="text-xs font-mono font-bold uppercase tracking-wider text-zinc-500">
                   PENCARIAN CEPAT FANDOM COMIFURO:
                 </span>
-                <Link href="/products" className="text-xs font-mono font-bold text-[#FF6B4A] hover:underline">
+                <Link href="/products" className="text-xs font-mono font-bold text-[#F84632] hover:underline">
                   Buka Filter Lengkap
                 </Link>
               </div>
@@ -493,7 +527,7 @@ export default async function HomePage() {
                   <Link
                     key={fandom}
                     href={`/products?q=${encodeURIComponent(fandom)}`}
-                    className="rounded-lg border border-white/10 bg-white/5 px-3 py-1.5 text-white/80 transition hover:border-[#FF6B4A] hover:bg-[#FF6B4A]/10 hover:text-white"
+                    className="rounded-lg border border-zinc-200 bg-white px-3 py-1.5 text-zinc-700 transition hover:border-[#F84632] hover:text-[#F84632] hover:bg-[#F84632]/5"
                   >
                     {fandom}
                   </Link>

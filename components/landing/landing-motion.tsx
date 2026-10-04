@@ -10,13 +10,47 @@ import {
 import { cn } from "@/lib/utils";
 
 // =============================================================================
+// Palet Warna Resmi TANALOKA
+// Surface: Gelap (#1B1D24)
+// Accent: Coral Red (#FF4838 / #F84632)
+// =============================================================================
+export const TANALOKA_PALETTE = {
+  cardDark: "#1B1D24",
+  coralRed: "#FF4838",
+  coralRedHover: "#F84632",
+  glowColor: "rgba(255, 72, 56, 0.25)",
+  borderColor: "rgba(255, 72, 56, 0.45)",
+} as const;
+
+export const TANALOKA_COLORS = TANALOKA_PALETTE;
+
+// =============================================================================
 // 1. FadeInView
-// Pembungkus animasi masuk bertahap (fade + slight translate Y) saat elemen
+// Pembungkus animasi masuk bertahap (fade + slight translate) saat elemen
 // masuk ke viewport. Menghormati prefers-reduced-motion tanpa rAF / scroll listener.
 // =============================================================================
 
+export function getFadeInOffsets(
+  direction: "up" | "down" | "left" | "right" | "none" = "up",
+  distance: number = 20
+) {
+  switch (direction) {
+    case "up":
+      return { x: 0, y: distance };
+    case "down":
+      return { x: 0, y: -distance };
+    case "left":
+      return { x: distance, y: 0 };
+    case "right":
+      return { x: -distance, y: 0 };
+    case "none":
+    default:
+      return { x: 0, y: 0 };
+  }
+}
+
 export interface FadeInViewProps extends HTMLMotionProps<"div"> {
-  children: React.ReactNode;
+  children?: React.ReactNode;
   className?: string;
   delay?: number;
   duration?: number;
@@ -38,24 +72,7 @@ export function FadeInView({
   ...props
 }: FadeInViewProps) {
   const shouldReduceMotion = Boolean(useReducedMotion());
-
-  const getOffsets = () => {
-    switch (direction) {
-      case "up":
-        return { x: 0, y: distance };
-      case "down":
-        return { x: 0, y: -distance };
-      case "left":
-        return { x: distance, y: 0 };
-      case "right":
-        return { x: -distance, y: 0 };
-      case "none":
-      default:
-        return { x: 0, y: 0 };
-    }
-  };
-
-  const offset = getOffsets();
+  const offset = getFadeInOffsets(direction, distance);
 
   if (shouldReduceMotion) {
     return (
@@ -85,61 +102,16 @@ export function FadeInView({
 
 // =============================================================================
 // 2. HeroEntranceMotion & HeroEntranceItem
-// Animasi staggered masuk untuk judul headline, subjudul, dan tombol aksi hero.
+// Animasi staggered masuk untuk judul headline, subjudul, dan tombol aksi hero
+// dengan transisi spring natural.
 // =============================================================================
 
-export interface HeroEntranceMotionProps extends HTMLMotionProps<"div"> {
-  children: React.ReactNode;
-  className?: string;
-  delay?: number;
-  staggerDelay?: number;
-}
-
-export interface HeroEntranceItemProps extends HTMLMotionProps<"div"> {
-  children: React.ReactNode;
-  className?: string;
-  distance?: number;
-}
-
-export function HeroEntranceItem({
-  children,
-  className,
-  distance = 24,
-  ...props
-}: HeroEntranceItemProps) {
-  const shouldReduceMotion = Boolean(useReducedMotion());
-
-  const itemVariants: Variants = {
-    hidden: shouldReduceMotion ? { opacity: 1, y: 0 } : { opacity: 0, y: distance },
-    visible: {
-      opacity: 1,
-      y: 0,
-      transition: shouldReduceMotion
-        ? { duration: 0 }
-        : {
-            duration: 0.6,
-            ease: [0.22, 1, 0.36, 1],
-          },
-    },
-  };
-
-  return (
-    <motion.div variants={itemVariants} className={className} {...props}>
-      {children}
-    </motion.div>
-  );
-}
-
-export function HeroEntranceMotion({
-  children,
-  className,
-  delay = 0.05,
-  staggerDelay = 0.12,
-  ...props
-}: HeroEntranceMotionProps) {
-  const shouldReduceMotion = Boolean(useReducedMotion());
-
-  const containerVariants: Variants = {
+export function getHeroContainerVariants(
+  shouldReduceMotion: boolean,
+  delay: number = 0.05,
+  staggerDelay: number = 0.12
+): Variants {
+  return {
     hidden: { opacity: shouldReduceMotion ? 1 : 0 },
     visible: {
       opacity: 1,
@@ -151,6 +123,71 @@ export function HeroEntranceMotion({
           },
     },
   };
+}
+
+export function getHeroItemVariants(
+  shouldReduceMotion: boolean,
+  distance: number = 24
+): Variants {
+  return {
+    hidden: shouldReduceMotion ? { opacity: 1, y: 0 } : { opacity: 0, y: distance },
+    visible: {
+      opacity: 1,
+      y: 0,
+      transition: shouldReduceMotion
+        ? { duration: 0 }
+        : {
+            type: "spring",
+            stiffness: 120,
+            damping: 18,
+            mass: 0.8,
+          },
+    },
+  };
+}
+
+export interface HeroEntranceItemProps extends HTMLMotionProps<"div"> {
+  children?: React.ReactNode;
+  className?: string;
+  distance?: number;
+}
+
+export function HeroEntranceItem({
+  children,
+  className,
+  distance = 24,
+  ...props
+}: HeroEntranceItemProps) {
+  const shouldReduceMotion = Boolean(useReducedMotion());
+  const itemVariants = getHeroItemVariants(shouldReduceMotion, distance);
+
+  return (
+    <motion.div variants={itemVariants} className={className} {...props}>
+      {children}
+    </motion.div>
+  );
+}
+
+export interface HeroEntranceMotionProps extends HTMLMotionProps<"div"> {
+  children?: React.ReactNode;
+  className?: string;
+  delay?: number;
+  staggerDelay?: number;
+}
+
+export function HeroEntranceMotion({
+  children,
+  className,
+  delay = 0.05,
+  staggerDelay = 0.12,
+  ...props
+}: HeroEntranceMotionProps) {
+  const shouldReduceMotion = Boolean(useReducedMotion());
+  const containerVariants = getHeroContainerVariants(
+    shouldReduceMotion,
+    delay,
+    staggerDelay
+  );
 
   return (
     <motion.div
@@ -169,12 +206,29 @@ HeroEntranceMotion.Item = HeroEntranceItem;
 
 // =============================================================================
 // 3. MetricCardMotion
-// Efek hover halus pada kartu metrik (scale 1.02, subtle border illumination)
-// dengan transisi spring natural.
+// Efek hover kartu metrik gelap (#1B1D24) dengan border glow Coral Red (#FF4838 / #F84632)
+// dan transisi spring natural.
 // =============================================================================
 
+export function getMetricCardHoverVariants(
+  glowColor: string = TANALOKA_PALETTE.glowColor,
+  borderColor: string = TANALOKA_PALETTE.borderColor
+) {
+  return {
+    scale: 1.02,
+    y: -3,
+    borderColor,
+    boxShadow: `0 12px 28px -8px ${glowColor}`,
+    transition: {
+      type: "spring" as const,
+      stiffness: 400,
+      damping: 25,
+    },
+  };
+}
+
 export interface MetricCardMotionProps extends HTMLMotionProps<"div"> {
-  children: React.ReactNode;
+  children?: React.ReactNode;
   className?: string;
   delay?: number;
   glowColor?: string;
@@ -185,15 +239,20 @@ export function MetricCardMotion({
   children,
   className,
   delay = 0,
-  glowColor = "rgba(255, 107, 74, 0.25)",
-  borderColor = "rgba(255, 107, 74, 0.45)",
+  glowColor = TANALOKA_PALETTE.glowColor,
+  borderColor = TANALOKA_PALETTE.borderColor,
   ...props
 }: MetricCardMotionProps) {
   const shouldReduceMotion = Boolean(useReducedMotion());
 
+  const cardClasses = cn(
+    "rounded-2xl border border-white/10 bg-[#1B1D24] transition-colors",
+    className
+  );
+
   if (shouldReduceMotion) {
     return (
-      <div className={className} {...(props as React.HTMLAttributes<HTMLDivElement>)}>
+      <div className={cardClasses} {...(props as React.HTMLAttributes<HTMLDivElement>)}>
         {children}
       </div>
     );
@@ -209,22 +268,12 @@ export function MetricCardMotion({
         delay,
         ease: [0.21, 0.47, 0.32, 0.98],
       }}
-      whileHover={{
-        scale: 1.02,
-        y: -3,
-        borderColor,
-        boxShadow: `0 12px 28px -8px ${glowColor}`,
-        transition: {
-          type: "spring",
-          stiffness: 400,
-          damping: 25,
-        },
-      }}
+      whileHover={getMetricCardHoverVariants(glowColor, borderColor)}
       whileTap={{
         scale: 0.99,
         transition: { type: "spring", stiffness: 500, damping: 30 },
       }}
-      className={className}
+      className={cardClasses}
       {...props}
     >
       {children}
@@ -234,8 +283,42 @@ export function MetricCardMotion({
 
 // =============================================================================
 // 4. BannerCardMotion, BannerImageMotion & BannerBadgeMotion
-// Efek hover halus pada kartu banner 16:9 (subtle image zoom, badge lift).
+// Efek hover halus pada kartu banner 16:9 (zoom halus dan elevasi badge)
+// selaras dengan estetika TANALOKA.
 // =============================================================================
+
+export function getBannerImageVariants(shouldReduceMotion: boolean): Variants {
+  return {
+    initial: { scale: 1 },
+    hover: shouldReduceMotion
+      ? { scale: 1 }
+      : {
+          scale: 1.05,
+          transition: {
+            duration: 0.45,
+            ease: [0.25, 1, 0.5, 1],
+          },
+        },
+  };
+}
+
+export function getBannerBadgeVariants(shouldReduceMotion: boolean): Variants {
+  return {
+    initial: { y: 0, scale: 1 },
+    hover: shouldReduceMotion
+      ? { y: 0, scale: 1 }
+      : {
+          y: -3,
+          scale: 1.03,
+          boxShadow: "0 8px 18px -2px rgba(0, 0, 0, 0.35)",
+          transition: {
+            type: "spring",
+            stiffness: 400,
+            damping: 22,
+          },
+        },
+  };
+}
 
 export interface BannerImageMotionProps extends HTMLMotionProps<"div"> {
   src?: string;
@@ -252,19 +335,38 @@ export function BannerImageMotion({
   ...props
 }: BannerImageMotionProps) {
   const shouldReduceMotion = Boolean(useReducedMotion());
+  const imageVariants = getBannerImageVariants(shouldReduceMotion);
 
-  const imageVariants: Variants = {
-    initial: { scale: 1 },
-    hover: shouldReduceMotion
-      ? { scale: 1 }
-      : {
-          scale: 1.05,
-          transition: {
-            duration: 0.45,
-            ease: [0.25, 1, 0.5, 1],
-          },
-        },
-  };
+  if (shouldReduceMotion) {
+    if (children) {
+      return (
+        <div
+          className={cn("h-full w-full overflow-hidden", className)}
+          {...(props as React.HTMLAttributes<HTMLDivElement>)}
+        >
+          {children}
+        </div>
+      );
+    }
+
+    return (
+      <div
+        className={cn("h-full w-full overflow-hidden", className)}
+        {...(props as React.HTMLAttributes<HTMLDivElement>)}
+      >
+        {src ? (
+          // eslint-disable-next-line @next/next/no-img-element
+          <img
+            src={src}
+            alt={alt}
+            loading="lazy"
+            decoding="async"
+            className="h-full w-full object-cover"
+          />
+        ) : null}
+      </div>
+    );
+  }
 
   if (children) {
     return (
@@ -309,22 +411,15 @@ export function BannerBadgeMotion({
   ...props
 }: BannerBadgeMotionProps) {
   const shouldReduceMotion = Boolean(useReducedMotion());
+  const badgeVariants = getBannerBadgeVariants(shouldReduceMotion);
 
-  const badgeVariants: Variants = {
-    initial: { y: 0, scale: 1 },
-    hover: shouldReduceMotion
-      ? { y: 0, scale: 1 }
-      : {
-          y: -3,
-          scale: 1.03,
-          boxShadow: "0 8px 16px -2px rgba(0, 0, 0, 0.3)",
-          transition: {
-            type: "spring",
-            stiffness: 400,
-            damping: 22,
-          },
-        },
-  };
+  if (shouldReduceMotion) {
+    return (
+      <div className={className} {...(props as React.HTMLAttributes<HTMLDivElement>)}>
+        {children}
+      </div>
+    );
+  }
 
   return (
     <motion.div variants={badgeVariants} className={className} {...props}>
@@ -365,28 +460,65 @@ export function BannerCardMotion({
 
   const hasImage = Boolean(imageSrc && !imgError);
 
+  const cardClasses = cn(
+    "group relative aspect-[16/9] w-full overflow-hidden rounded-2xl border border-white/10 bg-[#1B1D24] transition-colors",
+    className
+  );
+
+  if (shouldReduceMotion) {
+    return (
+      <div
+        className={cardClasses}
+        {...(props as React.HTMLAttributes<HTMLDivElement>)}
+      >
+        {imageSrc !== undefined ? (
+          hasImage ? (
+            <BannerImageMotion>
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img
+                src={imageSrc!}
+                alt={imageAlt}
+                loading="lazy"
+                decoding="async"
+                onError={() => setImgError(true)}
+                className="h-full w-full object-cover"
+              />
+            </BannerImageMotion>
+          ) : (
+            <div className="absolute inset-0 flex flex-col items-center justify-center bg-[radial-gradient(circle_at_top,_rgba(255,72,56,0.12),_transparent_60%),linear-gradient(135deg,#1B1D24_0%,#111317_100%)] p-6 text-center">
+              <p className="font-mono text-xs uppercase tracking-widest text-[#FF4838]">
+                {imageAlt}
+              </p>
+            </div>
+          )
+        ) : null}
+
+        {badge ? (
+          <BannerBadgeMotion className={cn("absolute z-20", badgePositionClass)}>
+            {badge}
+          </BannerBadgeMotion>
+        ) : null}
+
+        {children}
+      </div>
+    );
+  }
+
   return (
     <motion.div
-      initial={shouldReduceMotion ? false : "initial"}
-      whileHover={shouldReduceMotion ? undefined : "hover"}
-      whileInView={
-        shouldReduceMotion
-          ? undefined
-          : {
-              opacity: 1,
-              y: 0,
-              transition: {
-                duration: 0.5,
-                delay,
-                ease: [0.21, 0.47, 0.32, 0.98],
-              },
-            }
-      }
+      initial="initial"
+      whileHover="hover"
+      whileInView={{
+        opacity: 1,
+        y: 0,
+        transition: {
+          duration: 0.5,
+          delay,
+          ease: [0.21, 0.47, 0.32, 0.98],
+        },
+      }}
       viewport={{ once: true, margin: "-30px" }}
-      className={cn(
-        "group relative aspect-[16/9] w-full overflow-hidden rounded-2xl border border-white/10 bg-[#141418] transition-colors",
-        className
-      )}
+      className={cardClasses}
       {...props}
     >
       {imageSrc !== undefined ? (
@@ -403,8 +535,8 @@ export function BannerCardMotion({
             />
           </BannerImageMotion>
         ) : (
-          <div className="absolute inset-0 flex flex-col items-center justify-center bg-[radial-gradient(circle_at_top,_rgba(255,107,74,0.12),_transparent_60%),linear-gradient(135deg,#16161b_0%,#0e0e12_100%)] p-6 text-center">
-            <p className="font-mono text-xs uppercase tracking-widest text-[#FF6B4A]">
+          <div className="absolute inset-0 flex flex-col items-center justify-center bg-[radial-gradient(circle_at_top,_rgba(255,72,56,0.12),_transparent_60%),linear-gradient(135deg,#1B1D24_0%,#111317_100%)] p-6 text-center">
+            <p className="font-mono text-xs uppercase tracking-widest text-[#FF4838]">
               {imageAlt}
             </p>
           </div>

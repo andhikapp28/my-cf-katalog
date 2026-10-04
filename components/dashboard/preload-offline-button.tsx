@@ -4,15 +4,18 @@ import { useState } from "react";
 import { CheckCircle2, DownloadCloud, Loader2 } from "lucide-react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
+import { cn } from "@/lib/utils";
 
 export function PreloadOfflineButton({
   productIds = [],
   mapIds = [],
-  circleIds = []
+  circleIds = [],
+  className
 }: {
   productIds?: string[];
   mapIds?: string[];
   circleIds?: string[];
+  className?: string;
 }) {
   const [loading, setLoading] = useState(false);
   const [completed, setCompleted] = useState(false);
@@ -70,7 +73,10 @@ export function PreloadOfflineButton({
       onClick={handlePreload}
       disabled={loading}
       variant="secondary"
-      className="gap-2 rounded-full border border-brand-200/80 bg-white/90 text-xs font-semibold text-brand-700 shadow-sm transition hover:bg-brand-50"
+      className={cn(
+        "gap-2 rounded-full border border-brand-200/80 bg-white/90 text-xs font-semibold text-brand-700 shadow-sm transition hover:bg-brand-50",
+        className
+      )}
     >
       {loading ? (
         <>
