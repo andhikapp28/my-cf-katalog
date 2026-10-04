@@ -17,17 +17,13 @@ test.describe("Public dashboard", () => {
     const response = await page.goto("/");
     expect(response?.ok()).toBe(true);
 
-    // Elemen kunci dashboard: badge status event, budget pulse, dan ringkasan spend.
-    await expect(page.getByText(/Active Event|Upcoming Event|Featured Event/)).toBeVisible();
-    await expect(page.getByText("Budget pulse")).toBeVisible();
-    // `exact: true` karena getByText default-nya case-insensitive substring match,
-    // dan "Target Items" cocok juga dengan heading "Top target items" di bawahnya.
-    // "Budget Left" muncul dua kali (kartu ringkasan desktop + bottom-bar mobile),
-    // jadi pakai `.first()` alih-alih strict single-match.
-    await expect(page.getByText("Target Items", { exact: true })).toBeVisible();
-    await expect(page.getByText("Estimated Spend", { exact: true })).toBeVisible();
-    await expect(page.getByText("Actual Spend", { exact: true })).toBeVisible();
-    await expect(page.getByText("Budget Left", { exact: true }).first()).toBeVisible();
+    // Elemen kunci landing page: banner event aktif, hero headline, infograph pulse metrics
+    await expect(page.getByText("COMIPOCKET GUIDE")).toBeVisible();
+    await expect(page.getByText("EVENT PULSE & METRICS")).toBeVisible();
+    await expect(page.getByText("CIRCLES", { exact: true })).toBeVisible();
+    await expect(page.getByText("SAMPEL KARYA", { exact: true })).toBeVisible();
+    await expect(page.getByText("HALL VENUE", { exact: true })).toBeVisible();
+    await expect(page.getByText("COMIFURO 22 CIRCLES")).toBeVisible();
 
     expect(pageErrors, `Terjadi uncaught error di halaman: ${pageErrors.join("; ")}`).toEqual([]);
     expect(consoleErrors, `Terjadi console.error di halaman: ${consoleErrors.join("; ")}`).toEqual([]);

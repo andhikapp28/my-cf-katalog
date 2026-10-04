@@ -423,7 +423,7 @@ export async function hasSeedData() {
   return Boolean(existingEvent);
 }
 
-export async function getChecklistData(eventId?: string) {
+export async function getChecklistData(eventId?: string, limit = 100) {
   const selectedEvent =
     (eventId
       ? await db.query.events.findFirst({ where: eq(events.id, eventId) })
@@ -436,6 +436,8 @@ export async function getChecklistData(eventId?: string) {
   const [items, locations] = await Promise.all([
     db.query.products.findMany({
       where: and(eq(products.eventId, selectedEvent.id), inArray(products.status, [...checklistStatuses])),
+      orderBy: [desc(products.isRush), desc(products.priority), desc(products.updatedAt)],
+      limit,
       with: { circle: true }
     }),
     db.query.boothLocations.findMany({
@@ -483,6 +485,69 @@ export async function getUpcomingDeadlines(limit = 8) {
       circle: true
     }
   });
+}
+
+export async function getLandingPageData() {
+  const activeEvent = (await getActiveEvent()) ?? (await db.query.events.findFirst({ orderBy: [desc(events.startsAt)] }));
+
+  if (!activeEvent) {
+    return null;
+  }
+
+  const [
+    totalCirclesResult,
+    totalProductsResult,
+    maps,
+    featuredCircles,
+    featuredProducts,
+    allLocations
+  ] = await Promise.all([
+    db.select({ value: count() }).from(circles),
+    db.select({ value: count() }).from(products).where(eq(products.eventId, activeEvent.id)),
+    db.query.floorMaps.findMany({
+      where: eq(floorMaps.eventId, activeEvent.id),
+      orderBy: [asc(floorMaps.hall), asc(floorMaps.name)]
+    }),
+    db.query.circles.findMany({
+      limit: 8,
+      orderBy: [asc(circles.name)],
+      with: {
+        boothLocations: {
+          where: eq(boothLocations.eventId, activeEvent.id),
+          with: { floorMap: true }
+        },
+        products: {
+          where: eq(products.eventId, activeEvent.id),
+          limit: 3
+        }
+      }
+    }),
+    db.query.products.findMany({
+      where: and(eq(products.eventId, activeEvent.id), isNotNull(products.imageUrl)),
+      limit: 8,
+      orderBy: [desc(products.isRush), desc(products.priority), desc(products.updatedAt)],
+      with: {
+        circle: true
+      }
+    }),
+    db.query.boothLocations.findMany({
+      where: eq(boothLocations.eventId, activeEvent.id)
+    })
+  ]);
+
+  return {
+    event: activeEvent,
+    stats: {
+      totalCircles: totalCirclesResult[0]?.value ?? 0,
+      totalProducts: totalProductsResult[0]?.value ?? 0,
+      totalHalls: maps.length || 2,
+      totalBooths: allLocations.length
+    },
+    maps,
+    featuredCircles,
+    featuredProducts,
+    locations: allLocations
+  };
 }
 
 

@@ -29,10 +29,8 @@ test.describe("Admin products CRUD", () => {
       .locator("xpath=ancestor::section[1]");
     await expect(createSection).toBeVisible();
 
-    // Label field wajib (mis. "Event", "Product name") merender tanda "*" tanpa
-    // spasi (mis. "Event*"), jadi cocokkan tanpa `exact` agar tetap match.
-    await createSection.getByLabel("Event").selectOption({ index: 1 });
-    await createSection.getByLabel("Circle").selectOption({ index: 1 });
+    await createSection.locator("select[name='eventId']").selectOption({ index: 1 });
+    await createSection.locator("select[name='circleId']").selectOption({ index: 1 });
     await createSection.getByLabel("Product name").fill(PRODUCT_NAME);
     await createSection.getByLabel("Price").fill("123400");
     await createSection.getByLabel("Quantity").fill("2");

@@ -22,8 +22,9 @@ test.describe("Checklist mode", () => {
     const createSection = page
       .getByRole("heading", { name: "Add product", exact: true })
       .locator("xpath=ancestor::section[1]");
-    await createSection.getByLabel("Event").selectOption({ index: 1 });
-    await createSection.getByLabel("Circle").selectOption({ index: 1 });
+    await createSection.locator("select[name='eventId']").selectOption({ index: 1 });
+    const selectedEventId = await createSection.locator("select[name='eventId']").inputValue();
+    await createSection.locator("select[name='circleId']").selectOption({ index: 1 });
     await createSection.getByLabel("Product name").fill(PRODUCT_NAME);
     await createSection.getByLabel("Price").fill("50000");
     await createSection.getByLabel("Quantity").fill("1");
@@ -34,7 +35,7 @@ test.describe("Checklist mode", () => {
     await expect(page).toHaveURL(/\/admin\/products$/);
 
     // --- Checklist mode ---
-    await page.goto("/admin/checklist");
+    await page.goto(`/admin/checklist?event=${selectedEventId}`);
 
     const card = page.locator("article").filter({ hasText: PRODUCT_NAME }).first();
     await expect(card).toBeVisible();
