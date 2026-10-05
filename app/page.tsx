@@ -240,126 +240,126 @@ export default async function HomePage() {
           </HeroEntranceMotion>
         </div>
 
-        {/* Seamless Soft Transition into Dark Section 2 */}
-        <div className="absolute inset-x-0 bottom-0 h-28 sm:h-36 bg-gradient-to-b from-transparent via-[#2b598d]/60 to-[#111215] pointer-events-none" />
+        {/* Seamless Soft Transition into Acid Lime Section 2 */}
+        <div className="absolute inset-x-0 bottom-0 h-28 sm:h-36 bg-gradient-to-b from-transparent via-[#88c592]/50 to-[#D6F834] pointer-events-none" />
       </section>
 
       {/* ========================================================================= */}
-      {/* SECTION 2: DATA PULSE INFOGRAPH (AISUM Style inside Dark #111215 Block)  */}
-      {/* 2-Column Header + 4 Portrait Cards (#1B1D24) with Large Numbers & Coral   */}
+      {/* SECTION 2: DATA PULSE INFOGRAPH (AISUM Style on Acid Lime #D6F834 Block)  */}
+      {/* 2-Column Header + 4 Clean White Cards with Large Numbers & Coral Accents  */}
       {/* ========================================================================= */}
-      <section className="relative z-10 bg-[#111215] px-4 py-20 text-white sm:px-6 md:py-28 lg:px-8 border-t border-black">
+      <section className="relative z-10 bg-[#D6F834] px-4 py-20 text-[#111215] sm:px-6 md:py-28 lg:px-8 border-t border-black/10">
         <div className="container-shell max-w-7xl mx-auto space-y-12">
           {/* 2-Column Editorial Header (Image 2 - AISUM Style) */}
           <FadeInView>
-            <div className="grid gap-6 lg:grid-cols-12 lg:items-end border-b border-white/10 pb-8">
+            <div className="grid gap-6 lg:grid-cols-12 lg:items-end border-b border-black/15 pb-8">
               <div className="lg:col-span-7 space-y-3">
-                <div className="inline-flex items-center gap-2 text-xs font-mono font-bold tracking-widest text-[#F84632] uppercase">
-                  <Sparkles className="h-3.5 w-3.5" />
+                <div className="inline-flex items-center gap-2 text-xs font-mono font-bold tracking-widest text-[#111215] uppercase bg-black/10 px-3.5 py-1.5 rounded-full border border-black/10 shadow-xs">
+                  <Sparkles className="h-3.5 w-3.5 text-[#F84632]" />
                   <span>EVENT PULSE & METRICS</span>
                 </div>
-                <h2 className="font-[var(--font-display)] text-3xl font-black tracking-tight sm:text-4xl md:text-5xl text-white uppercase">
+                <h2 className="font-[var(--font-display)] text-3xl font-black tracking-tight sm:text-4xl md:text-5xl lg:text-6xl text-[#111215] uppercase leading-[0.92]">
                   CONVENTION MEETS ACTION<span className="text-[#F84632]">*</span>
                 </h2>
               </div>
               <div className="lg:col-span-5">
-                <p className="text-sm sm:text-base leading-relaxed text-zinc-300">
+                <p className="text-sm sm:text-base leading-relaxed text-[#111215]/85 font-medium">
                   Direktori komprehensif ribuan kreator independen dan booth karya. Diindeks ke dalam arsitektur offline-first untuk keandalan maksimal di dalam hall konvensi tanpa ketergantungan sinyal.
                 </p>
               </div>
             </div>
           </FadeInView>
 
-          {/* 4 Portrait Metric Cards (Exact AISUM Style: Dark Gray Cards + Coral Accents) */}
+          {/* 4 Portrait Metric Cards (Exact AISUM Style on White with Coral Red Accents) */}
           <div className="grid grid-cols-2 gap-4 sm:gap-6 lg:grid-cols-4">
             {/* Metric 1: Circles */}
             <MetricCardMotion
               delay={0.05}
-              glowColor="rgba(248, 70, 50, 0.25)"
-              borderColor="rgba(248, 70, 50, 0.45)"
-              className="group flex flex-col justify-between rounded-3xl border border-white/10 bg-[#1B1D24] p-6 sm:p-8 min-h-[230px]"
+              glowColor="rgba(0, 0, 0, 0.12)"
+              borderColor="rgba(0, 0, 0, 0.25)"
+              className="group flex flex-col justify-between rounded-3xl border-2 border-black/10 bg-white p-6 sm:p-8 min-h-[230px] shadow-xl hover:shadow-2xl text-[#111215]"
             >
               <div>
-                <div className="font-mono text-4xl sm:text-5xl lg:text-6xl font-black tracking-tight text-white group-hover:text-[#F84632] transition-colors">
+                <div className="font-mono text-4xl sm:text-5xl lg:text-6xl font-black tracking-tight text-[#111215] group-hover:text-[#F84632] transition-colors">
                   {stats.totalCircles ? stats.totalCircles.toLocaleString("id-ID") : "1.487"}
                 </div>
               </div>
-              <div className="pt-6 border-t border-white/10">
+              <div className="pt-6 border-t border-black/10">
                 <div className="flex items-center gap-2 text-xs font-mono font-bold tracking-wider text-[#F84632] uppercase">
                   <Users2 className="h-3.5 w-3.5 shrink-0" />
                   <span>CIRCLES</span>
                 </div>
-                <p className="mt-1 text-[11px] text-zinc-400">Artist Alley & Creator Alley</p>
+                <p className="mt-1 text-[11px] text-zinc-600 font-mono">Artist Alley & Creator Alley</p>
               </div>
             </MetricCardMotion>
 
             {/* Metric 2: Sampel Karya */}
             <MetricCardMotion
               delay={0.1}
-              glowColor="rgba(248, 70, 50, 0.25)"
-              borderColor="rgba(248, 70, 50, 0.45)"
-              className="group flex flex-col justify-between rounded-2xl border border-white/10 bg-[#1B1D24] p-6 sm:p-8 min-h-[230px]"
+              glowColor="rgba(0, 0, 0, 0.12)"
+              borderColor="rgba(0, 0, 0, 0.25)"
+              className="group flex flex-col justify-between rounded-3xl border-2 border-black/10 bg-white p-6 sm:p-8 min-h-[230px] shadow-xl hover:shadow-2xl text-[#111215]"
             >
               <div>
-                <div className="font-mono text-4xl sm:text-5xl lg:text-6xl font-black tracking-tight text-white group-hover:text-[#F84632] transition-colors">
+                <div className="font-mono text-4xl sm:text-5xl lg:text-6xl font-black tracking-tight text-[#111215] group-hover:text-[#F84632] transition-colors">
                   {stats.totalProducts ? stats.totalProducts.toLocaleString("id-ID") : "5.144"}
                 </div>
               </div>
-              <div className="pt-6 border-t border-white/10">
+              <div className="pt-6 border-t border-black/10">
                 <div className="flex items-center gap-2 text-xs font-mono font-bold tracking-wider text-[#F84632] uppercase">
                   <BookOpen className="h-3.5 w-3.5 shrink-0" />
                   <span>SAMPEL KARYA</span>
                 </div>
-                <p className="mt-1 text-[11px] text-zinc-400">Artbook, Merch, Standee & Zine</p>
+                <p className="mt-1 text-[11px] text-zinc-600 font-mono">Artbook, Merch, Standee & Zine</p>
               </div>
             </MetricCardMotion>
 
             {/* Metric 3: Hall Venue */}
             <MetricCardMotion
               delay={0.15}
-              glowColor="rgba(248, 70, 50, 0.25)"
-              borderColor="rgba(248, 70, 50, 0.45)"
-              className="group flex flex-col justify-between rounded-2xl border border-white/10 bg-[#1B1D24] p-6 sm:p-8 min-h-[230px]"
+              glowColor="rgba(0, 0, 0, 0.12)"
+              borderColor="rgba(0, 0, 0, 0.25)"
+              className="group flex flex-col justify-between rounded-3xl border-2 border-black/10 bg-white p-6 sm:p-8 min-h-[230px] shadow-xl hover:shadow-2xl text-[#111215]"
             >
               <div>
-                <div className="font-mono text-4xl sm:text-5xl lg:text-6xl font-black tracking-tight text-white group-hover:text-[#F84632] transition-colors">
+                <div className="font-mono text-4xl sm:text-5xl lg:text-6xl font-black tracking-tight text-[#111215] group-hover:text-[#F84632] transition-colors">
                   0{stats.totalHalls || 2}
                 </div>
               </div>
-              <div className="pt-6 border-t border-white/10">
+              <div className="pt-6 border-t border-black/10">
                 <div className="flex items-center gap-2 text-xs font-mono font-bold tracking-wider text-[#F84632] uppercase">
                   <Layers className="h-3.5 w-3.5 shrink-0" />
                   <span>HALL VENUE</span>
                 </div>
-                <p className="mt-1 text-[11px] text-zinc-400">Hall 8 & Hall 9 ICE BSD</p>
+                <p className="mt-1 text-[11px] text-zinc-600 font-mono">Hall 8 & Hall 9 ICE BSD</p>
               </div>
             </MetricCardMotion>
 
             {/* Metric 4: Offline Ready */}
             <MetricCardMotion
               delay={0.2}
-              glowColor="rgba(248, 70, 50, 0.25)"
-              borderColor="rgba(248, 70, 50, 0.45)"
-              className="group flex flex-col justify-between rounded-2xl border border-white/10 bg-[#1B1D24] p-6 sm:p-8 min-h-[230px]"
+              glowColor="rgba(0, 0, 0, 0.12)"
+              borderColor="rgba(0, 0, 0, 0.25)"
+              className="group flex flex-col justify-between rounded-3xl border-2 border-black/10 bg-white p-6 sm:p-8 min-h-[230px] shadow-xl hover:shadow-2xl text-[#111215]"
             >
               <div>
-                <div className="font-mono text-4xl sm:text-5xl lg:text-6xl font-black tracking-tight text-white group-hover:text-[#F84632] transition-colors">
+                <div className="font-mono text-4xl sm:text-5xl lg:text-6xl font-black tracking-tight text-[#111215] group-hover:text-[#F84632] transition-colors">
                   100%
                 </div>
               </div>
-              <div className="pt-6 border-t border-white/10">
+              <div className="pt-6 border-t border-black/10">
                 <div className="flex items-center gap-2 text-xs font-mono font-bold tracking-wider text-[#F84632] uppercase">
                   <WifiOff className="h-3.5 w-3.5 shrink-0" />
                   <span>OFFLINE READY</span>
                 </div>
-                <p className="mt-1 text-[11px] text-zinc-400">Service Worker & Local Storage</p>
+                <p className="mt-1 text-[11px] text-zinc-600 font-mono">Service Worker & Local Storage</p>
               </div>
             </MetricCardMotion>
           </div>
         </div>
 
         {/* Seamless Soft Transition into White Section 3 */}
-        <div className="absolute inset-x-0 bottom-0 h-20 sm:h-28 bg-gradient-to-b from-transparent via-[#252834]/40 to-[#FFFFFF] pointer-events-none" />
+        <div className="absolute inset-x-0 bottom-0 h-20 sm:h-28 bg-gradient-to-b from-transparent via-[#ebfcb9]/60 to-[#FFFFFF] pointer-events-none" />
       </section>
 
       {/* ========================================================================= */}

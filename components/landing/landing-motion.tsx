@@ -246,7 +246,7 @@ export function MetricCardMotion({
   const shouldReduceMotion = Boolean(useReducedMotion());
 
   const cardClasses = cn(
-    "rounded-2xl border border-white/10 bg-[#1B1D24] transition-colors",
+    "rounded-3xl border border-white/10 bg-[#1B1D24] transition-all",
     className
   );
 
