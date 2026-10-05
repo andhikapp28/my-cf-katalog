@@ -1,6 +1,6 @@
 import type { Metadata, Viewport } from "next";
 import type { ReactNode } from "react";
-import { Plus_Jakarta_Sans, Barlow_Condensed, JetBrains_Mono } from "next/font/google";
+import { Plus_Jakarta_Sans, Bebas_Neue, JetBrains_Mono } from "next/font/google";
 import "./globals.css";
 import { SiteHeader } from "@/components/layout/site-header";
 import { SiteFooter } from "@/components/layout/site-footer";
@@ -14,9 +14,9 @@ const sans = Plus_Jakarta_Sans({
   display: "swap"
 });
 
-const display = Barlow_Condensed({
+const display = Bebas_Neue({
   subsets: ["latin"],
-  weight: ["700", "800", "900"],
+  weight: ["400"],
   variable: "--font-display",
   display: "swap"
 });

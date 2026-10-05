@@ -18,11 +18,9 @@ test.describe("Public dashboard", () => {
     expect(response?.ok()).toBe(true);
 
     // 1. Teks Judul & Hero Headline (Struktur palet TANALOKA)
-    await expect(page.getByText(/COMIFURO COMPANION GUIDE/i)).toBeVisible();
-
     await expect(page.getByText("WHERE EVERY CREATOR GATHERS")).toBeVisible();
     await expect(page.locator("img[alt='ComiPocket Mascot']")).toBeVisible();
-    await expect(page.getByRole("link", { name: "Jelajahi 1.400+ Circle" })).toBeVisible();
+    await expect(page.getByRole("link", { name: "JELAJAHI 1.400+ CIRCLE" })).toBeVisible();
     await expect(page.getByRole("link", { name: "Peta Denah Hall" })).toBeVisible();
 
     // 2. Metrik Cards (AISUM Pulse & Metrics)

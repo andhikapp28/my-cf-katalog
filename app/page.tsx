@@ -150,40 +150,35 @@ export default async function HomePage() {
         </div>
 
         <div className="container-shell max-w-7xl mx-auto relative z-10 px-4 sm:px-6 lg:px-8 space-y-6">
-          {/* Top Editorial Slogans Flanking the Canvas */}
-          <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 pt-2">
-            <HeroEntranceMotion className="space-y-1">
+          {/* Top Editorial Slogans Flanking the Canvas (Exact TANALOKA Style) */}
+          <div className="flex flex-col sm:flex-row items-start sm:items-start justify-between gap-6 pt-2">
+            <HeroEntranceMotion className="space-y-2">
               <HeroEntranceItem>
-                <div className="inline-flex items-center gap-2 rounded-full border border-white/30 bg-white/15 px-3.5 py-1 text-xs font-mono font-bold tracking-widest text-white uppercase backdrop-blur-md shadow-xs">
-                  <span className="h-1.5 w-1.5 rounded-full bg-[#D6F834] animate-pulse" />
-                  <span>COMIFURO COMPANION GUIDE</span>
-                  <span className="text-[#F84632] font-black">*</span>
-                </div>
-              </HeroEntranceItem>
-              <HeroEntranceItem>
-                <p className="font-mono text-xs sm:text-sm font-bold tracking-[0.22em] text-[#D6F834] uppercase">
+                <p className="font-[var(--font-display)] text-3xl sm:text-4xl lg:text-5xl font-black tracking-tight text-[#D6F834] uppercase leading-none">
                   WHERE EVERY CREATOR GATHERS
                 </p>
+              </HeroEntranceItem>
+              <HeroEntranceItem>
                 <p className="text-xs sm:text-sm font-medium text-white/90 max-w-xs leading-relaxed">
-                  Kurasi resmi untuk para penjelajah, seniman independen, dan pemburu karya Comic Frontier.
+                  Kurasi independen untuk penjelajah, seniman komik, dan pemburu merchandise Comic Frontier.
                 </p>
               </HeroEntranceItem>
             </HeroEntranceMotion>
 
-            <HeroEntranceMotion className="space-y-1 sm:text-right">
+            <HeroEntranceMotion className="space-y-2 sm:text-right">
               <HeroEntranceItem>
-                <div className="inline-flex items-center gap-2 rounded-full border border-white/20 bg-white/10 px-3 py-1 text-xs font-mono font-medium text-white/90 backdrop-blur-md sm:ml-auto">
-                  <span>ICE BSD CITY</span>
-                  <span>·</span>
-                  <span>HALL 8 & 9</span>
-                </div>
+                <p className="font-mono text-[11px] font-bold tracking-[0.2em] text-white/90 uppercase">
+                  CURATED FOR CONVENTIONS · ICE BSD CITY
+                </p>
               </HeroEntranceItem>
               <HeroEntranceItem>
-                <p className="font-mono text-xs sm:text-sm font-bold tracking-[0.22em] text-white uppercase">
-                  HUNTING COMIFURO<span className="text-[#F84632]">*</span> TANPA MATI SINYAL
+                <p className="font-[var(--font-display)] text-2xl sm:text-3xl lg:text-4xl font-black tracking-tight text-white uppercase leading-none sm:text-right">
+                  HUNTING TANPA MATI SINYAL<span className="text-[#F84632]">*</span>
                 </p>
-                <p className="text-xs sm:text-sm font-medium text-white/85 max-w-xs sm:ml-auto leading-relaxed">
-                  1.400+ circle kreator, denah booth ICE BSD, kalkulator cash ATM, dan checklist belanja offline.
+              </HeroEntranceItem>
+              <HeroEntranceItem>
+                <p className="text-xs sm:text-sm font-medium text-white/80 max-w-xs sm:ml-auto leading-relaxed">
+                  1.400+ circle kreator, denah booth hall 8 & 9, kalkulator cash ATM, dan checklist offline.
                 </p>
               </HeroEntranceItem>
             </HeroEntranceMotion>
