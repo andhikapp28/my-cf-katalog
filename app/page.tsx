@@ -150,18 +150,55 @@ export default async function HomePage() {
         </div>
 
         <div className="container-shell max-w-7xl mx-auto relative z-10 px-4 sm:px-6 lg:px-8 space-y-6">
-          {/* Main Hero Composition (Exact TANALOKA Layout) */}
-          <div className="relative w-full min-h-[440px] sm:min-h-[520px] md:min-h-[600px] lg:min-h-[680px] flex flex-col justify-between pt-2">
-            
-            {/* Layer 0: Giant Typography COMIPOCKET across the upper screen behind Mascot */}
-            <div className="absolute inset-x-0 top-2 sm:top-4 flex items-center justify-center pointer-events-none select-none z-0 overflow-hidden">
-              <span className="font-[var(--font-display)] font-black text-[16vw] sm:text-[16.5vw] lg:text-[17vw] tracking-tight text-[#D6F834] uppercase leading-none select-none drop-shadow-sm whitespace-nowrap opacity-95">
+          {/* Top Editorial Slogans Flanking the Canvas (Exact TANALOKA Style) */}
+          <div className="flex flex-col sm:flex-row items-start sm:items-start justify-between gap-6 pt-2">
+            <HeroEntranceMotion className="space-y-2">
+              <HeroEntranceItem>
+                <p className="font-[var(--font-display)] text-3xl sm:text-4xl lg:text-5xl font-black tracking-tight text-[#D6F834] uppercase leading-none">
+                  WHERE EVERY CREATOR GATHERS
+                </p>
+              </HeroEntranceItem>
+              <HeroEntranceItem>
+                <p className="text-xs sm:text-sm font-medium text-white/90 max-w-xs leading-relaxed">
+                  Kurasi independen untuk penjelajah, seniman komik, dan pemburu merchandise Comic Frontier.
+                </p>
+              </HeroEntranceItem>
+            </HeroEntranceMotion>
+
+            <HeroEntranceMotion className="space-y-2 sm:text-right">
+              <HeroEntranceItem>
+                <p className="font-mono text-[11px] font-bold tracking-[0.2em] text-white/90 uppercase">
+                  CURATED FOR CONVENTIONS · ICE BSD CITY
+                </p>
+              </HeroEntranceItem>
+              <HeroEntranceItem>
+                <p className="font-[var(--font-display)] text-2xl sm:text-3xl lg:text-4xl font-black tracking-tight text-white uppercase leading-none sm:text-right">
+                  HUNTING TANPA MATI SINYAL<span className="text-[#F84632]">*</span>
+                </p>
+              </HeroEntranceItem>
+              <HeroEntranceItem>
+                <p className="text-xs sm:text-sm font-medium text-white/80 max-w-xs sm:ml-auto leading-relaxed">
+                  1.400+ circle kreator, denah booth hall 8 & 9, kalkulator cash ATM, dan checklist offline.
+                </p>
+              </HeroEntranceItem>
+            </HeroEntranceMotion>
+          </div>
+
+          {/* ===================================================================== */}
+          {/* THE MASKING COMPOSITION: GIANT COMIPOCKET LETTERS + OVERLAPPING MASCOT */}
+          {/* Layer 0: Giant Acid Lime '#D6F834' Text                               */}
+          {/* Layer 1: Cutout Mascot in Front (Physically Overlaps & Masks Text)     */}
+          {/* ===================================================================== */}
+          <div className="relative w-full min-h-[380px] sm:min-h-[480px] md:min-h-[560px] lg:min-h-[640px] flex items-center justify-center pt-2 sm:pt-4">
+            {/* Layer 0: Giant Typography Spanning Across the Screen Behind Mascot */}
+            <div className="absolute inset-0 flex items-center justify-center pointer-events-none select-none z-0 overflow-hidden">
+              <span className="font-[var(--font-display)] font-black text-[16vw] sm:text-[17vw] lg:text-[18vw] tracking-tighter text-[#D6F834] uppercase leading-none select-none drop-shadow-sm whitespace-nowrap opacity-95">
                 COMIPOCKET
               </span>
             </div>
 
-            {/* Layer 1: Mascot Cutout Standing in the Center-Foreground Overlapping the Letters */}
-            <div className="absolute inset-x-0 bottom-12 sm:bottom-16 flex items-end justify-center pointer-events-none z-10">
+            {/* Layer 1: Mascot Cutout Standing in the Foreground Overlapping the Letters */}
+            <div className="relative z-10 mx-auto flex items-end justify-center pointer-events-none">
               <Image
                 src="/mascot.png"
                 alt="ComiPocket Mascot"
@@ -172,75 +209,35 @@ export default async function HomePage() {
                 className="h-[360px] sm:h-[460px] md:h-[540px] lg:h-[620px] w-auto object-contain drop-shadow-[0_25px_50px_rgba(0,0,0,0.35)] select-none"
               />
             </div>
-
-            {/* Layer 2: Editorial Slogans on Left and Right (Exact TANALOKA Composition) */}
-            <div className="relative z-20 grid grid-cols-1 sm:grid-cols-2 gap-8 items-start justify-between pointer-events-none pt-4 sm:pt-8">
-              {/* Left Column: Slogan Stack (Like 'WHERE EVERY DANCE RHYTHM') */}
-              <HeroEntranceMotion className="space-y-3 pointer-events-auto">
-                <HeroEntranceItem>
-                  <h2 className="font-[var(--font-display)] text-4xl sm:text-5xl lg:text-6xl font-black tracking-tight text-[#D6F834] uppercase leading-[0.88] drop-shadow-sm">
-                    WHERE EVERY <br />
-                    CREATOR <br />
-                    GATHERS
-                  </h2>
-                </HeroEntranceItem>
-                <HeroEntranceItem>
-                  <p className="text-xs sm:text-sm font-medium text-white/95 max-w-xs leading-relaxed drop-shadow-sm">
-                    Kurasi resmi untuk para penjelajah, seniman komik, dan pemburu merchandise Comic Frontier.
-                  </p>
-                </HeroEntranceItem>
-              </HeroEntranceMotion>
-
-              {/* Right Column: Slogan & Subtext (Like 'CURATED FOR...' & 'COLORS TELLS STORY') */}
-              <HeroEntranceMotion className="space-y-3 sm:text-right pointer-events-auto sm:ml-auto">
-                <HeroEntranceItem>
-                  <div className="inline-flex items-center gap-2 rounded-full border border-white/30 bg-white/15 px-3 py-1 text-xs font-mono font-bold tracking-widest text-white uppercase backdrop-blur-md shadow-xs sm:ml-auto">
-                    <span>ICE BSD · HALL 8 & 9</span>
-                  </div>
-                </HeroEntranceItem>
-                <HeroEntranceItem>
-                  <p className="font-[var(--font-display)] text-3xl sm:text-4xl lg:text-5xl font-black tracking-tight text-white uppercase leading-[0.88] drop-shadow-sm sm:text-right">
-                    HUNTING TANPA <br />
-                    MATI SINYAL<span className="text-[#F84632]">*</span>
-                  </p>
-                </HeroEntranceItem>
-                <HeroEntranceItem>
-                  <p className="text-xs sm:text-sm font-medium text-white/90 max-w-xs sm:ml-auto leading-relaxed drop-shadow-sm">
-                    1.400+ circle kreator, denah booth offline, kalkulator cash ATM, dan checklist belanja.
-                  </p>
-                </HeroEntranceItem>
-              </HeroEntranceMotion>
-            </div>
-
-            {/* Bottom Row: High-Contrast CTA Buttons */}
-            <HeroEntranceMotion className="relative z-30 flex flex-wrap items-center justify-center gap-3 pt-6 pb-2">
-              <HeroEntranceItem>
-                <Link
-                  href="/products"
-                  className="inline-flex items-center justify-center rounded-full bg-[#D6F834] px-8 py-3.5 text-sm font-extrabold text-[#111215] shadow-xl hover:bg-[#cbf128] transition active:scale-[0.98] uppercase tracking-wide"
-                >
-                  JELAJAHI 1.400+ CIRCLE
-                </Link>
-              </HeroEntranceItem>
-
-              <HeroEntranceItem>
-                <Link
-                  href="/maps"
-                  className="inline-flex items-center justify-center rounded-full border border-white/40 bg-white/15 backdrop-blur px-6 py-3.5 text-sm font-bold text-white transition hover:bg-white/25 active:scale-[0.98]"
-                >
-                  Peta Denah Hall
-                </Link>
-              </HeroEntranceItem>
-
-              <HeroEntranceItem>
-                <PreloadOfflineButton
-                  productIds={featuredProducts.map((p) => p.id)}
-                  circleIds={featuredCircles.map((c) => c.id)}
-                />
-              </HeroEntranceItem>
-            </HeroEntranceMotion>
-
           </div>
+
+          {/* Layer 2: Floating High-Contrast CTA Buttons */}
+          <HeroEntranceMotion className="relative z-20 flex flex-wrap items-center justify-center gap-3 pt-2 sm:pt-4">
+            <HeroEntranceItem>
+              <Link
+                href="/products"
+                className="inline-flex items-center justify-center rounded-full bg-[#D6F834] px-8 py-3.5 text-sm font-extrabold text-[#111215] shadow-xl hover:bg-[#cbf128] transition active:scale-[0.98] uppercase tracking-wide"
+              >
+                JELAJAHI 1.400+ CIRCLE
+              </Link>
+            </HeroEntranceItem>
+
+            <HeroEntranceItem>
+              <Link
+                href="/maps"
+                className="inline-flex items-center justify-center rounded-full border border-white/40 bg-white/15 backdrop-blur px-6 py-3.5 text-sm font-bold text-white transition hover:bg-white/25 active:scale-[0.98]"
+              >
+                Peta Denah Hall
+              </Link>
+            </HeroEntranceItem>
+
+            <HeroEntranceItem>
+              <PreloadOfflineButton
+                productIds={featuredProducts.map((p) => p.id)}
+                circleIds={featuredCircles.map((c) => c.id)}
+              />
+            </HeroEntranceItem>
+          </HeroEntranceMotion>
         </div>
 
         {/* Seamless Soft Transition into Dark Section 2 */}
