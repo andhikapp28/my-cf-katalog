@@ -20,14 +20,8 @@ test.describe("Public dashboard", () => {
     // 1. Teks Judul & Hero Headline (Struktur palet TANALOKA)
     await expect(page.getByText(/COMIFURO COMPANION GUIDE/i)).toBeVisible();
 
-    const heroHeading = page.getByRole("heading", { level: 1 });
-    await expect(heroHeading).toBeVisible();
-    await expect(heroHeading).toContainText("HUNTING");
-    await expect(heroHeading).toContainText("COMIFURO");
-    await expect(heroHeading).toContainText("TANPA MATI SINYAL");
-
     await expect(page.getByText("WHERE EVERY CREATOR GATHERS")).toBeVisible();
-    await expect(page.getByText("MASCOT STAGE")).toBeVisible();
+    await expect(page.locator("img[alt='ComiPocket Mascot']")).toBeVisible();
     await expect(page.getByRole("link", { name: "Jelajahi 1.400+ Circle" })).toBeVisible();
     await expect(page.getByRole("link", { name: "Peta Denah Hall" })).toBeVisible();
 

@@ -1,5 +1,6 @@
 export const revalidate = 120;
 
+import Image from "next/image";
 import Link from "next/link";
 import {
   ArrowUpRight,
@@ -137,140 +138,124 @@ export default async function HomePage() {
   return (
     <div className="relative min-h-screen selection:bg-[#D6F834] selection:text-[#111215]">
       {/* ========================================================================= */}
-      {/* SECTION 1: HERO SECTION - TANALOKA SKY BLUE PALETTE (#5398DA / #4F93E6)   */}
-      {/* Acid Lime (#D6F834) Display Typography & CTA, Pure White text, Red Asterisk */}
-      {/* Spacious Layered Mascot Canvas on the right side                           */}
+      {/* SECTION 1: COVER HERO (TANALOKA EDITORIAL STYLE WITH MASKING TYPOGRAPHY)  */}
+      {/* Sky Blue Canvas (#5398DA) + Giant Acid Lime Text Behind Cutout Mascot    */}
       {/* ========================================================================= */}
-      <section className="relative z-10 overflow-hidden bg-gradient-to-b from-[#5398DA] via-[#5398DA] to-[#4F93E6] px-4 pt-10 pb-16 sm:px-6 md:pt-14 md:pb-24 lg:px-8 text-white">
-        {/* Subtle grid and ambient lighting overlays */}
+      <section className="relative z-10 overflow-hidden bg-[#5398DA] text-white pt-8 pb-20 sm:pb-28 lg:pb-36">
+        {/* Subtle technical background grid */}
         <div className="pointer-events-none absolute inset-0">
           <div className="absolute inset-0 bg-[linear-gradient(to_right,rgba(255,255,255,0.06)_1px,transparent_1px),linear-gradient(to_bottom,rgba(255,255,255,0.06)_1px,transparent_1px)] bg-[size:4rem_4rem]" />
           <div className="absolute -top-32 left-1/3 h-96 w-96 rounded-full bg-white/10 blur-[120px]" />
           <div className="absolute -bottom-24 right-1/4 h-80 w-80 rounded-full bg-[#D6F834]/15 blur-[100px]" />
         </div>
 
-        <div className="container-shell max-w-7xl mx-auto relative z-10">
-          <div className="grid gap-12 lg:grid-cols-12 lg:items-center">
-            {/* Left Column: Bold TANALOKA Typography & Quick CTAs */}
-            <HeroEntranceMotion className="space-y-6 lg:col-span-7">
+        <div className="container-shell max-w-7xl mx-auto relative z-10 px-4 sm:px-6 lg:px-8 space-y-6">
+          {/* Top Editorial Slogans Flanking the Canvas */}
+          <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 pt-2">
+            <HeroEntranceMotion className="space-y-1">
               <HeroEntranceItem>
-                <div className="inline-flex items-center gap-2 rounded-full border border-white/30 bg-white/15 px-4 py-1.5 text-xs font-mono font-bold tracking-widest text-white uppercase backdrop-blur-md shadow-xs">
-                  <span className="h-2 w-2 rounded-full bg-[#D6F834] animate-pulse" />
+                <div className="inline-flex items-center gap-2 rounded-full border border-white/30 bg-white/15 px-3.5 py-1 text-xs font-mono font-bold tracking-widest text-white uppercase backdrop-blur-md shadow-xs">
+                  <span className="h-1.5 w-1.5 rounded-full bg-[#D6F834] animate-pulse" />
                   <span>COMIFURO COMPANION GUIDE</span>
                   <span className="text-[#F84632] font-black">*</span>
                 </div>
               </HeroEntranceItem>
-
               <HeroEntranceItem>
-                <h1 className="font-[var(--font-display)] text-5xl font-black tracking-tight uppercase sm:text-6xl md:text-7xl lg:text-[5.5rem] leading-[0.92] text-white">
-                  HUNTING <br />
-                  <span className="text-[#D6F834]">COMIFURO</span><span className="text-[#F84632]">*</span> <br />
-                  <span>TANPA MATI SINYAL</span>
-                </h1>
-                <div className="pt-2 font-mono text-base sm:text-xl lg:text-2xl font-black tracking-wider text-[#D6F834] uppercase">
+                <p className="font-mono text-xs sm:text-sm font-bold tracking-[0.22em] text-[#D6F834] uppercase">
                   WHERE EVERY CREATOR GATHERS
-                </div>
-              </HeroEntranceItem>
-
-              <HeroEntranceItem>
-                <p className="max-w-xl text-base sm:text-lg font-normal leading-relaxed text-white/95">
-                  Katalog personal untuk menjelajahi ribuan circle kreator, denah booth ICE BSD, kalkulator cash ATM, dan checklist belanja yang aktif 100% saat offline.
                 </p>
-              </HeroEntranceItem>
-
-              <HeroEntranceItem>
-                <div className="flex flex-wrap items-center gap-3 pt-2">
-                  <Link
-                    href="/products"
-                    className="inline-flex items-center justify-center rounded-full bg-[#D6F834] px-8 py-3.5 text-sm font-black text-[#111215] transition-all hover:bg-[#cef338] active:scale-[0.98] shadow-lg shadow-black/15 uppercase tracking-wide"
-                  >
-                    Jelajahi 1.400+ Circle
-                  </Link>
-                  <Link
-                    href="/maps"
-                    className="inline-flex items-center justify-center rounded-full border border-white/35 bg-white/15 backdrop-blur-md px-6 py-3.5 text-sm font-bold text-white transition hover:bg-white/25 active:scale-[0.98]"
-                  >
-                    Peta Denah Hall
-                  </Link>
-                  <PreloadOfflineButton
-                    productIds={featuredProducts.map((p) => p.id)}
-                    circleIds={featuredCircles.map((c) => c.id)}
-                    className="border-white/35 bg-white/15 backdrop-blur-md px-5 py-3.5 text-xs font-bold text-white hover:bg-white/25 hover:text-white"
-                  />
-                </div>
+                <p className="text-xs sm:text-sm font-medium text-white/90 max-w-xs leading-relaxed">
+                  Kurasi resmi untuk para penjelajah, seniman independen, dan pemburu karya Comic Frontier.
+                </p>
               </HeroEntranceItem>
             </HeroEntranceMotion>
 
-            {/* Right Column: Layered Mascot Staging Canvas (TANALOKA Masked Dancer Style) */}
-            <FadeInView delay={0.15} duration={0.6} className="lg:col-span-5 flex items-center justify-center">
-              <div className="relative flex w-full min-h-[380px] sm:min-h-[440px] lg:min-h-[480px] items-center justify-center rounded-3xl border border-white/25 bg-white/10 p-8 backdrop-blur-md group overflow-hidden shadow-2xl shadow-black/10">
-                {/* Visual Halo & Stage Radial Rings */}
-                <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(214,248,52,0.18),transparent_65%)]" />
-                <div className="pointer-events-none absolute -top-16 -right-16 h-48 w-48 rounded-full bg-white/10 blur-2xl" />
-                <div className="pointer-events-none absolute -bottom-16 -left-16 h-48 w-48 rounded-full bg-[#F84632]/15 blur-2xl" />
-
-                {/* Stage Framing Guidelines & Corner Accents */}
-                <div className="absolute top-4 left-4 h-4 w-4 border-t-2 border-l-2 border-white/40" />
-                <div className="absolute top-4 right-4 h-4 w-4 border-t-2 border-r-2 border-white/40" />
-                <div className="absolute bottom-4 left-4 h-4 w-4 border-b-2 border-l-2 border-white/40" />
-                <div className="absolute bottom-4 right-4 h-4 w-4 border-b-2 border-r-2 border-white/40" />
-
-                {/* Technical Coordinate Indicators */}
-                <div className="absolute top-4 inset-x-0 flex justify-center">
-                  <span className="font-mono text-[10px] tracking-widest text-white/60 uppercase">
-                    STAGE CANVAS · LAYER 01
-                  </span>
+            <HeroEntranceMotion className="space-y-1 sm:text-right">
+              <HeroEntranceItem>
+                <div className="inline-flex items-center gap-2 rounded-full border border-white/20 bg-white/10 px-3 py-1 text-xs font-mono font-medium text-white/90 backdrop-blur-md sm:ml-auto">
+                  <span>ICE BSD CITY</span>
+                  <span>·</span>
+                  <span>HALL 8 & 9</span>
                 </div>
-
-                {/* Multi-layer Rotating Backdrop Ring */}
-                <div className="pointer-events-none absolute h-64 w-64 rounded-full border border-white/20 border-dashed animate-[spin_40s_linear_infinite]" />
-                <div className="pointer-events-none absolute h-80 w-80 rounded-full border border-white/10" />
-
-                {/* Mascot Stage Slot: Spasial bertingkat untuk maskot resmi */}
-                <div className="relative z-10 flex max-w-xs flex-col items-center text-center space-y-4">
-                  {/* Central Mascot Badge Container */}
-                  <div className="relative flex h-32 w-32 sm:h-36 sm:w-36 items-center justify-center rounded-full border-2 border-white/40 bg-white/20 shadow-xl backdrop-blur-lg">
-                    <span className="font-[var(--font-display)] text-4xl sm:text-5xl font-black tracking-tighter text-[#D6F834] drop-shadow-sm">
-                      CP
-                    </span>
-                    <div className="pointer-events-none absolute inset-0 rounded-full border-2 border-[#D6F834]/40 animate-ping opacity-30" />
-                  </div>
-
-                  <div className="space-y-1.5">
-                    <div className="inline-flex items-center gap-2 rounded-full border border-white/30 bg-white/20 px-3.5 py-1 text-xs font-mono font-bold tracking-wider text-white shadow-xs">
-                      <span className="h-1.5 w-1.5 rounded-full bg-[#D6F834]" />
-                      <span>MASCOT STAGE</span>
-                      <span className="text-[#F84632]">*</span>
-                    </div>
-                    <p className="text-xs leading-relaxed text-white/80 pt-1">
-                      Area spasial bertingkat siap pakai untuk ilustrasi maskot resmi ComiPocket.
-                    </p>
-                  </div>
-
-                  {/* Floating Meta Chips */}
-                  <div className="flex items-center gap-2 pt-1">
-                    <span className="rounded-full bg-black/25 px-2.5 py-0.5 font-mono text-[10px] font-semibold text-white/90 border border-white/15">
-                      RATIO 3:4 / 16:9
-                    </span>
-                    <span className="rounded-full bg-[#D6F834]/25 px-2.5 py-0.5 font-mono text-[10px] font-semibold text-[#D6F834] border border-[#D6F834]/30">
-                      ICE BSD STAGE
-                    </span>
-                  </div>
-                </div>
-              </div>
-            </FadeInView>
+              </HeroEntranceItem>
+              <HeroEntranceItem>
+                <p className="font-mono text-xs sm:text-sm font-bold tracking-[0.22em] text-white uppercase">
+                  HUNTING COMIFURO<span className="text-[#F84632]">*</span> TANPA MATI SINYAL
+                </p>
+                <p className="text-xs sm:text-sm font-medium text-white/85 max-w-xs sm:ml-auto leading-relaxed">
+                  1.400+ circle kreator, denah booth ICE BSD, kalkulator cash ATM, dan checklist belanja offline.
+                </p>
+              </HeroEntranceItem>
+            </HeroEntranceMotion>
           </div>
+
+          {/* ===================================================================== */}
+          {/* THE MASKING COMPOSITION: GIANT COMIPOCKET LETTERS + OVERLAPPING MASCOT */}
+          {/* Layer 0: Giant Acid Lime '#D6F834' Text                               */}
+          {/* Layer 1: Cutout Mascot in Front (Physically Overlaps & Masks Text)     */}
+          {/* ===================================================================== */}
+          <div className="relative w-full min-h-[380px] sm:min-h-[480px] md:min-h-[560px] lg:min-h-[640px] flex items-center justify-center pt-2 sm:pt-4">
+            {/* Layer 0: Giant Typography Spanning Across the Screen Behind Mascot */}
+            <div className="absolute inset-0 flex items-center justify-center pointer-events-none select-none z-0 overflow-hidden">
+              <span className="font-[var(--font-display)] font-black text-[16vw] sm:text-[17vw] lg:text-[18vw] tracking-tighter text-[#D6F834] uppercase leading-none select-none drop-shadow-sm whitespace-nowrap opacity-95">
+                COMIPOCKET
+              </span>
+            </div>
+
+            {/* Layer 1: Mascot Cutout Standing in the Foreground Overlapping the Letters */}
+            <div className="relative z-10 mx-auto flex items-end justify-center pointer-events-none">
+              <Image
+                src="/mascot.png"
+                alt="ComiPocket Mascot"
+                width={550}
+                height={850}
+                priority
+                unoptimized
+                className="h-[360px] sm:h-[460px] md:h-[540px] lg:h-[620px] w-auto object-contain drop-shadow-[0_25px_50px_rgba(0,0,0,0.35)] select-none"
+              />
+            </div>
+          </div>
+
+          {/* Layer 2: Floating High-Contrast CTA Buttons */}
+          <HeroEntranceMotion className="relative z-20 flex flex-wrap items-center justify-center gap-3 pt-2 sm:pt-4">
+            <HeroEntranceItem>
+              <Link
+                href="/products"
+                className="inline-flex items-center justify-center rounded-full bg-[#D6F834] px-8 py-3.5 text-sm font-extrabold text-[#111215] shadow-xl hover:bg-[#cbf128] transition active:scale-[0.98] uppercase tracking-wide"
+              >
+                JELAJAHI 1.400+ CIRCLE
+              </Link>
+            </HeroEntranceItem>
+
+            <HeroEntranceItem>
+              <Link
+                href="/maps"
+                className="inline-flex items-center justify-center rounded-full border border-white/40 bg-white/15 backdrop-blur px-6 py-3.5 text-sm font-bold text-white transition hover:bg-white/25 active:scale-[0.98]"
+              >
+                Peta Denah Hall
+              </Link>
+            </HeroEntranceItem>
+
+            <HeroEntranceItem>
+              <PreloadOfflineButton
+                productIds={featuredProducts.map((p) => p.id)}
+                circleIds={featuredCircles.map((c) => c.id)}
+              />
+            </HeroEntranceItem>
+          </HeroEntranceMotion>
         </div>
+
+        {/* Seamless Soft Transition into Dark Section 2 */}
+        <div className="absolute inset-x-0 bottom-0 h-28 sm:h-36 bg-gradient-to-b from-transparent via-[#2b598d]/60 to-[#111215] pointer-events-none" />
       </section>
 
       {/* ========================================================================= */}
-      {/* SECTION 2: DATA PULSE INFOGRAPH (AISUM Style inside Dark #111215 Container)*/}
-      {/* 2-Column Header: Left Coral Red (#F84632) tag + White heading with red asterisk*/}
-      {/* 4 Metric Cards: Background #1B1D24, Big white numbers, Coral Red icons/labels*/}
+      {/* SECTION 2: DATA PULSE INFOGRAPH (AISUM Style inside Dark #111215 Block)  */}
+      {/* 2-Column Header + 4 Portrait Cards (#1B1D24) with Large Numbers & Coral   */}
       {/* ========================================================================= */}
       <section className="relative z-10 bg-[#111215] px-4 py-20 text-white sm:px-6 md:py-28 lg:px-8 border-t border-black">
         <div className="container-shell max-w-7xl mx-auto space-y-12">
-          {/* 2-Column Header AISUM Style */}
+          {/* 2-Column Editorial Header (Image 2 - AISUM Style) */}
           <FadeInView>
             <div className="grid gap-6 lg:grid-cols-12 lg:items-end border-b border-white/10 pb-8">
               <div className="lg:col-span-7 space-y-3">
@@ -290,14 +275,14 @@ export default async function HomePage() {
             </div>
           </FadeInView>
 
-          {/* 4 Metric Cards (AISUM Style) with MetricCardMotion on #1B1D24 */}
+          {/* 4 Portrait Metric Cards (Exact AISUM Style: Dark Gray Cards + Coral Accents) */}
           <div className="grid grid-cols-2 gap-4 sm:gap-6 lg:grid-cols-4">
             {/* Metric 1: Circles */}
             <MetricCardMotion
               delay={0.05}
               glowColor="rgba(248, 70, 50, 0.25)"
               borderColor="rgba(248, 70, 50, 0.45)"
-              className="group flex flex-col justify-between rounded-2xl border border-white/10 bg-[#1B1D24] p-6 sm:p-8 min-h-[230px]"
+              className="group flex flex-col justify-between rounded-3xl border border-white/10 bg-[#1B1D24] p-6 sm:p-8 min-h-[230px]"
             >
               <div>
                 <div className="font-mono text-4xl sm:text-5xl lg:text-6xl font-black tracking-tight text-white group-hover:text-[#F84632] transition-colors">
@@ -377,6 +362,9 @@ export default async function HomePage() {
             </MetricCardMotion>
           </div>
         </div>
+
+        {/* Seamless Soft Transition into White Section 3 */}
+        <div className="absolute inset-x-0 bottom-0 h-20 sm:h-28 bg-gradient-to-b from-transparent via-[#252834]/40 to-[#FFFFFF] pointer-events-none" />
       </section>
 
       {/* ========================================================================= */}
@@ -386,7 +374,7 @@ export default async function HomePage() {
       {/* ========================================================================= */}
       <section className="relative z-10 bg-[#FFFFFF] px-4 py-20 text-[#111215] sm:px-6 md:py-28 lg:px-8 border-t border-zinc-200">
         <div className="container-shell max-w-7xl mx-auto space-y-12">
-          {/* Section Header */}
+          {/* Section Header with Coral Red Title (TANALOKA Style) */}
           <FadeInView>
             <div className="flex flex-col gap-6 sm:flex-row sm:items-end sm:justify-between border-b border-zinc-200 pb-8">
               <div>
@@ -490,7 +478,7 @@ export default async function HomePage() {
                         <span>{edition.linkText}</span>
                         <ArrowUpRight className="h-3 w-3" />
                       </Link>
-                      <span className="text-[11px] text-zinc-400 font-mono uppercase">
+                      <span className="text-[10px] font-mono text-zinc-400 uppercase font-semibold">
                         {edition.editionBadge}
                       </span>
                     </div>
