@@ -1,3 +1,4 @@
+import Image from "next/image";
 import Link from "next/link";
 
 export function SiteFooter() {
@@ -86,15 +87,28 @@ export function SiteFooter() {
           </div>
         </div>
 
-        {/* TANALOKA Big Display Typography: COMIPOCKET in Coral Red (#F84632) */}
-        <div className="w-full border-t border-[#E5E5E5] pt-8">
-          <div className="overflow-hidden select-none text-center">
+        {/* TANALOKA Big Display Typography with Overlapping Mascot */}
+        <div className="relative w-full border-t border-[#E5E5E5] pt-10">
+          <div className="relative overflow-hidden select-none text-center">
+            {/* Giant Coral Red text behind */}
             <span className="block font-[var(--font-display)] font-black text-6xl sm:text-8xl md:text-9xl lg:text-[11rem] xl:text-[13rem] tracking-tighter text-[#F84632] leading-none uppercase">
               COMIPOCKET
             </span>
+
+            {/* Mascot Cutout Standing in the Center Overlapping the Letters */}
+            <div className="absolute inset-0 flex items-end justify-center pointer-events-none">
+              <Image
+                src="/mascot.png"
+                alt="ComiPocket Mascot Footer"
+                width={260}
+                height={270}
+                unoptimized
+                className="h-36 sm:h-48 md:h-56 lg:h-64 w-auto object-contain drop-shadow-xl select-none"
+              />
+            </div>
           </div>
 
-          <div className="mt-4 flex flex-col items-center justify-between gap-2 border-t border-zinc-100 pt-4 text-xs font-mono text-zinc-400 sm:flex-row">
+          <div className="mt-6 flex flex-col items-center justify-between gap-2 border-t border-zinc-100 pt-4 text-xs font-mono text-zinc-400 sm:flex-row">
             <p>© 2026 ComiPocket. Comic Frontier Companion Guide.</p>
             <p>ICE BSD City, Tangerang · Offline First PWA</p>
           </div>

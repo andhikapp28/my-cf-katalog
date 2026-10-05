@@ -1,22 +1,31 @@
 import type { Metadata, Viewport } from "next";
 import type { ReactNode } from "react";
-import { IBM_Plex_Sans, Space_Grotesk } from "next/font/google";
+import { Plus_Jakarta_Sans, Barlow_Condensed, JetBrains_Mono } from "next/font/google";
 import "./globals.css";
 import { SiteHeader } from "@/components/layout/site-header";
 import { SiteFooter } from "@/components/layout/site-footer";
 import { ServiceWorkerRegister } from "@/components/layout/service-worker-register";
 import { Toaster } from "sonner";
 
-const sans = IBM_Plex_Sans({
+const sans = Plus_Jakarta_Sans({
   subsets: ["latin"],
-  weight: ["400", "500", "600", "700"],
-  variable: "--font-sans"
+  weight: ["400", "500", "600", "700", "800"],
+  variable: "--font-sans",
+  display: "swap"
 });
 
-const display = Space_Grotesk({
+const display = Barlow_Condensed({
   subsets: ["latin"],
-  weight: ["500", "700"],
-  variable: "--font-display"
+  weight: ["700", "800", "900"],
+  variable: "--font-display",
+  display: "swap"
+});
+
+const mono = JetBrains_Mono({
+  subsets: ["latin"],
+  weight: ["500", "700", "800"],
+  variable: "--font-mono",
+  display: "swap"
 });
 
 export const metadata: Metadata = {
@@ -48,7 +57,7 @@ export const viewport: Viewport = {
 
 export default function RootLayout({ children }: Readonly<{ children: ReactNode }>) {
   return (
-    <html lang="id" className={`${sans.variable} ${display.variable}`}>
+    <html lang="id" className={`${sans.variable} ${display.variable} ${mono.variable}`}>
       <body className="font-[var(--font-sans)]">
         <div className="flex min-h-screen flex-col">
           <SiteHeader />
