@@ -1,19 +1,34 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import {
   addToWishlist,
+  calculateAtmCashReadiness,
   calculateRequiredCash,
   calculateWishlistSummary,
   calculateWishlistTotal,
+  clearPurchasedProducts,
   clearWishlist,
+  compareBoothOrder,
+  getPurchasedProductIds,
+  getPurchasedServerSnapshot,
+  getPurchasedSnapshot,
   getWishlistProductIds,
   getWishlistServerSnapshot,
   getWishlistSnapshot,
   isBrowserStorageAvailable,
   isInWishlist,
+  isCircleInWishlist,
+  isProductPurchased,
   removeFromWishlist,
+  removePurchasedProduct,
+  savePurchasedProductIds,
   saveWishlistProductIds,
+  subscribePurchased,
   subscribeWishlist,
+  toggleCircleWishlist,
+  togglePurchasedProduct,
   toggleWishlist,
+  WISHLIST_PURCHASED_STORAGE_KEY,
+  WISHLIST_PURCHASED_UPDATED_EVENT,
   WISHLIST_STORAGE_KEY,
   WISHLIST_UPDATED_EVENT,
   type WishlistProductItem
@@ -216,6 +231,64 @@ describe("lib/wishlist - Browser Client Storage", () => {
     // Referensi identik penting untuk React useSyncExternalStore agar tidak infinite render loop
     expect(Object.is(snap1, snap2)).toBe(true);
   });
+
+  describe("Circle Wishlist Integration", () => {
+    it("isCircleInWishlist mendeteksi circle baik lewat circleId maupun produknya", () => {
+      saveWishlistProductIds(["circle-alpha", "prod-beta"]);
+
+      // Deteksi via circleId langsung
+      expect(isCircleInWishlist("circle-alpha")).toBe(true);
+
+      // Deteksi via produk milik circle
+      expect(isCircleInWishlist("circle-beta", ["prod-beta", "prod-other"])).toBe(true);
+
+      // Circle yang belum masuk
+      expect(isCircleInWishlist("circle-gamma", ["prod-gamma"])).toBe(false);
+    });
+
+    it("toggleCircleWishlist menambah dan menghapus circle beserta produknya", () => {
+      const added = toggleCircleWishlist("c-1", ["p-1", "p-2"]);
+      expect(added).toBe(true);
+      expect(isCircleInWishlist("c-1")).toBe(true);
+      expect(getWishlistProductIds()).toContain("c-1");
+      expect(getWishlistProductIds()).toContain("p-1");
+
+      const removed = toggleCircleWishlist("c-1", ["p-1", "p-2"]);
+      expect(removed).toBe(false);
+      expect(isCircleInWishlist("c-1")).toBe(false);
+      expect(getWishlistProductIds()).not.toContain("c-1");
+      expect(getWishlistProductIds()).not.toContain("p-1");
+    });
+  });
+
+  describe("Purchased Checklist Storage", () => {
+    it("dapat menambah, mengecek, toggle, dan menghapus status terbeli", () => {
+      expect(getPurchasedProductIds()).toEqual([]);
+      expect(isProductPurchased("p-1")).toBe(false);
+
+      // toggle true
+      const added = togglePurchasedProduct("p-1");
+      expect(added).toBe(true);
+      expect(isProductPurchased("p-1")).toBe(true);
+      expect(getPurchasedProductIds()).toContain("p-1");
+
+      // toggle false
+      const removed = togglePurchasedProduct("p-1");
+      expect(removed).toBe(false);
+      expect(isProductPurchased("p-1")).toBe(false);
+
+      // clear
+      togglePurchasedProduct("p-2");
+      expect(getPurchasedProductIds()).toEqual(["p-2"]);
+      clearPurchasedProducts();
+      expect(getPurchasedProductIds()).toEqual([]);
+    });
+
+    it("mengekspor konstanta event dan storage key dengan benar", () => {
+      expect(WISHLIST_PURCHASED_STORAGE_KEY).toBe("comipocket_wishlist_purchased_ids");
+      expect(WISHLIST_PURCHASED_UPDATED_EVENT).toBe("comipocket:wishlist-purchased-updated");
+    });
+  });
 });
 
 describe("lib/wishlist - Domain Calculations (Total & Cash Readiness)", () => {
@@ -387,6 +460,57 @@ describe("lib/wishlist - Domain Calculations (Total & Cash Readiness)", () => {
         purchasedTotal: 0,
         remainingTotal: 0
       });
+    });
+  });
+
+  describe("calculateAtmCashReadiness", () => {
+    it("menghitung kekurangan uang tunai dan rekomendasi lembar ATM ICE BSD", () => {
+      // Dibutuhkan 350.000, uang di dompet 100.000 -> Kurang 250.000
+      const res = calculateAtmCashReadiness(350000, 100000);
+      expect(res.requiredCash).toBe(350000);
+      expect(res.cashInHand).toBe(100000);
+      expect(res.shortfall).toBe(250000);
+      expect(res.notes50k).toBe(5); // 250k / 50k = 5 lembar
+      expect(res.notes100k).toBe(3); // 250k / 100k = 3 lembar (300k)
+      expect(res.recommendedWithdrawal50k).toBe(250000);
+      expect(res.recommendedWithdrawal100k).toBe(300000);
+      expect(res.isSufficient).toBe(false);
+    });
+
+    it("menangani kondisi saat uang tunai di dompet sudah mencukupi", () => {
+      const res = calculateAtmCashReadiness(200000, 250000);
+      expect(res.shortfall).toBe(0);
+      expect(res.notes50k).toBe(0);
+      expect(res.notes100k).toBe(0);
+      expect(res.isSufficient).toBe(true);
+    });
+
+    it("menangani input 0 atau tanpa cash in hand", () => {
+      const res = calculateAtmCashReadiness(125000);
+      expect(res.shortfall).toBe(125000);
+      expect(res.notes50k).toBe(3); // 150k
+      expect(res.notes100k).toBe(2); // 200k
+    });
+  });
+
+  describe("compareBoothOrder", () => {
+    it("mengurutkan berdasarkan Hall secara natural (Hall 8 sebelum Hall 9)", () => {
+      const a = { hall: "Hall 8", boothCode: "B-01" };
+      const b = { hall: "Hall 9", boothCode: "A-01" };
+      expect(compareBoothOrder(a, b)).toBeLessThan(0);
+      expect(compareBoothOrder(b, a)).toBeGreaterThan(0);
+    });
+
+    it("mengurutkan berdasarkan boothCode di dalam Hall yang sama (A-15a sebelum B-02)", () => {
+      const a = { hall: "Hall 8", boothCode: "A-15a" };
+      const b = { hall: "Hall 8", boothCode: "B-02" };
+      expect(compareBoothOrder(a, b)).toBeLessThan(0);
+    });
+
+    it("menangani hall atau boothCode null/kosong dengan meletakkannya di akhir", () => {
+      const a = { hall: "Hall 8", boothCode: "A-01" };
+      const b = { hall: null, boothCode: "A-01" };
+      expect(compareBoothOrder(a, b)).toBeLessThan(0);
     });
   });
 });

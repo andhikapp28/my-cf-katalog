@@ -3,6 +3,7 @@ import { Zap } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
 import { ProductImage } from "@/components/products/product-image";
+import { WishlistHeartButton } from "@/components/wishlist/wishlist-heart-button";
 import {
   eventDayBadgeStyles,
   eventDayShortLabels,
@@ -36,14 +37,23 @@ export function ProductCard({
   boothCode?: string | null;
 }) {
   return (
-    <Card className="overflow-hidden">
-      <ProductImage
-        src={product.imageUrl}
-        alt={product.name}
-        className="aspect-[4/3] rounded-none border-0"
-        fallbackLabel="No image"
-        fallbackDescription="Tambahkan direct image URL untuk preview produk ini."
-      />
+    <Card className="overflow-hidden relative group">
+      <div className="relative">
+        <ProductImage
+          src={product.imageUrl}
+          alt={product.name}
+          className="aspect-[4/3] rounded-none border-0"
+          fallbackLabel="No image"
+          fallbackDescription="Tambahkan direct image URL untuk preview produk ini."
+        />
+        <div className="absolute top-2.5 right-2.5 z-10">
+          <WishlistHeartButton
+            productId={product.id}
+            productName={product.name}
+            size="sm"
+          />
+        </div>
+      </div>
       <CardContent className="space-y-4">
         <div className="space-y-2">
           <div className="flex flex-wrap gap-2">

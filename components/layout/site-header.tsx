@@ -1,32 +1,55 @@
 "use client";
 
+import { useEffect, useState, useSyncExternalStore } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { cn } from "@/lib/utils";
+import {
+  getWishlistServerSnapshot,
+  getWishlistSnapshot,
+  subscribeWishlist
+} from "@/lib/wishlist";
 
-const links = [
+const navLinks = [
   { href: "/", label: "Dashboard" },
-  { href: "/events", label: "Events" },
-  { href: "/docs", label: "Documentation" }
+  { href: "/products", label: "Katalog" },
+  { href: "/maps", label: "Peta Denah" },
+  { href: "/wishlist", label: "Wishlist", isWishlist: true },
+  { href: "/docs", label: "Docs" }
 ];
 
 export function SiteHeader() {
   const pathname = usePathname();
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  const wishlistIds = useSyncExternalStore(
+    subscribeWishlist,
+    getWishlistSnapshot,
+    getWishlistServerSnapshot
+  );
+
+  const wishlistCount = mounted ? wishlistIds.length : 0;
 
   return (
     <header className="sticky top-0 z-50 border-b border-white/20 bg-[#5398DA]/90 backdrop-blur-md transition-colors duration-200">
       <div className="container-shell flex h-16 items-center justify-between gap-4">
         <div className="flex items-center gap-8">
-          <Link href="/" className="flex items-center gap-2.5 group">
-            <span className="font-[var(--font-display)] text-2xl font-black tracking-tight text-white group-hover:text-[#D6F834] transition-colors">
+          <Link href="/" className="group flex items-center gap-2.5">
+            <span className="font-[var(--font-display)] text-2xl font-black tracking-tight text-white transition-colors group-hover:text-[#D6F834]">
               ComiPocket
             </span>
-            <span className="rounded-full bg-[#D6F834] px-2.5 py-0.5 text-[10px] font-mono font-black uppercase text-[#111215] shadow-xs">
+            <span className="rounded-full bg-[#D6F834] px-2.5 py-0.5 font-mono text-[10px] font-black uppercase text-[#111215] shadow-xs">
               Comifuro
             </span>
           </Link>
-          <nav className="hidden items-center gap-8 md:flex">
-            {links.map((item) => {
+
+          {/* Desktop Navigation */}
+          <nav className="hidden items-center gap-6 md:flex lg:gap-8">
+            {navLinks.map((item) => {
               const isActive =
                 item.href === "/"
                   ? pathname === "/"
@@ -37,15 +60,23 @@ export function SiteHeader() {
                   key={item.href}
                   href={item.href}
                   className={cn(
-                    "relative py-1 text-xs font-mono font-bold tracking-widest uppercase transition-colors duration-150",
+                    "relative inline-flex items-center gap-1.5 py-1 font-mono text-xs font-bold tracking-widest uppercase transition-colors duration-150",
                     isActive
-                      ? "text-white font-extrabold"
+                      ? "font-extrabold text-white"
                       : "text-white/80 hover:text-white"
                   )}
                 >
-                  {item.label}
+                  <span>{item.label}</span>
+                  {item.isWishlist && mounted && wishlistCount > 0 && (
+                    <span
+                      data-testid="header-wishlist-badge"
+                      className="inline-flex items-center gap-1 rounded-full bg-[#F84632] px-2 py-0.5 font-mono text-[10px] font-black leading-none text-white shadow-xs"
+                    >
+                      ♥ {wishlistCount}
+                    </span>
+                  )}
                   {isActive && (
-                    <span className="absolute inset-x-0 -bottom-1 h-0.5 bg-white rounded-full" />
+                    <span className="absolute inset-x-0 -bottom-1 h-0.5 rounded-full bg-white" />
                   )}
                 </Link>
               );
@@ -53,9 +84,9 @@ export function SiteHeader() {
           </nav>
         </div>
 
-        {/* Mobile Nav Links (3 Items only, No Admin Panel) */}
-        <div className="flex items-center gap-4 md:hidden">
-          {links.map((item) => {
+        {/* Mobile Nav Links (All 5 Public Items, No Admin Panel) */}
+        <div className="flex items-center gap-2.5 overflow-x-auto py-1 text-xs md:hidden">
+          {navLinks.map((item) => {
             const isActive =
               item.href === "/"
                 ? pathname === "/"
@@ -66,11 +97,18 @@ export function SiteHeader() {
                 key={item.href}
                 href={item.href}
                 className={cn(
-                  "text-xs font-mono font-bold uppercase transition",
-                  isActive ? "text-white underline underline-offset-4" : "text-white/80 hover:text-white"
+                  "inline-flex shrink-0 items-center gap-1 rounded-md px-1.5 py-1 font-mono text-xs font-bold uppercase transition",
+                  isActive
+                    ? "bg-white/15 font-black text-white underline underline-offset-4"
+                    : "text-white/80 hover:text-white"
                 )}
               >
-                {item.label}
+                <span>{item.label}</span>
+                {item.isWishlist && mounted && wishlistCount > 0 && (
+                  <span className="rounded-full bg-[#F84632] px-1.5 py-0.5 font-mono text-[9px] font-black leading-none text-white">
+                    ♥ {wishlistCount}
+                  </span>
+                )}
               </Link>
             );
           })}

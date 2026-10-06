@@ -1,14 +1,11 @@
 import "server-only";
-import { and, asc, count, desc, eq, ilike, inArray, isNotNull, sql } from "drizzle-orm";
+import { and, asc, count, desc, eq, ilike, inArray, isNotNull } from "drizzle-orm";
 import { db } from "@/db";
 import {
   boothLocations,
   circles,
   events,
-  expenseCategories,
-  expenses,
   floorMaps,
-  productStatusLogs,
   products
 } from "@/db/schema";
 import type { Product } from "@/db/schema";
@@ -51,12 +48,6 @@ export async function getFloorMapsList(eventId?: string) {
     with: {
       event: true
     }
-  });
-}
-
-export async function getExpenseCategories() {
-  return db.query.expenseCategories.findMany({
-    orderBy: [asc(expenseCategories.name)]
   });
 }
 
@@ -113,13 +104,7 @@ export async function getProductById(id: string) {
     where: eq(products.id, id),
     with: {
       event: true,
-      circle: true,
-      statusLogs: {
-        orderBy: [desc(productStatusLogs.createdAt)],
-        with: {
-          createdByUser: true
-        }
-      }
+      circle: true
     }
   });
 }
@@ -190,21 +175,13 @@ export async function getDashboardData(eventId?: string) {
     return null;
   }
 
-  const [eventProducts, eventExpenses, locations] = await Promise.all([
+  const [eventProducts, locations] = await Promise.all([
     db.query.products.findMany({
       where: eq(products.eventId, selectedEvent.id),
       with: {
         circle: true
       },
       orderBy: [desc(products.updatedAt)]
-    }),
-    db.query.expenses.findMany({
-      where: eq(expenses.eventId, selectedEvent.id),
-      with: {
-        category: true,
-        product: true
-      },
-      orderBy: [desc(expenses.expenseDate)]
     }),
     db.query.boothLocations.findMany({
       where: eq(boothLocations.eventId, selectedEvent.id),
@@ -216,9 +193,8 @@ export async function getDashboardData(eventId?: string) {
   ]);
 
   const totalEstimated = eventProducts.reduce((sum, item) => sum + item.price * item.quantity, 0);
-  const totalActual = eventExpenses
-    .filter((item) => item.isActual)
-    .reduce((sum, item) => sum + item.amount, 0);
+  const purchasedProducts = eventProducts.filter((item) => item.status === "PURCHASED");
+  const totalActual = purchasedProducts.reduce((sum, item) => sum + item.price * item.quantity, 0);
 
   const statusCounts = eventProducts.reduce<Record<string, number>>((acc, item) => {
     acc[item.status] = (acc[item.status] ?? 0) + 1;
@@ -273,7 +249,7 @@ export async function getDashboardData(eventId?: string) {
     totalItems: eventProducts.length,
     totalEstimated,
     totalActual,
-    remainingBudget: selectedEvent.budget - totalActual,
+    remainingBudget: selectedEvent.budget - totalEstimated,
     cashNeeded,
     rushItems,
     day1Estimated,
@@ -283,7 +259,6 @@ export async function getDashboardData(eventId?: string) {
     upcomingDeadlines,
     priorityCircles,
     products: eventProducts,
-    expenses: eventExpenses,
     locations
   };
 }
@@ -306,84 +281,6 @@ export async function getEventsWithCounts() {
     .orderBy(desc(events.startsAt));
 }
 
-export async function getExpenseSummary(eventId?: string) {
-  const targetEvent = eventId
-    ? await db.query.events.findFirst({ where: eq(events.id, eventId) })
-    : await getActiveEvent();
-
-  if (!targetEvent) {
-    return null;
-  }
-
-  const [categoryBreakdown, records, plannedFromItems] = await Promise.all([
-    db
-      .select({
-        categoryId: expenses.categoryId,
-        categoryName: expenseCategories.name,
-        total: sql<number>`sum(${expenses.amount})`
-      })
-      .from(expenses)
-      .innerJoin(expenseCategories, eq(expenseCategories.id, expenses.categoryId))
-      .where(and(eq(expenses.eventId, targetEvent.id), eq(expenses.isActual, true)))
-      .groupBy(expenses.categoryId, expenseCategories.name),
-    db.query.expenses.findMany({
-      where: eq(expenses.eventId, targetEvent.id),
-      with: {
-        category: true,
-        product: true
-      },
-      orderBy: [desc(expenses.expenseDate)]
-    }),
-    db
-      .select({
-        total: sql<number>`coalesce(sum(${products.price} * ${products.quantity}), 0)`
-      })
-      .from(products)
-      .where(
-        and(eq(products.eventId, targetEvent.id), inArray(products.status, ["TARGET", "PO_OPEN", "PO_DONE", "PURCHASED"]))
-      )
-  ]);
-
-  const actual = records.filter((item) => item.isActual).reduce((sum, item) => sum + item.amount, 0);
-
-  return {
-    event: targetEvent,
-    records,
-    categoryBreakdown,
-    totalBudget: targetEvent.budget,
-    totalPlanned: plannedFromItems[0]?.total ?? 0,
-    totalActual: actual,
-    difference: targetEvent.budget - actual
-  };
-}
-
-export async function getAdminOverviewCounts() {
-  const [eventCount, circleCount, productCount, expenseCount] = await Promise.all([
-    db.select({ value: count() }).from(events),
-    db.select({ value: count() }).from(circles),
-    db.select({ value: count() }).from(products),
-    db.select({ value: count() }).from(expenses)
-  ]);
-
-  return {
-    eventCount: eventCount[0]?.value ?? 0,
-    circleCount: circleCount[0]?.value ?? 0,
-    productCount: productCount[0]?.value ?? 0,
-    expenseCount: expenseCount[0]?.value ?? 0
-  };
-}
-
-export async function getAdminProductsForEvent(eventId?: string) {
-  return db.query.products.findMany({
-    where: eventId ? eq(products.eventId, eventId) : undefined,
-    with: {
-      event: true,
-      circle: true
-    },
-    orderBy: [desc(products.updatedAt)]
-  });
-}
-
 export async function getBooths(eventId?: string) {
   return db.query.boothLocations.findMany({
     where: eventId ? eq(boothLocations.eventId, eventId) : undefined,
@@ -392,18 +289,6 @@ export async function getBooths(eventId?: string) {
       event: true,
       circle: true,
       floorMap: true
-    }
-  });
-}
-
-export async function getExpensesAdmin(eventId?: string) {
-  return db.query.expenses.findMany({
-    where: eventId ? eq(expenses.eventId, eventId) : undefined,
-    orderBy: [desc(expenses.expenseDate), desc(expenses.createdAt)],
-    with: {
-      event: true,
-      category: true,
-      product: true
     }
   });
 }
@@ -549,7 +434,3 @@ export async function getLandingPageData() {
     locations: allLocations
   };
 }
-
-
-
-

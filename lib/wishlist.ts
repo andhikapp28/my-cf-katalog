@@ -479,3 +479,353 @@ export function calculateWishlistSummary(
     remainingTotal
   };
 }
+
+export const WISHLIST_PURCHASED_STORAGE_KEY = "comipocket_wishlist_purchased_ids";
+export const WISHLIST_PURCHASED_UPDATED_EVENT = "comipocket:wishlist-purchased-updated";
+
+let cachedPurchasedSnapshot: string[] = EMPTY_SNAPSHOT;
+let lastRawPurchasedStorage: string | null = null;
+
+function dispatchPurchasedUpdate(ids: string[]): void {
+  if (typeof window === "undefined") return;
+  try {
+    window.dispatchEvent(
+      new CustomEvent(WISHLIST_PURCHASED_UPDATED_EVENT, {
+        detail: { purchased: ids }
+      })
+    );
+  } catch {
+    // Abaikan jika lingkungan runtime tidak mendukung CustomEvent
+  }
+}
+
+/**
+ * Ambil daftar ID produk yang telah ditandai terbeli (✓) dari localStorage.
+ * Aman dipanggil di server/SSR (mengembalikan array kosong []).
+ */
+export function getPurchasedProductIds(): string[] {
+  if (typeof window === "undefined" || typeof window.localStorage === "undefined") {
+    return EMPTY_SNAPSHOT;
+  }
+
+  try {
+    const raw = window.localStorage.getItem(WISHLIST_PURCHASED_STORAGE_KEY);
+    if (!raw) return [];
+
+    const parsed = JSON.parse(raw);
+    if (!Array.isArray(parsed)) return [];
+
+    const result: string[] = [];
+    for (const item of parsed) {
+      if (typeof item === "string") {
+        const trimmed = item.trim();
+        if (trimmed && !result.includes(trimmed)) {
+          result.push(trimmed);
+        }
+      }
+    }
+    return result;
+  } catch {
+    return [];
+  }
+}
+
+/**
+ * Simpan daftar ID produk yang telah ditandai terbeli ke localStorage.
+ */
+export function savePurchasedProductIds(ids: string[]): boolean {
+  if (typeof window === "undefined" || typeof window.localStorage === "undefined") {
+    return false;
+  }
+
+  try {
+    const unique = Array.from(
+      new Set(
+        ids
+          .filter((id) => typeof id === "string" && id.trim().length > 0)
+          .map((id) => id.trim())
+      )
+    );
+
+    const serialized = JSON.stringify(unique);
+    window.localStorage.setItem(WISHLIST_PURCHASED_STORAGE_KEY, serialized);
+    lastRawPurchasedStorage = serialized;
+    cachedPurchasedSnapshot = unique;
+
+    dispatchPurchasedUpdate(unique);
+    return true;
+  } catch {
+    return false;
+  }
+}
+
+/**
+ * Tandai satu produk sebagai telah dibeli (tambahkan ke daftar terbeli).
+ */
+export function addPurchasedProduct(productId: string): boolean {
+  if (typeof window === "undefined" || typeof window.localStorage === "undefined") {
+    return false;
+  }
+  if (!productId || typeof productId !== "string") return false;
+  const trimmed = productId.trim();
+  if (!trimmed) return false;
+
+  const current = getPurchasedProductIds();
+  if (current.includes(trimmed)) {
+    return true;
+  }
+
+  return savePurchasedProductIds([...current, trimmed]);
+}
+
+/**
+ * Batalkan tanda terbeli untuk satu produk.
+ */
+export function removePurchasedProduct(productId: string): boolean {
+  if (typeof window === "undefined" || typeof window.localStorage === "undefined") {
+    return false;
+  }
+  if (!productId || typeof productId !== "string") return false;
+  const trimmed = productId.trim();
+  if (!trimmed) return false;
+
+  const current = getPurchasedProductIds();
+  const next = current.filter((id) => id !== trimmed);
+  if (next.length === current.length) {
+    return true;
+  }
+
+  return savePurchasedProductIds(next);
+}
+
+/**
+ * Toggle status checklist terbeli ('[ ] Beli' <-> '✓ Dibeli').
+ * Mengembalikan `true` bila sekarang berstatus dibeli, `false` bila batal dibeli.
+ */
+export function togglePurchasedProduct(productId: string): boolean {
+  if (typeof window === "undefined" || typeof window.localStorage === "undefined") {
+    return false;
+  }
+  if (!productId || typeof productId !== "string") return false;
+  const trimmed = productId.trim();
+  if (!trimmed) return false;
+
+  const current = getPurchasedProductIds();
+  if (current.includes(trimmed)) {
+    removePurchasedProduct(trimmed);
+    return false;
+  } else {
+    addPurchasedProduct(trimmed);
+    return true;
+  }
+}
+
+/**
+ * Cek apakah produk tertentu sudah ditandai sebagai terbeli.
+ */
+export function isProductPurchased(
+  productId: string,
+  purchasedIds?: string[] | Set<string> | null
+): boolean {
+  if (!productId || typeof productId !== "string") return false;
+  const trimmed = productId.trim();
+
+  if (purchasedIds instanceof Set) {
+    return purchasedIds.has(trimmed);
+  }
+  if (Array.isArray(purchasedIds)) {
+    return purchasedIds.includes(trimmed);
+  }
+
+  return getPurchasedProductIds().includes(trimmed);
+}
+
+/**
+ * Reset seluruh status centang terbeli.
+ */
+export function clearPurchasedProducts(): boolean {
+  if (typeof window === "undefined" || typeof window.localStorage === "undefined") {
+    return false;
+  }
+
+  try {
+    window.localStorage.removeItem(WISHLIST_PURCHASED_STORAGE_KEY);
+    lastRawPurchasedStorage = null;
+    cachedPurchasedSnapshot = EMPTY_SNAPSHOT;
+    dispatchPurchasedUpdate([]);
+    return true;
+  } catch {
+    return false;
+  }
+}
+
+/**
+ * Subscribe perubahan status terbeli untuk React / useSyncExternalStore.
+ */
+export function subscribePurchased(callback: (ids: string[]) => void): () => void {
+  if (typeof window === "undefined") {
+    return () => {};
+  }
+
+  const handleUpdate = () => {
+    callback(getPurchasedSnapshot());
+  };
+
+  const handleStorage = (event: StorageEvent) => {
+    if (event.key === WISHLIST_PURCHASED_STORAGE_KEY || event.key === null) {
+      lastRawPurchasedStorage = null;
+      callback(getPurchasedSnapshot());
+    }
+  };
+
+  window.addEventListener(WISHLIST_PURCHASED_UPDATED_EVENT, handleUpdate);
+  window.addEventListener("storage", handleStorage);
+
+  return () => {
+    window.removeEventListener(WISHLIST_PURCHASED_UPDATED_EVENT, handleUpdate);
+    window.removeEventListener("storage", handleStorage);
+  };
+}
+
+export function getPurchasedSnapshot(): string[] {
+  if (typeof window === "undefined" || typeof window.localStorage === "undefined") {
+    return EMPTY_SNAPSHOT;
+  }
+
+  try {
+    const raw = window.localStorage.getItem(WISHLIST_PURCHASED_STORAGE_KEY);
+    if (raw === lastRawPurchasedStorage) {
+      return cachedPurchasedSnapshot;
+    }
+    lastRawPurchasedStorage = raw;
+    cachedPurchasedSnapshot = getPurchasedProductIds();
+    return cachedPurchasedSnapshot;
+  } catch {
+    return EMPTY_SNAPSHOT;
+  }
+}
+
+export function getPurchasedServerSnapshot(): string[] {
+  return EMPTY_SNAPSHOT;
+}
+
+export interface AtmCashReadiness {
+  requiredCash: number;
+  cashInHand: number;
+  shortfall: number;
+  notes50k: number;
+  notes100k: number;
+  recommendedWithdrawal50k: number;
+  recommendedWithdrawal100k: number;
+  isSufficient: boolean;
+}
+
+/**
+ * Hitung kesiapan uang tunai fisik untuk ditarik di ATM ICE BSD sebelum masuk hall.
+ */
+export function calculateAtmCashReadiness(
+  requiredCash: number,
+  cashInHand: number = 0
+): AtmCashReadiness {
+  const safeCashInHand = Math.max(0, cashInHand || 0);
+  const shortfall = Math.max(0, requiredCash - safeCashInHand);
+  const notes50k = shortfall > 0 ? Math.ceil(shortfall / 50000) : 0;
+  const notes100k = shortfall > 0 ? Math.ceil(shortfall / 100000) : 0;
+  return {
+    requiredCash,
+    cashInHand: safeCashInHand,
+    shortfall,
+    notes50k,
+    notes100k,
+    recommendedWithdrawal50k: notes50k * 50000,
+    recommendedWithdrawal100k: notes100k * 100000,
+    isSufficient: shortfall === 0
+  };
+}
+
+/**
+ * Natural sort per Hall lalu per Lorong/Nomor Meja booth (e.g. Hall 8 A-15a -> Hall 9 C-02b).
+ */
+export function compareBoothOrder(
+  a: { hall?: string | null; boothCode?: string | null },
+  b: { hall?: string | null; boothCode?: string | null }
+): number {
+  const hallA = (a.hall || "").trim();
+  const hallB = (b.hall || "").trim();
+  if (hallA !== hallB) {
+    if (!hallA) return 1;
+    if (!hallB) return -1;
+    return hallA.localeCompare(hallB, undefined, { numeric: true, sensitivity: "base" });
+  }
+
+  const codeA = (a.boothCode || "").trim();
+  const codeB = (b.boothCode || "").trim();
+  if (codeA !== codeB) {
+    if (!codeA) return 1;
+    if (!codeB) return -1;
+    return codeA.localeCompare(codeB, undefined, { numeric: true, sensitivity: "base" });
+  }
+
+  return 0;
+}
+
+/**
+ * Cek apakah sebuah circle tersimpan di wishlist (baik via circleId langsung
+ * atau melalui produk-produk milik circle ini).
+ */
+export function isCircleInWishlist(
+  circleId: string,
+  circleProductIds?: string[] | null,
+  wishlistIds?: string[] | Set<string> | null
+): boolean {
+  if (!circleId) return false;
+  const trimmed = circleId.trim();
+  if (isInWishlist(trimmed, wishlistIds)) {
+    return true;
+  }
+  if (circleProductIds && circleProductIds.length > 0) {
+    return circleProductIds.some((pId) => isInWishlist(pId, wishlistIds));
+  }
+  return false;
+}
+
+/**
+ * Toggle status wishlist untuk sebuah circle.
+ * Bila sudah ada di wishlist: hapus circleId dan seluruh circleProductIds.
+ * Bila belum ada di wishlist: tambahkan circleId (dan seluruh circleProductIds bila ada).
+ * @returns boolean `true` jika sekarang tersimpan, `false` jika dihapus.
+ */
+export function toggleCircleWishlist(
+  circleId: string,
+  circleProductIds?: string[] | null
+): boolean {
+  if (typeof window === "undefined" || typeof window.localStorage === "undefined") {
+    return false;
+  }
+  if (!circleId) return false;
+  const trimmedCircleId = circleId.trim();
+  const current = getWishlistProductIds();
+  const currentlyWishlisted = isCircleInWishlist(trimmedCircleId, circleProductIds, current);
+
+  const targetIds = new Set<string>();
+  targetIds.add(trimmedCircleId);
+  if (circleProductIds) {
+    for (const pId of circleProductIds) {
+      if (pId && typeof pId === "string") {
+        targetIds.add(pId.trim());
+      }
+    }
+  }
+
+  if (currentlyWishlisted) {
+    const next = current.filter((id) => !targetIds.has(id));
+    saveWishlistProductIds(next);
+    return false;
+  } else {
+    const next = Array.from(new Set([...current, ...targetIds]));
+    saveWishlistProductIds(next);
+    return true;
+  }
+}
+
+

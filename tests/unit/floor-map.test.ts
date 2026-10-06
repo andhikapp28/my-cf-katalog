@@ -1,5 +1,12 @@
 import { describe, expect, it } from "vitest";
-import { clampScale, computeFocalTranslate, pickNextBooth } from "@/lib/floor-map";
+import {
+  clampScale,
+  computeFocalTranslate,
+  filterCircleMarkers,
+  getBoothFloorCoordinates,
+  parseCircleNotes,
+  pickNextBooth
+} from "@/lib/floor-map";
 
 describe("clampScale", () => {
   it("membatasi skala ke rentang MIN..MAX", () => {
@@ -85,3 +92,151 @@ describe("pickNextBooth", () => {
     expect(result?.boothCode).toBe("A2");
   });
 });
+
+describe("getBoothFloorCoordinates", () => {
+  it("menghitung koordinat booth Hall 8 (Island AA-AG dan Aisle A-M)", () => {
+    const aa1 = getBoothFloorCoordinates("AA-01", "Hall 8");
+    const c2 = getBoothFloorCoordinates("C-02b", "Hall 8");
+    const m40 = getBoothFloorCoordinates("M-40", "Hall 8");
+
+    expect(aa1.x).toBeGreaterThan(5);
+    expect(aa1.x).toBeLessThan(15);
+    expect(aa1.y).toBeGreaterThan(10);
+
+    expect(c2.x).toBeGreaterThan(45);
+    expect(c2.x).toBeLessThan(55);
+
+    expect(m40.x).toBeGreaterThan(90);
+  });
+
+  it("menghitung koordinat booth Hall 9 (Aisle N-S, Z dan Corporate TC)", () => {
+    const n1 = getBoothFloorCoordinates("N-01", "Hall 9");
+    const tc12 = getBoothFloorCoordinates("TC-12", "Hall 9");
+
+    expect(n1.x).toBeGreaterThan(10);
+    expect(n1.x).toBeLessThan(20);
+
+    expect(tc12.x).toBeGreaterThan(65);
+    expect(tc12.x).toBeLessThan(95);
+  });
+});
+
+describe("parseCircleNotes", () => {
+  it("mengekstrak fandom, rating, circle cut, dan media sosial dengan benar", () => {
+    const notes = [
+      "Booth: AA-01 (Both Days)",
+      "Fandom: Genshin Impact (Honkai Star Rail)",
+      "Rating: Mature (18+)",
+      "Kategori: Artbook, Merchandise/Goods",
+      "Circle Cut: https://example.com/cut.jpg",
+      "X/Twitter: https://x.com/hanami",
+      "Instagram: https://instagram.com/hanami",
+      "Bio: Ilustrator spesialis anime fantasy"
+    ].join("\n");
+
+    const meta = parseCircleNotes(notes, "https://x.com/hanami");
+    expect(meta.fandom).toBe("Genshin Impact (Honkai Star Rail)");
+    expect(meta.rating).toBe("M");
+    expect(meta.circleCutUrl).toBe("https://example.com/cut.jpg");
+    expect(meta.categories).toContain("Artbook");
+    expect(meta.socialLinks.length).toBeGreaterThanOrEqual(2);
+    expect(meta.description).toContain("Ilustrator spesialis anime fantasy");
+  });
+});
+
+describe("filterCircleMarkers", () => {
+  const sampleMarkers: import("@/lib/floor-map").CircleMarker[] = [
+    {
+      id: "b1",
+      circleId: "c1",
+      circleName: "Atelier Hanami",
+      boothCode: "A-15a",
+      day: "DAY_1",
+      dayLabel: "Day 1 (Sabtu)",
+      rating: "GA",
+      fandom: "Hololive",
+      description: "Artbook Holo",
+      sampleWorks: [],
+      socialLinks: [],
+      categories: ["Artbook"],
+      posX: 25,
+      posY: 40,
+      isHighlighted: true,
+      isDone: false,
+      hasRush: true,
+      products: [{ id: "p1", name: "Holo Artbook", price: 150000 }]
+    },
+    {
+      id: "b2",
+      circleId: "c2",
+      circleName: "Mikan Press",
+      boothCode: "C-02b",
+      day: "ALL_DAYS",
+      dayLabel: "Both Days",
+      rating: "GA",
+      fandom: "Original",
+      description: "Doujinshi",
+      sampleWorks: [],
+      socialLinks: [],
+      categories: ["Comic"],
+      posX: 52,
+      posY: 35,
+      isHighlighted: false,
+      isDone: false,
+      hasRush: false,
+      products: []
+    },
+    {
+      id: "b3",
+      circleId: "c3",
+      circleName: "Hoshizora Project",
+      boothCode: "G-08",
+      day: "DAY_2",
+      dayLabel: "Day 2 (Minggu)",
+      rating: "GA",
+      fandom: "Genshin Impact",
+      description: "Merchandise",
+      sampleWorks: [],
+      socialLinks: [],
+      categories: ["Goods"],
+      posX: 75,
+      posY: 65,
+      isHighlighted: false,
+      isDone: false,
+      hasRush: false,
+      products: []
+    }
+  ];
+
+  it("memfilter marker berdasarkan teks pencarian (nama circle / booth code / fandom)", () => {
+    const byName = filterCircleMarkers(sampleMarkers, { search: "Atelier" });
+    expect(byName.filtered.length).toBe(1);
+    expect(byName.filtered[0].circleName).toBe("Atelier Hanami");
+
+    const byBooth = filterCircleMarkers(sampleMarkers, { search: "C-02" });
+    expect(byBooth.filtered.length).toBe(1);
+    expect(byBooth.filtered[0].circleName).toBe("Mikan Press");
+
+    const byFandom = filterCircleMarkers(sampleMarkers, { search: "Genshin" });
+    expect(byFandom.filtered.length).toBe(1);
+    expect(byFandom.filtered[0].circleName).toBe("Hoshizora Project");
+  });
+
+  it("memfilter marker berdasarkan hari", () => {
+    const day1 = filterCircleMarkers(sampleMarkers, { dayFilter: "DAY_1" });
+    expect(day1.filtered.length).toBe(2);
+
+    const day2 = filterCircleMarkers(sampleMarkers, { dayFilter: "DAY_2" });
+    expect(day2.filtered.length).toBe(2);
+  });
+
+  it("memfilter marker berdasarkan status wishlist", () => {
+    const wishResult = filterCircleMarkers(sampleMarkers, {
+      dayFilter: "WISHLIST",
+      wishlistIds: new Set(["c1"])
+    });
+    expect(wishResult.filtered.length).toBe(1);
+    expect(wishResult.filtered[0].circleId).toBe("c1");
+  });
+});
+

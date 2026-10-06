@@ -1,17 +1,3 @@
-import React, { type ReactNode } from "react";
-import {
-  Banknote,
-  Boxes,
-  LayoutDashboard,
-  ListChecks,
-  Map,
-  MapPinned,
-  PackagePlus,
-  Settings,
-  ShoppingBag,
-  Users2
-} from "lucide-react";
-
 export const productStatuses = [
   "TARGET",
   "PO_OPEN",
@@ -23,7 +9,6 @@ export const productStatuses = [
 
 export const priorities = ["HIGH", "MEDIUM", "LOW"] as const;
 export const purchaseTypes = ["PO", "ON_THE_SPOT"] as const;
-export const paymentMethods = ["CASH", "QRIS", "CARD", "BANK_TRANSFER", "E_WALLET", "OTHER"] as const;
 export const eventDays = ["DAY_1", "DAY_2", "ALL_DAYS"] as const;
 export type EventDay = (typeof eventDays)[number];
 
@@ -59,19 +44,3 @@ export const priorityStyles: Record<(typeof priorities)[number], string> = {
   MEDIUM: "bg-amber-500/10 text-amber-700 ring-amber-600/20",
   LOW: "bg-emerald-500/10 text-emerald-700 ring-emerald-600/20"
 };
-
-export const adminNavigation: Array<{ href: string; label: string; icon: ReactNode }> = [
-  { href: "/admin", label: "Dashboard", icon: <LayoutDashboard className="h-4 w-4" /> },
-  { href: "/admin/checklist", label: "Checklist Mode", icon: <ListChecks className="h-4 w-4" /> },
-  { href: "/admin/catalog/new", label: "Quick Catalog", icon: <PackagePlus className="h-4 w-4" /> },
-  { href: "/admin/events", label: "Events", icon: <Boxes className="h-4 w-4" /> },
-  { href: "/admin/circles", label: "Circles", icon: <Users2 className="h-4 w-4" /> },
-  { href: "/admin/floor-maps", label: "Floor Maps", icon: <Map className="h-4 w-4" /> },
-  { href: "/admin/booths", label: "Booth Locations", icon: <MapPinned className="h-4 w-4" /> },
-  { href: "/admin/products", label: "Products", icon: <ShoppingBag className="h-4 w-4" /> },
-  { href: "/admin/expenses", label: "Expenses", icon: <Banknote className="h-4 w-4" /> },
-  { href: "/admin/settings", label: "Settings", icon: <Settings className="h-4 w-4" /> }
-];
-
-
-

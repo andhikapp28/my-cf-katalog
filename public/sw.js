@@ -20,12 +20,10 @@
  *   event, tapi tetap ter-refresh di background saat online.
  * - Stale-while-revalidate untuk halaman PUBLIK yang relevan dipakai offline
  *   saat event: "/", "/events", "/events/:slug", "/products", "/products/:id",
- *   "/circles", "/circles/:id", "/maps", "/maps/:id", "/expenses".
- * - TIDAK PERNAH meng-intercept/cache "/admin/*" — halaman admin butuh sesi
- *   login live dan mutasi data tidak boleh silently menampilkan data basi.
+ *   "/circles", "/circles/:id", "/maps", "/maps/:id", "/wishlist", "/docs".
  */
 
-const CACHE_VERSION = "v3";
+const CACHE_VERSION = "v4";
 const STATIC_CACHE = `comipocket-static-${CACHE_VERSION}`;
 const PAGES_CACHE = `comipocket-pages-${CACHE_VERSION}`;
 const IMAGE_CACHE = `comipocket-images-${CACHE_VERSION}`;
@@ -37,7 +35,8 @@ const PUBLIC_PAGE_PATTERNS = [
   /^\/products(\/.*)?$/,
   /^\/circles(\/.*)?$/,
   /^\/maps(\/.*)?$/,
-  /^\/expenses\/?$/
+  /^\/wishlist\/?$/,
+  /^\/docs\/?$/
 ];
 
 self.addEventListener("install", () => {
@@ -105,11 +104,6 @@ self.addEventListener("fetch", (event) => {
 
   const url = new URL(request.url);
   const isSameOrigin = url.origin === self.location.origin;
-
-  // Jangan pernah cache admin — butuh sesi live, mutasi tidak boleh basi.
-  if (isSameOrigin && url.pathname.startsWith("/admin")) {
-    return;
-  }
 
   if (isSameOrigin && url.pathname.startsWith("/_next/static/")) {
     event.respondWith(cacheFirst(request, STATIC_CACHE));

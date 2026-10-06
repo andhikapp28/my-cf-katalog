@@ -35,7 +35,7 @@ export function PreloadOfflineButton({
         "/products",
         "/circles",
         "/maps",
-        "/expenses",
+        "/wishlist",
         ...productIds.slice(0, 30).map((id) => `/products/${id}`),
         ...mapIds.map((id) => `/maps/${id}`),
         ...circleIds.slice(0, 20).map((id) => `/circles/${id}`)

@@ -5,7 +5,7 @@ import { EmptyState } from "@/components/ui/empty-state";
 import { Input } from "@/components/ui/input";
 import { Select } from "@/components/ui/select";
 import { ProductCard } from "@/components/products/product-card";
-import { AdminPagination } from "@/components/admin/admin-pagination";
+import { Pagination } from "@/components/ui/pagination";
 import { getBooths, getCircleList, getEventList, getProducts } from "@/db/queries";
 import { getPageParam, paginateItems, type SearchParams } from "@/lib/admin-ui";
 
@@ -104,9 +104,6 @@ export default async function ProductsPage({
           <p className="text-xs uppercase tracking-[0.18em] text-ink-500">Visible Items</p>
           <p className="font-semibold text-ink-900">{products.length} results</p>
         </div>
-        <Link href="/expenses" className="rounded-full bg-brand-500 px-4 py-2 font-medium text-white">
-          Add spend
-        </Link>
       </div>
 
       {pagination.totalItems ? (
@@ -144,7 +141,7 @@ export default async function ProductsPage({
             </div>
           )}
 
-          <AdminPagination
+          <Pagination
             page={pagination.page}
             pageSize={pagination.pageSize}
             totalItems={pagination.totalItems}

@@ -4,7 +4,7 @@ import Link from "next/link";
 import { Card, CardContent } from "@/components/ui/card";
 import { EmptyState } from "@/components/ui/empty-state";
 import { Input } from "@/components/ui/input";
-import { AdminPagination } from "@/components/admin/admin-pagination";
+import { Pagination } from "@/components/ui/pagination";
 import { getCircleList } from "@/db/queries";
 import { getPageParam, getSearchParam, paginateItems, type SearchParams } from "@/lib/admin-ui";
 
@@ -77,7 +77,7 @@ export default async function CirclesPage({
             ))}
           </div>
 
-          <AdminPagination
+          <Pagination
             page={pagination.page}
             pageSize={pagination.pageSize}
             totalItems={pagination.totalItems}

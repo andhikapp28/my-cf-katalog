@@ -13,7 +13,6 @@ import {
 } from "drizzle-orm/pg-core";
 import { relations } from "drizzle-orm";
 
-export const userRoleEnum = pgEnum("user_role", ["ADMIN"]);
 export const eventDayEnum = pgEnum("event_day", ["DAY_1", "DAY_2", "ALL_DAYS"]);
 export const productStatusEnum = pgEnum("product_status", [
   "TARGET",
@@ -25,31 +24,11 @@ export const productStatusEnum = pgEnum("product_status", [
 ]);
 export const priorityEnum = pgEnum("priority", ["HIGH", "MEDIUM", "LOW"]);
 export const purchaseTypeEnum = pgEnum("purchase_type", ["PO", "ON_THE_SPOT"]);
-export const paymentMethodEnum = pgEnum("payment_method", [
-  "CASH",
-  "QRIS",
-  "CARD",
-  "BANK_TRANSFER",
-  "E_WALLET",
-  "OTHER"
-]);
 
 const timestamps = {
   createdAt: timestamp("created_at", { withTimezone: true }).defaultNow().notNull(),
   updatedAt: timestamp("updated_at", { withTimezone: true }).defaultNow().notNull()
 };
-
-export const users = pgTable(
-  "users",
-  {
-    id: uuid("id").defaultRandom().primaryKey(),
-    email: varchar("email", { length: 255 }).notNull(),
-    passwordHash: text("password_hash").notNull(),
-    role: userRoleEnum("role").notNull().default("ADMIN"),
-    ...timestamps
-  },
-  (table) => [uniqueIndex("users_email_unique").on(table.email)]
-);
 
 export const events = pgTable(
   "events",
@@ -173,70 +152,10 @@ export const products = pgTable(
   ]
 );
 
-export const expenseCategories = pgTable(
-  "expense_categories",
-  {
-    id: uuid("id").defaultRandom().primaryKey(),
-    name: varchar("name", { length: 120 }).notNull(),
-    slug: varchar("slug", { length: 140 }).notNull(),
-    color: varchar("color", { length: 16 }).notNull().default("#D46A3A"),
-    ...timestamps
-  },
-  (table) => [uniqueIndex("expense_categories_slug_unique").on(table.slug)]
-);
-
-export const expenses = pgTable(
-  "expenses",
-  {
-    id: uuid("id").defaultRandom().primaryKey(),
-    eventId: uuid("event_id")
-      .notNull()
-      .references(() => events.id, { onDelete: "cascade" }),
-    productId: uuid("product_id").references(() => products.id, { onDelete: "set null" }),
-    categoryId: uuid("category_id")
-      .notNull()
-      .references(() => expenseCategories.id, { onDelete: "restrict" }),
-    amount: integer("amount").notNull(),
-    expenseDate: date("expense_date").notNull(),
-    note: text("note"),
-    paymentMethod: paymentMethodEnum("payment_method").notNull().default("CASH"),
-    isPlanned: boolean("is_planned").notNull().default(false),
-    isActual: boolean("is_actual").notNull().default(true),
-    ...timestamps
-  },
-  (table) => [
-    index("expenses_event_idx").on(table.eventId),
-    index("expenses_category_idx").on(table.categoryId),
-    index("expenses_product_idx").on(table.productId),
-    index("expenses_date_idx").on(table.expenseDate)
-  ]
-);
-
-export const productStatusLogs = pgTable(
-  "product_status_logs",
-  {
-    id: uuid("id").defaultRandom().primaryKey(),
-    productId: uuid("product_id")
-      .notNull()
-      .references(() => products.id, { onDelete: "cascade" }),
-    fromStatus: productStatusEnum("from_status"),
-    toStatus: productStatusEnum("to_status").notNull(),
-    note: text("note"),
-    createdBy: uuid("created_by").references(() => users.id, { onDelete: "set null" }),
-    createdAt: timestamp("created_at", { withTimezone: true }).defaultNow().notNull()
-  },
-  (table) => [index("product_status_logs_product_idx").on(table.productId, table.createdAt)]
-);
-
-export const usersRelations = relations(users, ({ many }) => ({
-  statusLogs: many(productStatusLogs)
-}));
-
 export const eventsRelations = relations(events, ({ many }) => ({
   floorMaps: many(floorMaps),
   boothLocations: many(boothLocations),
-  products: many(products),
-  expenses: many(expenses)
+  products: many(products)
 }));
 
 export const circlesRelations = relations(circles, ({ many }) => ({
@@ -267,7 +186,7 @@ export const boothLocationsRelations = relations(boothLocations, ({ one }) => ({
   })
 }));
 
-export const productsRelations = relations(products, ({ one, many }) => ({
+export const productsRelations = relations(products, ({ one }) => ({
   event: one(events, {
     fields: [products.eventId],
     references: [events.id]
@@ -275,47 +194,12 @@ export const productsRelations = relations(products, ({ one, many }) => ({
   circle: one(circles, {
     fields: [products.circleId],
     references: [circles.id]
-  }),
-  expenses: many(expenses),
-  statusLogs: many(productStatusLogs)
-}));
-
-export const expenseCategoriesRelations = relations(expenseCategories, ({ many }) => ({
-  expenses: many(expenses)
-}));
-
-export const expensesRelations = relations(expenses, ({ one }) => ({
-  event: one(events, {
-    fields: [expenses.eventId],
-    references: [events.id]
-  }),
-  product: one(products, {
-    fields: [expenses.productId],
-    references: [products.id]
-  }),
-  category: one(expenseCategories, {
-    fields: [expenses.categoryId],
-    references: [expenseCategories.id]
   })
 }));
 
-export const productStatusLogsRelations = relations(productStatusLogs, ({ one }) => ({
-  product: one(products, {
-    fields: [productStatusLogs.productId],
-    references: [products.id]
-  }),
-  createdByUser: one(users, {
-    fields: [productStatusLogs.createdBy],
-    references: [users.id]
-  })
-}));
-
-export type User = typeof users.$inferSelect;
 export type Event = typeof events.$inferSelect;
 export type Circle = typeof circles.$inferSelect;
 export type FloorMap = typeof floorMaps.$inferSelect;
 export type BoothLocation = typeof boothLocations.$inferSelect;
 export type Product = typeof products.$inferSelect;
-export type ExpenseCategory = typeof expenseCategories.$inferSelect;
-export type Expense = typeof expenses.$inferSelect;
 export type EventDay = (typeof eventDayEnum.enumValues)[number];

@@ -1,33 +1,11 @@
 import { describe, expect, it } from "vitest";
 import {
   boothLocationSchema,
-  catalogEntrySchema,
   circleSchema,
   eventSchema,
-  expenseCategorySchema,
-  expenseSchema,
   floorMapSchema,
-  loginSchema,
-  productSchema,
-  quickStatusSchema
+  productSchema
 } from "@/lib/validators";
-
-describe("loginSchema", () => {
-  it("menerima email dan password valid", () => {
-    const result = loginSchema.safeParse({ email: "admin@example.com", password: "password123" });
-    expect(result.success).toBe(true);
-  });
-
-  it("menolak email yang tidak valid", () => {
-    const result = loginSchema.safeParse({ email: "not-an-email", password: "password123" });
-    expect(result.success).toBe(false);
-  });
-
-  it("menolak password yang lebih pendek dari 8 karakter", () => {
-    const result = loginSchema.safeParse({ email: "admin@example.com", password: "short" });
-    expect(result.success).toBe(false);
-  });
-});
 
 describe("eventSchema", () => {
   const base = {
@@ -230,139 +208,5 @@ describe("productSchema", () => {
       expect(result.data.targetDay).toBe("ALL_DAYS");
       expect(result.data.isRush).toBe(false);
     }
-  });
-});
-
-describe("quickStatusSchema", () => {
-  it("menerima productId dan status valid", () => {
-    const result = quickStatusSchema.safeParse({
-      productId: "11111111-1111-1111-1111-111111111111",
-      status: "PO_OPEN"
-    });
-    expect(result.success).toBe(true);
-  });
-
-  it("menolak status enum yang tidak valid (mencegah cast langsung dari FormData)", () => {
-    const result = quickStatusSchema.safeParse({
-      productId: "11111111-1111-1111-1111-111111111111",
-      status: "INVALID_STATUS"
-    });
-    expect(result.success).toBe(false);
-  });
-});
-
-describe("expenseCategorySchema", () => {
-  it("menerima payload valid", () => {
-    const result = expenseCategorySchema.safeParse({
-      name: "Merchandise",
-      slug: "merchandise",
-      color: "#D46A3A"
-    });
-    expect(result.success).toBe(true);
-  });
-
-  it("menolak color yang terlalu pendek", () => {
-    const result = expenseCategorySchema.safeParse({
-      name: "Merchandise",
-      slug: "merchandise",
-      color: "#F"
-    });
-    expect(result.success).toBe(false);
-  });
-});
-
-describe("expenseSchema", () => {
-  const base = {
-    eventId: "11111111-1111-1111-1111-111111111111",
-    categoryId: "22222222-2222-2222-2222-222222222222",
-    amount: 50000,
-    expenseDate: "2026-07-18",
-    paymentMethod: "QRIS"
-  };
-
-  it("menerima expense actual saja", () => {
-    const result = expenseSchema.safeParse({ ...base, isPlanned: false, isActual: true });
-    expect(result.success).toBe(true);
-  });
-
-  it("menerima expense planned saja", () => {
-    const result = expenseSchema.safeParse({ ...base, isPlanned: true, isActual: false });
-    expect(result.success).toBe(true);
-  });
-
-  it("menolak jika keduanya planned dan actual false (refine)", () => {
-    const result = expenseSchema.safeParse({ ...base, isPlanned: false, isActual: false });
-    expect(result.success).toBe(false);
-  });
-
-  it("menolak amount nol atau negatif", () => {
-    const result = expenseSchema.safeParse({ ...base, amount: 0, isActual: true });
-    expect(result.success).toBe(false);
-  });
-});
-
-describe("catalogEntrySchema", () => {
-  const eventId = "11111111-1111-1111-1111-111111111111";
-  const product = {
-    name: "Original Character Acrylic Stand",
-    price: 95000,
-    status: "TARGET",
-    priority: "MEDIUM",
-    quantity: 1,
-    purchaseType: "ON_THE_SPOT"
-  };
-
-  it("menerima circle mode existing dengan minimal 1 produk", () => {
-    const result = catalogEntrySchema.safeParse({
-      eventId,
-      circle: { mode: "existing", id: "22222222-2222-2222-2222-222222222222" },
-      products: [product]
-    });
-    expect(result.success).toBe(true);
-  });
-
-  it("menerima circle mode new dengan minimal 1 produk", () => {
-    const result = catalogEntrySchema.safeParse({
-      eventId,
-      circle: { mode: "new", name: "Mikan Press" },
-      products: [product]
-    });
-    expect(result.success).toBe(true);
-  });
-
-  it("menolak discriminated union tanpa mode yang valid", () => {
-    const result = catalogEntrySchema.safeParse({
-      eventId,
-      circle: { mode: "unknown" },
-      products: [product]
-    });
-    expect(result.success).toBe(false);
-  });
-
-  it("menolak circle mode existing tanpa id uuid", () => {
-    const result = catalogEntrySchema.safeParse({
-      eventId,
-      circle: { mode: "existing" },
-      products: [product]
-    });
-    expect(result.success).toBe(false);
-  });
-
-  it("menolak array produk kosong (min 1)", () => {
-    const result = catalogEntrySchema.safeParse({
-      eventId,
-      circle: { mode: "new", name: "Mikan Press" },
-      products: []
-    });
-    expect(result.success).toBe(false);
-  });
-
-  it("menolak array produk lebih dari 20 (max 20)", () => {
-    const result = catalogEntrySchema.safeParse({
-      eventId,
-      circle: { mode: "new", name: "Mikan Press" },
-      products: Array.from({ length: 21 }, () => product)
-    });
-    expect(result.success).toBe(false);
   });
 });

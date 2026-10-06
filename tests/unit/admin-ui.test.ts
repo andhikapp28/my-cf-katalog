@@ -49,17 +49,17 @@ describe("getPageParam", () => {
 
 describe("buildPathWithQuery", () => {
   it("mengembalikan path tanpa query bila semua value kosong/undefined", () => {
-    expect(buildPathWithQuery("/admin/products", { q: undefined, status: "" })).toBe("/admin/products");
+    expect(buildPathWithQuery("/products", { q: undefined, status: "" })).toBe("/products");
   });
 
   it("menambahkan query string untuk value yang truthy", () => {
-    const result = buildPathWithQuery("/admin/products", { q: "book", status: "TARGET" });
-    expect(result).toBe("/admin/products?q=book&status=TARGET");
+    const result = buildPathWithQuery("/products", { q: "book", status: "TARGET" });
+    expect(result).toBe("/products?q=book&status=TARGET");
   });
 
   it("mengabaikan key dengan value falsy", () => {
-    const result = buildPathWithQuery("/admin/products", { q: "book", event: undefined });
-    expect(result).toBe("/admin/products?q=book");
+    const result = buildPathWithQuery("/products", { q: "book", event: undefined });
+    expect(result).toBe("/products?q=book");
   });
 });
 

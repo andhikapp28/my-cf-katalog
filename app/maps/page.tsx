@@ -1,46 +1,122 @@
 export const revalidate = 120;
 
-import Link from "next/link";
-import { Card, CardContent } from "@/components/ui/card";
+import { Compass, MapPin, Sparkles, WifiOff, Heart } from "lucide-react";
 import { EmptyState } from "@/components/ui/empty-state";
-import { getFloorMapsList } from "@/db/queries";
+import { FloorMapViewer } from "@/components/maps/floor-map-viewer";
+import { getInteractiveMapData } from "@/lib/map-data";
 
-export default async function MapsPage() {
-  const maps = await getFloorMapsList();
+export default async function MapsPage({
+  searchParams
+}: {
+  searchParams: Promise<Record<string, string | string[] | undefined>>;
+}) {
+  const query = await searchParams;
+  const targetMapId = typeof query.mapId === "string" ? query.mapId : undefined;
+  const selectedCircleId = typeof query.circleId === "string" ? query.circleId : undefined;
 
-  if (!maps.length) {
+  const data = await getInteractiveMapData(targetMapId);
+
+  if (!data) {
     return (
-      <div className="container-shell py-10">
-        <EmptyState title="Belum ada floor map" description="Upload denah event dari admin panel untuk mulai melacak booth circle." />
+      <div className="container-shell py-12">
+        <EmptyState
+          title="Belum ada denah venue"
+          description="Upload denah event dari admin panel untuk mulai melacak lokasi booth circle kreator."
+        />
       </div>
     );
   }
 
+  const { event, currentMap, allFloorMaps, markers } = data;
+
   return (
-    <div className="container-shell space-y-6 py-8">
-      <div>
-        <p className="text-xs uppercase tracking-[0.28em] text-ink-500">Maps</p>
-        <h1 className="mt-2 font-[var(--font-display)] text-4xl font-semibold tracking-tight">Floor maps per event</h1>
-      </div>
-      <div className="grid gap-5 md:grid-cols-2 xl:grid-cols-3">
-        {maps.map((map) => (
-          <Card key={map.id}>
-            <CardContent className="space-y-3">
-              <p className="text-sm text-ink-500">{map.event.name}</p>
-              <Link
-                href={`/maps/${map.id}`}
-                className="font-[var(--font-display)] text-2xl font-semibold text-ink-900 hover:text-brand-700"
-              >
-                {map.name}
-              </Link>
-              <p className="text-sm text-ink-500">{map.width} x {map.height}</p>
-              <Link href={`/maps/${map.id}`} className="inline-flex rounded-full border border-line px-4 py-2 text-sm font-medium text-ink-700">
-                Open map
-              </Link>
-            </CardContent>
-          </Card>
-        ))}
-      </div>
+    <div className="container-shell space-y-6 py-6 sm:py-8">
+      {/* =================================================================== */}
+      {/* HEADER: TANALOKA EDITORIAL TITLE                                    */}
+      {/* =================================================================== */}
+      <section className="panel p-6 sm:p-8">
+        <div className="flex flex-col md:flex-row md:items-end md:justify-between gap-4">
+          <div className="space-y-2">
+            <div className="flex flex-wrap items-center gap-2">
+              <span className="inline-flex items-center gap-1.5 rounded-full bg-[#5398DA]/15 px-3 py-1 text-xs font-bold text-[#5398DA] border border-[#5398DA]/30">
+                <MapPin className="h-3.5 w-3.5" />
+                ICE BSD City · Hall 8 & 9
+              </span>
+              <span className="inline-flex items-center gap-1 rounded-full bg-[#D6F834]/15 px-3 py-1 text-xs font-bold text-ink-900 border border-[#D6F834]/40">
+                <Sparkles className="h-3 w-3 text-brand-600" />
+                {event.name}
+              </span>
+            </div>
+
+            <h1 className="font-[var(--font-display)] text-4xl sm:text-5xl font-black uppercase tracking-tight text-ink-900 leading-none">
+              Peta Interaktif & Hunting Route
+            </h1>
+
+            <p className="max-w-2xl text-xs sm:text-sm text-ink-500 leading-relaxed">
+              Denah arsitektural hall ICE BSD lengkap dengan pencarian instan nama circle, nomor meja booth
+              (mis. <strong className="text-ink-900 font-semibold font-[var(--font-mono)]">AA-01</strong>,{" "}
+              <strong className="text-ink-900 font-semibold font-[var(--font-mono)]">TC-12</strong>),
+              filter jadwal hari, dan galeri karya attendee.
+            </p>
+          </div>
+
+          <div className="flex items-center gap-2 shrink-0">
+            <span className="rounded-2xl border border-line bg-white/80 px-4 py-2.5 text-xs font-bold text-ink-700 shadow-xs">
+              <strong className="text-brand-600">{markers.length}</strong> Booth Terdata
+            </span>
+          </div>
+        </div>
+      </section>
+
+      {/* =================================================================== */}
+      {/* INTERACTIVE FLOOR MAP VIEWER COMPONENT                              */}
+      {/* =================================================================== */}
+      <FloorMapViewer
+        name={currentMap.name}
+        hall={currentMap.hall}
+        imageUrl={currentMap.imageUrl}
+        width={currentMap.width}
+        height={currentMap.height}
+        markers={markers}
+        initialCircleId={selectedCircleId}
+        currentHallId={currentMap.id}
+        halls={allFloorMaps.map((m) => ({ id: m.id, name: m.name, hall: m.hall }))}
+      />
+
+      {/* =================================================================== */}
+      {/* PANDUAN PENGGUNAAN & VENUE TIPS                                      */}
+      {/* =================================================================== */}
+      <section className="grid gap-4 sm:grid-cols-3">
+        <div className="panel p-5 space-y-2">
+          <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-[#5398DA]/15 text-[#5398DA]">
+            <Compass className="h-5 w-5" />
+          </div>
+          <h3 className="font-bold text-sm text-ink-900">Pencarian & Filter Cepat</h3>
+          <p className="text-xs text-ink-500 leading-relaxed">
+            Ketik nomor meja (mis. <span className="font-[var(--font-mono)] font-bold text-ink-700">A-15a</span>) atau judul fandom untuk langsung menyorot marker di denah.
+          </p>
+        </div>
+
+        <div className="panel p-5 space-y-2">
+          <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-[#FF4838]/15 text-[#FF4838]">
+            <Heart className="h-5 w-5 fill-current" />
+          </div>
+          <h3 className="font-bold text-sm text-ink-900">Integrasi Wishlist Tamu</h3>
+          <p className="text-xs text-ink-500 leading-relaxed">
+            Klik tombol hati pada detail circle untuk menyimpan ke daftar belanja offline dan menghitung kesiapan uang tunai fisik.
+          </p>
+        </div>
+
+        <div className="panel p-5 space-y-2">
+          <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-[#D6F834]/30 text-ink-900">
+            <WifiOff className="h-5 w-5" />
+          </div>
+          <h3 className="font-bold text-sm text-ink-900">100% Siap Dipakai Offline</h3>
+          <p className="text-xs text-ink-500 leading-relaxed">
+            Denah vektor arsitektural hall tetap tajam dan responsif meskipun jaringan seluler di dalam venue ICE BSD mengalami blackout sinyal.
+          </p>
+        </div>
+      </section>
     </div>
   );
 }

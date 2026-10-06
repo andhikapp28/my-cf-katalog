@@ -56,8 +56,8 @@ export function SiteFooter() {
                 </Link>
               </li>
               <li>
-                <Link href="/expenses" className="hover:text-[#111215] transition-colors">
-                  Kalkulator Belanja & ATM
+                <Link href="/wishlist" className="hover:text-[#111215] transition-colors">
+                  Wishlist & Checklist
                 </Link>
               </li>
             </ul>
@@ -65,17 +65,17 @@ export function SiteFooter() {
 
           <div className="lg:col-span-3 space-y-2.5">
             <p className="font-mono text-xs font-bold uppercase tracking-widest text-[#F84632]">
-              Sistem & Admin
+              Sistem & Komunitas
             </p>
             <ul className="space-y-1.5 text-sm font-medium text-zinc-600">
               <li>
-                <Link href="/admin" className="hover:text-[#111215] transition-colors">
-                  Admin Control Panel
+                <Link href="/events" className="hover:text-[#111215] transition-colors">
+                  Arsip Comic Frontier
                 </Link>
               </li>
               <li>
-                <Link href="/events" className="hover:text-[#111215] transition-colors">
-                  Arsip Comic Frontier
+                <Link href="/docs" className="hover:text-[#111215] transition-colors">
+                  Dokumentasi Panduan
                 </Link>
               </li>
               <li>

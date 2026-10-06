@@ -46,7 +46,7 @@ export default async function EventDetailPage({ params }: { params: Promise<{ sl
 
   const eventState = getEventState(event.startsAt, event.isActive);
   const budgetUsage = Math.min(100, Math.round((dashboard.totalActual / Math.max(event.budget, 1)) * 100));
-  const trackedCircles = new Set(dashboard.products.map((item) => item.circleId)).size;
+  const trackedCircles = new Set(dashboard.products.map((item: { circleId: string }) => item.circleId)).size;
 
   return (
     <div className="container-shell space-y-8 py-8 md:py-10">
@@ -261,8 +261,8 @@ export default async function EventDetailPage({ params }: { params: Promise<{ sl
               <Link href="/maps" className="rounded-3xl border border-line bg-white/70 px-5 py-5 text-sm font-medium text-ink-800 transition hover:border-brand-300 hover:text-brand-700">
                 Check floor maps
               </Link>
-              <Link href="/expenses" className="rounded-3xl border border-line bg-white/70 px-5 py-5 text-sm font-medium text-ink-800 transition hover:border-brand-300 hover:text-brand-700">
-                Review expenses
+              <Link href="/wishlist" className="rounded-3xl border border-line bg-white/70 px-5 py-5 text-sm font-medium text-ink-800 transition hover:border-brand-300 hover:text-brand-700">
+                Buka wishlist & checklist
               </Link>
               <Link href="/circles" className="rounded-3xl border border-line bg-white/70 px-5 py-5 text-sm font-medium text-ink-800 transition hover:border-brand-300 hover:text-brand-700">
                 Browse circles

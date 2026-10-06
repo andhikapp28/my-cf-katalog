@@ -6,8 +6,9 @@ import { Zap } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
 import { ProductImage } from "@/components/products/product-image";
+import { WishlistHeartButton } from "@/components/wishlist/wishlist-heart-button";
 import { getBoothLocationForCircle, getProductById } from "@/db/queries";
-import { formatCurrency, formatDateTime } from "@/lib/format";
+import { formatCurrency } from "@/lib/format";
 import {
   eventDayBadgeStyles,
   eventDayLabels,
@@ -87,7 +88,13 @@ export default async function ProductDetailPage({ params }: { params: Promise<{ 
               <p className="mt-1 font-mono text-base font-semibold">{product.poPickupNotes}</p>
             </div>
           ) : null}
-          <div className="mt-5 flex flex-wrap gap-3">
+          <div className="mt-5 flex flex-wrap items-center gap-3">
+            <WishlistHeartButton
+              productId={product.id}
+              productName={product.name}
+              size="lg"
+              showLabel
+            />
             {product.productLink ? (
               <Link href={product.productLink} target="_blank" className="rounded-full bg-brand-500 px-5 py-3 text-sm font-medium text-white">
                 Open product link
@@ -103,7 +110,7 @@ export default async function ProductDetailPage({ params }: { params: Promise<{ 
         </div>
       </section>
 
-      <section className="grid gap-6 lg:grid-cols-2">
+      <section>
         <Card>
           <CardContent className="space-y-4">
             <h2 className="font-[var(--font-display)] text-2xl font-semibold">Booth info</h2>
@@ -120,25 +127,6 @@ export default async function ProductDetailPage({ params }: { params: Promise<{ 
             ) : (
               <p className="rounded-2xl border border-dashed border-line px-4 py-4 text-sm text-ink-500">Lokasi booth belum diatur untuk event ini.</p>
             )}
-          </CardContent>
-        </Card>
-        <Card>
-          <CardContent className="space-y-4">
-            <h2 className="font-[var(--font-display)] text-2xl font-semibold">Status history</h2>
-            <div className="space-y-3">
-              {product.statusLogs.length ? (
-                product.statusLogs.map((log) => (
-                  <div key={log.id} className="rounded-2xl border border-line bg-white/70 px-4 py-3 text-sm text-ink-700">
-                    <p className="font-medium text-ink-900">
-                      {log.fromStatus ? `${log.fromStatus} ? ${log.toStatus}` : log.toStatus}
-                    </p>
-                    <p className="mt-1 text-ink-500">{formatDateTime(log.createdAt)}</p>
-                  </div>
-                ))
-              ) : (
-                <p className="rounded-2xl border border-dashed border-line px-4 py-4 text-sm text-ink-500">Belum ada riwayat perubahan status.</p>
-              )}
-            </div>
           </CardContent>
         </Card>
       </section>
