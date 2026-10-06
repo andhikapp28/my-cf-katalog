@@ -356,6 +356,21 @@ export function extractUniqueFandoms(markers: CircleMarker[]): string[] {
 }
 
 /**
+ * Komparasi natural sorting kode booth (misal: A-01, A-02, A-10, AA-01, B-01).
+ * Kode kosong atau tidak terdefinisi akan diletakkan di akhir urutan.
+ */
+export function compareBoothCodes(a?: string | null, b?: string | null): number {
+  const codeA = (a || "").trim();
+  const codeB = (b || "").trim();
+
+  if (!codeA && !codeB) return 0;
+  if (!codeA) return 1;
+  if (!codeB) return -1;
+
+  return codeA.localeCompare(codeB, undefined, { numeric: true, sensitivity: "base" });
+}
+
+/**
  * Pilih booth berikutnya yang perlu dikunjungi untuk rute belanja di venue.
  */
 export function pickNextBooth(markers: BoothMarker[], currentBoothId?: string): BoothMarker | null {
@@ -370,7 +385,7 @@ export function pickNextBooth(markers: BoothMarker[], currentBoothId?: string): 
       return a.isHighlighted ? -1 : 1;
     }
 
-    return a.boothCode.localeCompare(b.boothCode, undefined, { numeric: true, sensitivity: "base" });
+    return compareBoothCodes(a.boothCode, b.boothCode);
   });
 
   if (!currentBoothId) {

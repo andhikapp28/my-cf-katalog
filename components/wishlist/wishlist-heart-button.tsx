@@ -6,8 +6,10 @@ import { toast } from "sonner";
 import {
   getWishlistServerSnapshot,
   getWishlistSnapshot,
+  isCircleInWishlist,
   isInWishlist,
   subscribeWishlist,
+  toggleCircleWishlist,
   toggleWishlist
 } from "@/lib/wishlist";
 import { cn } from "@/lib/utils";
@@ -17,13 +19,17 @@ export function WishlistHeartButton({
   productName,
   className,
   size = "md",
-  showLabel = false
+  showLabel = false,
+  isCircle = false,
+  circleProductIds
 }: {
   productId: string;
   productName?: string;
   className?: string;
   size?: "sm" | "md" | "lg";
   showLabel?: boolean;
+  isCircle?: boolean;
+  circleProductIds?: string[];
 }) {
   const [mounted, setMounted] = useState(false);
 
@@ -37,32 +43,42 @@ export function WishlistHeartButton({
     getWishlistServerSnapshot
   );
 
-  const active = mounted && isInWishlist(productId, wishlistIds);
+  const active =
+    mounted &&
+    (isCircle
+      ? isCircleInWishlist(productId, circleProductIds, wishlistIds)
+      : isInWishlist(productId, wishlistIds));
 
   const handleClick = (e: React.MouseEvent) => {
     e.preventDefault();
     e.stopPropagation();
 
     const willAdd = !active;
-    const ok = toggleWishlist(productId);
+    if (isCircle) {
+      toggleCircleWishlist(productId, circleProductIds);
+    } else {
+      toggleWishlist(productId);
+    }
 
-    if (ok) {
-      if (willAdd) {
-        toast.success(
-          productName
-            ? `"${productName}" masuk ke Wishlist!`
+    if (willAdd) {
+      toast.success(
+        productName
+          ? `"${productName}" masuk ke Wishlist!`
+          : isCircle
+            ? "Circle ditambahkan ke Wishlist!"
             : "Karya ditambahkan ke Wishlist!",
-          {
-            description: "Dapat diakses offline di menu Wishlist saat di ICE BSD."
-          }
-        );
-      } else {
-        toast.info(
-          productName
-            ? `"${productName}" dihapus dari Wishlist`
+        {
+          description: "Dapat diakses offline di menu Wishlist saat di ICE BSD."
+        }
+      );
+    } else {
+      toast.info(
+        productName
+          ? `"${productName}" dihapus dari Wishlist`
+          : isCircle
+            ? "Circle dihapus dari Wishlist"
             : "Karya dihapus dari Wishlist"
-        );
-      }
+      );
     }
   };
 

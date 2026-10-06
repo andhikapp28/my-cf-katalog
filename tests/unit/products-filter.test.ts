@@ -43,4 +43,13 @@ describe("Booth Code Sorting", () => {
 
     expect(sorted).toEqual(["A-01", "A-02", "A-10", "AA-01", "B-05", ""]);
   });
+
+  it("membangun URL filter circle dengan query q, fandom, dan sort booth", () => {
+    const url = buildPathWithQuery("/products", {
+      q: "Hanami",
+      fandom: "Hololive",
+      sort: "booth"
+    });
+    expect(url).toBe("/products?q=Hanami&fandom=Hololive&sort=booth");
+  });
 });

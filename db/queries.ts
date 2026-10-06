@@ -8,8 +8,79 @@ import {
   floorMaps,
   products
 } from "@/db/schema";
-import type { Product } from "@/db/schema";
+import type { BoothLocation, Circle, EventDay, FloorMap, Product } from "@/db/schema";
 import { checklistStatuses, sortChecklistItems } from "@/lib/checklist";
+import { compareBoothCodes, parseCircleNotes, type ParsedCircleMetadata } from "@/lib/floor-map";
+import { getCatalogCache } from "@/lib/map-data";
+
+export { compareBoothCodes } from "@/lib/floor-map";
+
+export type CatalogCircleFilters = {
+  q?: string;
+  fandom?: string;
+  day?: EventDay | string;
+  sort?: "name" | "booth" | string;
+  circleId?: string;
+  eventId?: string;
+  limit?: number;
+  offset?: number;
+};
+
+export type CatalogCircle = Circle & {
+  boothLocations: Array<
+    BoothLocation & {
+      floorMap: FloorMap | null;
+    }
+  >;
+  products: Product[];
+  metadata: ParsedCircleMetadata;
+  boothCode: string | null;
+  day: string | null;
+  dayLabel: string;
+  rating?: string | null;
+  fandom?: string | null;
+  description?: string | null;
+  circleCutUrl?: string | null;
+  sampleWorks: string[];
+  socialLinks: Array<{ platform: string; url: string; label: string }>;
+  categories: string[];
+};
+
+export function getCirclePrimaryBoothCode(circle: {
+  boothLocations?: Array<{ boothCode?: string | null }> | null;
+  boothCode?: string | null;
+}): string {
+  if (circle.boothCode && circle.boothCode.trim()) {
+    return circle.boothCode.trim();
+  }
+  if (!circle.boothLocations || circle.boothLocations.length === 0) {
+    return "";
+  }
+  const codes = circle.boothLocations
+    .map((b) => (b.boothCode || "").trim())
+    .filter(Boolean);
+  if (codes.length === 0) {
+    return "";
+  }
+  codes.sort(compareBoothCodes);
+  return codes[0] || "";
+}
+
+export function sortCirclesByBooth<
+  T extends {
+    name: string;
+    boothCode?: string | null;
+    boothLocations?: Array<{ boothCode?: string | null }> | null;
+  }
+>(circles: T[]): T[] {
+  return [...circles].sort((a, b) => {
+    const codeA = getCirclePrimaryBoothCode(a);
+    const codeB = getCirclePrimaryBoothCode(b);
+    const diff = compareBoothCodes(codeA, codeB);
+    if (diff !== 0) return diff;
+    return a.name.localeCompare(b.name, undefined, { sensitivity: "base" });
+  });
+}
 
 export type ProductListFilters = {
   q?: string;
@@ -43,6 +114,165 @@ export async function getCircleList() {
   return db.query.circles.findMany({
     orderBy: [asc(circles.name)]
   });
+}
+
+export async function getCatalogCircles(
+  filters: CatalogCircleFilters = {}
+): Promise<CatalogCircle[]> {
+  const selectedEvent =
+    (filters.eventId
+      ? await db.query.events.findFirst({ where: eq(events.id, filters.eventId) })
+      : await getActiveEvent()) ??
+    (await db.query.events.findFirst({ orderBy: [desc(events.startsAt)] }));
+
+  const circlesList = await db.query.circles.findMany({
+    with: {
+      boothLocations: selectedEvent
+        ? {
+            where: eq(boothLocations.eventId, selectedEvent.id),
+            with: { floorMap: true }
+          }
+        : {
+            with: { floorMap: true }
+          },
+      products: selectedEvent
+        ? {
+            where: eq(products.eventId, selectedEvent.id)
+          }
+        : true
+    },
+    orderBy: [asc(circles.name)]
+  });
+
+  const catalog = getCatalogCache();
+
+  const enrichedCircles: CatalogCircle[] = circlesList.map((circle) => {
+    const location = circle.boothLocations[0];
+    const boothCode = location?.boothCode ?? null;
+    const day = location?.day ?? "ALL_DAYS";
+
+    const parsed = parseCircleNotes(circle.notes, circle.socialLink);
+
+    const rawCatalogItem =
+      (boothCode ? catalog.get(boothCode.trim().toUpperCase()) : null) ??
+      catalog.get(circle.name.trim().toLowerCase());
+
+    const fandom =
+      parsed.fandom ??
+      (rawCatalogItem?.fandom && rawCatalogItem.fandom !== "-"
+        ? [rawCatalogItem.fandom, rawCatalogItem.other_fandom].filter((s) => s && s !== "-").join(" / ")
+        : null);
+
+    const rating =
+      parsed.rating !== "GA"
+        ? parsed.rating
+        : rawCatalogItem?.rating?.toUpperCase().includes("M")
+          ? "M"
+          : rawCatalogItem?.rating?.toUpperCase().includes("PG")
+            ? "PG"
+            : "GA";
+
+    const circleCutUrl =
+      parsed.circleCutUrl ??
+      rawCatalogItem?.circle_cut ??
+      null;
+
+    const sampleWorks: string[] = [];
+    if (Array.isArray(rawCatalogItem?.sampleworks_images)) {
+      for (const img of rawCatalogItem.sampleworks_images) {
+        if (typeof img === "string" && img.startsWith("http") && !sampleWorks.includes(img)) {
+          sampleWorks.push(img);
+        }
+      }
+    }
+    for (const p of circle.products) {
+      if (p.imageUrl && p.imageUrl.startsWith("http") && !sampleWorks.includes(p.imageUrl)) {
+        sampleWorks.push(p.imageUrl);
+      }
+    }
+
+    const dayLabel =
+      day === "DAY_1"
+        ? "Day 1 (Sabtu)"
+        : day === "DAY_2"
+          ? "Day 2 (Minggu)"
+          : "Both Days (Sabtu & Minggu)";
+
+    return {
+      ...circle,
+      boothLocations: circle.boothLocations,
+      products: circle.products,
+      metadata: parsed,
+      boothCode,
+      day,
+      dayLabel,
+      rating,
+      fandom,
+      description: parsed.description ?? circle.notes ?? null,
+      circleCutUrl,
+      sampleWorks,
+      socialLinks: parsed.socialLinks,
+      categories: parsed.categories
+    };
+  });
+
+  let result = enrichedCircles;
+
+  if (filters.circleId) {
+    result = result.filter((c) => c.id === filters.circleId);
+  }
+
+  if (filters.day && filters.day !== "ALL_DAYS" && filters.day !== "ALL") {
+    result = result.filter((c) => {
+      if (c.boothLocations && c.boothLocations.length > 0) {
+        return c.boothLocations.some((b) => b.day === filters.day || b.day === "ALL_DAYS");
+      }
+      return c.day === filters.day || c.day === "ALL_DAYS";
+    });
+  }
+
+  if (filters.q && filters.q.trim()) {
+    const term = filters.q.trim().toLowerCase();
+    result = result.filter((c) => {
+      if (c.name.toLowerCase().includes(term)) return true;
+      if (c.boothCode?.toLowerCase().includes(term)) return true;
+      if (c.fandom?.toLowerCase().includes(term)) return true;
+      if (c.notes?.toLowerCase().includes(term)) return true;
+      if (c.description?.toLowerCase().includes(term)) return true;
+      if (c.categories.some((cat) => cat.toLowerCase().includes(term))) return true;
+      if (c.products.some((p) => p.name.toLowerCase().includes(term))) return true;
+      return false;
+    });
+  }
+
+  if (filters.fandom && filters.fandom.trim()) {
+    const fandomTerm = filters.fandom.trim().toLowerCase();
+    result = result.filter((c) => {
+      if (c.fandom?.toLowerCase().includes(fandomTerm)) return true;
+      if (c.notes?.toLowerCase().includes(fandomTerm)) return true;
+      return false;
+    });
+  }
+
+  if (filters.sort === "booth") {
+    result.sort((a, b) => {
+      const diff = compareBoothCodes(a.boothCode, b.boothCode);
+      if (diff !== 0) return diff;
+      return a.name.localeCompare(b.name, undefined, { sensitivity: "base" });
+    });
+  } else if (filters.sort === "latest") {
+    result.sort((a, b) => b.updatedAt.getTime() - a.updatedAt.getTime());
+  } else {
+    // Default: urutkan berdasarkan nama circle A-Z
+    result.sort((a, b) => a.name.localeCompare(b.name, undefined, { sensitivity: "base" }));
+  }
+
+  if (typeof filters.limit === "number") {
+    const offset = filters.offset ?? 0;
+    return result.slice(offset, offset + filters.limit);
+  }
+
+  return result;
 }
 
 export async function getFloorMapsList(eventId?: string) {

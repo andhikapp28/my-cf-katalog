@@ -15,7 +15,8 @@ export default defineConfig({
   plugins: [react()],
   resolve: {
     alias: {
-      "@": path.resolve(__dirname)
+      "@": path.resolve(__dirname),
+      "server-only": path.resolve(__dirname, "node_modules/server-only/empty.js")
     }
   },
   test: {

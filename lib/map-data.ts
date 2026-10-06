@@ -34,7 +34,7 @@ interface RawCatalogEntry {
 
 let catalogCache: Map<string, RawCatalogEntry> | null = null;
 
-function getCatalogCache(): Map<string, RawCatalogEntry> {
+export function getCatalogCache(): Map<string, RawCatalogEntry> {
   if (catalogCache) return catalogCache;
 
   catalogCache = new Map();

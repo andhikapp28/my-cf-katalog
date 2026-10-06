@@ -91,17 +91,16 @@ test.describe("Public dashboard", () => {
 
     // Heading katalog TANALOKA
     await expect(
-      page.getByRole("heading", { level: 1, name: /KATALOG KARYA & MERCHANDISE COMIFURO/i })
+      page.getByRole("heading", { level: 1, name: /DIREKTORI CIRCLE & KATALOG KARYA COMIFURO/i })
     ).toBeVisible();
 
     // Input filter & pencarian terpadu
-    await expect(page.getByPlaceholder(/Cari nama karya, circle/i)).toBeVisible();
-    await expect(page.getByRole("button", { name: "Cari" })).toBeVisible();
+    await expect(page.getByPlaceholder(/Cari nama circle/i)).toBeVisible();
+    await expect(page.getByRole("button", { name: /CARI/i })).toBeVisible();
 
-    // Filter chips hari & kategori
-    await expect(page.getByRole("link", { name: "Semua Hari" })).toBeVisible();
-    await expect(page.getByRole("link", { name: /Day 1/i })).toBeVisible();
-    await expect(page.getByRole("link", { name: /Day 2/i })).toBeVisible();
-    await expect(page.getByRole("link", { name: /Incaran Rush Pagi/i })).toBeVisible();
+    // Filter chips hari
+    await expect(page.getByRole("link", { name: /SEMUA HARI/i })).toBeVisible();
+    await expect(page.getByRole("link", { name: /DAY 1/i })).toBeVisible();
+    await expect(page.getByRole("link", { name: /DAY 2/i })).toBeVisible();
   });
 });
