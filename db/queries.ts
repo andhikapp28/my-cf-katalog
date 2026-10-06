@@ -1,5 +1,5 @@
 import "server-only";
-import { and, asc, count, desc, eq, ilike, inArray, isNotNull } from "drizzle-orm";
+import { and, asc, count, desc, eq, gt, ilike, inArray, isNotNull, or } from "drizzle-orm";
 import { db } from "@/db";
 import {
   boothLocations,
@@ -13,6 +13,7 @@ import { checklistStatuses, sortChecklistItems } from "@/lib/checklist";
 
 export type ProductListFilters = {
   q?: string;
+  fandom?: string;
   status?: string;
   priority?: string;
   circleId?: string;
@@ -20,6 +21,9 @@ export type ProductListFilters = {
   sort?: string;
   targetDay?: string;
   isRush?: boolean;
+  paidOnly?: boolean;
+  limit?: number;
+  offset?: number;
 };
 
 export async function getActiveEvent() {
@@ -54,8 +58,64 @@ export async function getFloorMapsList(eventId?: string) {
 export async function getProducts(filters: ProductListFilters = {}) {
   const conditions = [];
 
-  if (filters.q) {
-    conditions.push(ilike(products.name, `%${filters.q}%`));
+  // Pencarian teks terpadu (q): nama produk, notes produk, nama circle, notes circle, atau kode booth
+  if (filters.q && filters.q.trim()) {
+    const qTrim = filters.q.trim();
+    const term = `%${qTrim}%`;
+
+    const matchingCircles = await db
+      .select({ id: circles.id })
+      .from(circles)
+      .leftJoin(boothLocations, eq(boothLocations.circleId, circles.id))
+      .where(
+        or(
+          ilike(circles.name, term),
+          ilike(circles.notes, term),
+          ilike(boothLocations.boothCode, term)
+        )
+      );
+
+    const circleIds = Array.from(new Set(matchingCircles.map((c) => c.id)));
+
+    const qOrConditions = [
+      ilike(products.name, term),
+      ilike(products.notes, term)
+    ];
+
+    if (circleIds.length > 0) {
+      qOrConditions.push(inArray(products.circleId, circleIds));
+    }
+
+    conditions.push(or(...qOrConditions));
+  }
+
+  // Filter fandom khusus (misal dari quick tag fandom)
+  if (filters.fandom && filters.fandom.trim()) {
+    const fandomTrim = filters.fandom.trim();
+    const fandomTerm = `%${fandomTrim}%`;
+
+    const matchingFandomCircles = await db
+      .select({ id: circles.id })
+      .from(circles)
+      .where(
+        or(
+          ilike(circles.name, fandomTerm),
+          ilike(circles.notes, fandomTerm)
+        )
+      );
+
+    const fandomCircleIds = Array.from(new Set(matchingFandomCircles.map((c) => c.id)));
+
+    const fandomOrConditions = [
+      ilike(products.name, fandomTerm),
+      ilike(products.notes, fandomTerm)
+    ];
+
+    if (fandomCircleIds.length > 0) {
+      fandomOrConditions.push(inArray(products.circleId, fandomCircleIds));
+    }
+
+    conditions.push(or(...fandomOrConditions));
   }
 
   if (filters.status) {
@@ -74,24 +134,49 @@ export async function getProducts(filters: ProductListFilters = {}) {
     conditions.push(eq(products.eventId, filters.eventId));
   }
 
-  if (filters.targetDay) {
-    conditions.push(eq(products.targetDay, filters.targetDay as Product["targetDay"]));
+  if (filters.targetDay && filters.targetDay !== "ALL_DAYS" && filters.targetDay !== "ALL") {
+    conditions.push(
+      or(
+        eq(products.targetDay, filters.targetDay as Product["targetDay"]),
+        eq(products.targetDay, "ALL_DAYS")
+      )
+    );
   }
 
   if (typeof filters.isRush === "boolean") {
     conditions.push(eq(products.isRush, filters.isRush));
   }
 
-  const orderBy =
-    filters.sort === "price"
-      ? [desc(products.price)]
-      : filters.sort === "updated"
-        ? [desc(products.updatedAt)]
-        : [asc(products.poDeadline), desc(products.updatedAt)];
+  if (filters.paidOnly) {
+    conditions.push(gt(products.price, 0));
+  }
+
+  let orderBy;
+  switch (filters.sort) {
+    case "price":
+      orderBy = [desc(products.price), desc(products.updatedAt)];
+      break;
+    case "price_asc":
+      orderBy = [asc(products.price), desc(products.updatedAt)];
+      break;
+    case "deadline":
+      orderBy = [asc(products.poDeadline), desc(products.updatedAt)];
+      break;
+    case "name":
+      orderBy = [asc(products.name)];
+      break;
+    case "updated":
+    case "latest":
+    default:
+      orderBy = [desc(products.updatedAt), desc(products.createdAt)];
+      break;
+  }
 
   return db.query.products.findMany({
     where: conditions.length ? and(...conditions) : undefined,
     orderBy,
+    limit: filters.limit,
+    offset: filters.offset,
     with: {
       event: true,
       circle: true
