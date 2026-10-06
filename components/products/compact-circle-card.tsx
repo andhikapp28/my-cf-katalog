@@ -63,6 +63,17 @@ function getInitials(name: string): string {
   return (parts[0][0] + parts[1][0]).toUpperCase();
 }
 
+export function formatCircleImageUrl(url?: string | null): string | null {
+  if (!url || typeof url !== "string") return null;
+  const trimmed = url.trim();
+  if (!trimmed || !trimmed.startsWith("http")) return null;
+  try {
+    return encodeURI(decodeURI(trimmed));
+  } catch {
+    return encodeURI(trimmed);
+  }
+}
+
 function resolveDayConfig(dayStr?: string | null): { label: string; className: string } {
   if (!dayStr) {
     return {
@@ -110,11 +121,12 @@ export function CompactCircleCard({
   const rawDay = circle.day || circle.locations?.[0]?.day || "ALL_DAYS";
   const dayConfig = resolveDayConfig(rawDay);
 
-  const circleCutUrl =
+  const rawCircleCutUrl =
     circle.circleCutUrl ||
     parsedMeta.circleCutUrl ||
     circle.products?.find((p) => p.imageUrl)?.imageUrl ||
     null;
+  const circleCutUrl = formatCircleImageUrl(rawCircleCutUrl);
 
   const fandom = circle.fandom || parsedMeta.fandom;
   const categories =
@@ -164,6 +176,7 @@ export function CompactCircleCard({
             alt={circle.name}
             loading="lazy"
             decoding="async"
+            referrerPolicy="no-referrer"
             className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-105"
             onError={(e) => {
               (e.currentTarget as HTMLElement).style.display = "none";

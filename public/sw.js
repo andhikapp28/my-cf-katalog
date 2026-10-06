@@ -67,32 +67,36 @@ async function cacheFirst(request, cacheName) {
 }
 
 async function staleWhileRevalidate(request, cacheName) {
-  const cache = await caches.open(cacheName);
-  const cached = await cache.match(request);
+  try {
+    const cache = await caches.open(cacheName);
+    const cached = await cache.match(request);
 
-  const networkFetch = fetch(request)
-    .then((response) => {
-      // Response `opaque` (cross-origin tanpa CORS, umum untuk banner/produk
-      // image dari domain bebas) tidak bisa dicek `.ok`, tapi tetap aman
-      // disimpan — browser sendiri yang membatasi ukuran/isi cache lintas asal.
-      if (response && (response.ok || response.type === "opaque")) {
-        cache.put(request, response.clone()).catch(() => {});
-      }
-      return response;
-    })
-    .catch(() => undefined);
+    const networkFetch = fetch(request)
+      .then((response) => {
+        // Response `opaque` (cross-origin tanpa CORS, umum untuk banner/produk
+        // image dari domain bebas) tidak bisa dicek `.ok`, tapi tetap aman
+        // disimpan — browser sendiri yang membatasi ukuran/isi cache lintas asal.
+        if (response && (response.ok || response.type === "opaque")) {
+          cache.put(request, response.clone()).catch(() => {});
+        }
+        return response;
+      })
+      .catch(() => undefined);
 
-  if (cached) {
-    // Refresh di background, tapi langsung balas dari cache supaya instan.
-    return cached;
+    if (cached) {
+      // Refresh di background, tapi langsung balas dari cache supaya instan.
+      return cached;
+    }
+
+    const network = await networkFetch;
+    if (network) {
+      return network;
+    }
+  } catch {
+    // Ignore cache error and fallback to direct fetch
   }
 
-  const network = await networkFetch;
-  if (network) {
-    return network;
-  }
-
-  return Response.error();
+  return fetch(request).catch(() => Response.error());
 }
 
 self.addEventListener("fetch", (event) => {

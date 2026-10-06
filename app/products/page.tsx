@@ -1,6 +1,7 @@
 export const revalidate = 120;
 
 import Link from "next/link";
+import { RotateCcw, Search, X } from "lucide-react";
 import { EmptyState } from "@/components/ui/empty-state";
 import { Pagination } from "@/components/ui/pagination";
 import { CircleCatalogClient } from "@/components/products/circle-catalog-client";
@@ -116,17 +117,19 @@ export default async function ProductsPage({
               {q ? (
                 <Link
                   href={getFilterHref({ q: undefined })}
-                  className="rounded-xl border border-zinc-200 bg-white px-2.5 py-1.5 font-mono text-xs font-bold text-zinc-600 hover:text-zinc-900 hover:bg-zinc-100 transition"
+                  className="inline-flex items-center gap-1 rounded-xl border border-zinc-200 bg-white px-2.5 py-1.5 font-mono text-xs font-bold text-zinc-600 hover:text-zinc-900 hover:bg-zinc-100 transition shadow-2xs"
                   title="Hapus kata kunci pencarian"
                 >
-                  [ RESET ]
+                  <X className="h-3.5 w-3.5" />
+                  <span>Reset</span>
                 </Link>
               ) : null}
               <button
                 type="submit"
-                className="rounded-xl bg-[#111215] px-4 py-2 font-mono text-xs font-bold uppercase tracking-wider text-[#D6F834] transition hover:bg-zinc-800"
+                className="inline-flex items-center gap-1.5 rounded-xl bg-[#111215] px-4 py-2 font-mono text-xs font-bold uppercase tracking-wider text-[#D6F834] transition hover:bg-zinc-800 shadow-xs active:scale-95"
               >
-                [ CARI ]
+                <Search className="h-3.5 w-3.5" />
+                <span>Cari</span>
               </button>
             </div>
           </div>
@@ -229,14 +232,15 @@ export default async function ProductsPage({
           {hasActiveFilters ? (
             <Link
               href="/products"
-              className="inline-flex items-center rounded-full border border-zinc-200 bg-white px-3 py-1.5 font-mono text-xs font-bold text-[#F84632] hover:bg-zinc-50 hover:underline transition"
+              className="inline-flex items-center gap-1.5 rounded-full border border-zinc-200 bg-white px-3.5 py-1.5 font-mono text-xs font-bold text-[#F84632] hover:bg-zinc-50 transition shadow-2xs"
             >
-              [ RESET SEMUA FILTER ]
+              <RotateCcw className="h-3.5 w-3.5" />
+              <span>Reset Filter</span>
             </Link>
           ) : null}
         </div>
 
-        {/* Sort Controls (Text-Only) */}
+        {/* Sort Controls */}
         <div className="flex items-center gap-2 self-end sm:self-auto">
           <div className="inline-flex items-center rounded-2xl border border-zinc-200 bg-white p-1 shadow-2xs">
             <span className="px-2 text-[11px] font-mono font-bold uppercase text-zinc-400">
@@ -245,35 +249,35 @@ export default async function ProductsPage({
             <Link
               href={getFilterHref({ sort: undefined })}
               className={cn(
-                "rounded-xl px-2.5 py-1 font-mono text-xs font-bold uppercase tracking-wider transition",
+                "rounded-xl px-3 py-1 font-mono text-xs font-bold uppercase tracking-wider transition",
                 !sort || sort === "booth"
                   ? "bg-[#111215] text-[#D6F834]"
                   : "text-zinc-600 hover:text-zinc-900"
               )}
             >
-              [ BOOTH ]
+              Booth
             </Link>
             <Link
               href={getFilterHref({ sort: "name" })}
               className={cn(
-                "rounded-xl px-2.5 py-1 font-mono text-xs font-bold uppercase tracking-wider transition",
+                "rounded-xl px-3 py-1 font-mono text-xs font-bold uppercase tracking-wider transition",
                 sort === "name"
                   ? "bg-[#111215] text-[#D6F834]"
                   : "text-zinc-600 hover:text-zinc-900"
               )}
             >
-              [ NAMA ]
+              Nama
             </Link>
             <Link
               href={getFilterHref({ sort: "latest" })}
               className={cn(
-                "rounded-xl px-2.5 py-1 font-mono text-xs font-bold uppercase tracking-wider transition",
+                "rounded-xl px-3 py-1 font-mono text-xs font-bold uppercase tracking-wider transition",
                 sort === "latest"
                   ? "bg-[#111215] text-[#D6F834]"
                   : "text-zinc-600 hover:text-zinc-900"
               )}
             >
-              [ TERBARU ]
+              Terbaru
             </Link>
           </div>
         </div>

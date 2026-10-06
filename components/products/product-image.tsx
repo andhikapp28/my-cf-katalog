@@ -54,6 +54,7 @@ export function ProductImage({
           alt={alt}
           loading="lazy"
           decoding="async"
+          referrerPolicy="no-referrer"
           onLoad={() => setState("loaded")}
           onError={() => setState("error")}
           className={cn("h-full w-full object-cover", imageClassName, state === "loaded" ? "opacity-100" : "opacity-0")}
@@ -83,5 +84,13 @@ export function ProductImage({
 
 function normalizeUrl(value?: string | null) {
   const trimmed = value?.trim();
-  return trimmed ? trimmed : null;
+  if (!trimmed) return null;
+  if (!trimmed.startsWith("http://") && !trimmed.startsWith("https://") && !trimmed.startsWith("/")) {
+    return null;
+  }
+  try {
+    return encodeURI(decodeURI(trimmed));
+  } catch {
+    return encodeURI(trimmed);
+  }
 }

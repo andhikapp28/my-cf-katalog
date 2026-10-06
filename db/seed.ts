@@ -41,7 +41,7 @@ async function main() {
       startsAt: new Date("2026-07-18T09:00:00+07:00"),
       endsAt: new Date("2026-07-19T18:00:00+07:00"),
       budget: 2500000,
-      isActive: true
+      isActive: false
     })
     .returning();
 

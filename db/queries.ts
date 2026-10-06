@@ -116,6 +116,14 @@ export async function getCircleList() {
   });
 }
 
+let baseCirclesCache: {
+  eventId: string;
+  timestamp: number;
+  circles: CatalogCircle[];
+} | null = null;
+
+const CACHE_TTL_MS = 120 * 1000; // 2 menit TTL untuk performa kilat (sub-2ms) saat ganti halaman / filter
+
 export async function getCatalogCircles(
   filters: CatalogCircleFilters = {}
 ): Promise<CatalogCircle[]> {
@@ -125,28 +133,39 @@ export async function getCatalogCircles(
       : await getActiveEvent()) ??
     (await db.query.events.findFirst({ orderBy: [desc(events.startsAt)] }));
 
-  const circlesList = await db.query.circles.findMany({
-    with: {
-      boothLocations: selectedEvent
-        ? {
-            where: eq(boothLocations.eventId, selectedEvent.id),
-            with: { floorMap: true }
-          }
-        : {
-            with: { floorMap: true }
-          },
-      products: selectedEvent
-        ? {
-            where: eq(products.eventId, selectedEvent.id)
-          }
-        : true
-    },
-    orderBy: [asc(circles.name)]
-  });
+  const eventIdKey = selectedEvent?.id || "all-events";
+  const now = Date.now();
+  let enrichedCircles: CatalogCircle[];
 
-  const catalog = getCatalogCache();
+  if (
+    baseCirclesCache &&
+    baseCirclesCache.eventId === eventIdKey &&
+    now - baseCirclesCache.timestamp < CACHE_TTL_MS
+  ) {
+    enrichedCircles = baseCirclesCache.circles;
+  } else {
+    const circlesList = await db.query.circles.findMany({
+      with: {
+        boothLocations: selectedEvent
+          ? {
+              where: eq(boothLocations.eventId, selectedEvent.id),
+              with: { floorMap: true }
+            }
+          : {
+              with: { floorMap: true }
+            },
+        products: selectedEvent
+          ? {
+              where: eq(products.eventId, selectedEvent.id)
+            }
+          : true
+      },
+      orderBy: [asc(circles.name)]
+    });
 
-  const enrichedCircles: CatalogCircle[] = circlesList.map((circle) => {
+    const catalog = getCatalogCache();
+
+    enrichedCircles = circlesList.map((circle) => {
     const location = circle.boothLocations[0];
     const boothCode = location?.boothCode ?? null;
     const day = location?.day ?? "ALL_DAYS";
@@ -215,6 +234,13 @@ export async function getCatalogCircles(
       categories: parsed.categories
     };
   });
+
+    baseCirclesCache = {
+      eventId: eventIdKey,
+      timestamp: now,
+      circles: enrichedCircles
+    };
+  }
 
   let result = enrichedCircles;
 

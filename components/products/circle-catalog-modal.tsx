@@ -6,7 +6,10 @@ import { AnimatePresence, motion, useReducedMotion } from "motion/react";
 import { toast } from "sonner";
 import { ProductImage } from "@/components/products/product-image";
 import { WishlistHeartButton } from "@/components/wishlist/wishlist-heart-button";
-import type { CompactCircleItem } from "@/components/products/compact-circle-card";
+import {
+  formatCircleImageUrl,
+  type CompactCircleItem
+} from "@/components/products/compact-circle-card";
 import { parseCircleNotes } from "@/lib/floor-map";
 import { formatCurrency } from "@/lib/format";
 import { cn } from "@/lib/utils";
@@ -58,14 +61,21 @@ function resolveRatingBadge(rating?: string | null) {
   }
   if (norm.includes("PG")) {
     return {
-      label: "PG (13+)",
-      className: "bg-amber-50 text-amber-700 border border-amber-200"
+      label: "PG",
+      className: "bg-[#5398DA]/10 text-[#5398DA] border border-[#5398DA]/30"
     };
   }
   return {
-    label: "GA (All Ages)",
-    className: "bg-emerald-50 text-emerald-700 border border-emerald-200"
+    label: "GA",
+    className: "bg-zinc-100 text-zinc-700 border border-zinc-200"
   };
+}
+
+function getInitials(name: string): string {
+  const parts = name.trim().split(/\s+/).filter(Boolean);
+  if (parts.length === 0) return "CP";
+  if (parts.length === 1) return parts[0].slice(0, 2).toUpperCase();
+  return (parts[0][0] + parts[1][0]).toUpperCase();
 }
 
 export function CircleCatalogModal({
@@ -103,6 +113,24 @@ export function CircleCatalogModal({
     return parseCircleNotes(circle.notes, circle.socialLink);
   }, [circle]);
 
+  const circleCutUrl =
+    circle?.circleCutUrl ||
+    parsedMeta?.circleCutUrl ||
+    circle?.products?.find((p) => p.imageUrl)?.imageUrl ||
+    null;
+
+  const formattedCircleCut = useMemo(() => {
+    return formatCircleImageUrl(circleCutUrl);
+  }, [circleCutUrl]);
+
+  const socialLinks = useMemo(() => {
+    if (!circle) return [];
+    if (circle.socialLinks && circle.socialLinks.length > 0) {
+      return circle.socialLinks;
+    }
+    return parsedMeta?.socialLinks || [];
+  }, [circle, parsedMeta]);
+
   const boothCode =
     circle?.boothCode ||
     circle?.locations?.[0]?.boothCode ||
@@ -117,14 +145,6 @@ export function CircleCatalogModal({
   const effectiveFloorMapId =
     floorMapId || circle?.locations?.[0]?.floorMapId || null;
 
-  const socialLinks = useMemo(() => {
-    if (!circle) return [];
-    if (circle.socialLinks && circle.socialLinks.length > 0) {
-      return circle.socialLinks;
-    }
-    return parsedMeta?.socialLinks || [];
-  }, [circle, parsedMeta]);
-
   const fandom = circle?.fandom || parsedMeta?.fandom;
   const categories =
     circle?.categories && circle.categories.length > 0
@@ -136,6 +156,8 @@ export function CircleCatalogModal({
     parsedMeta?.description ||
     circle?.notes ||
     "Circle ini belum mencantumkan bio resmi.";
+
+  if (!isOpen || !circle) return null;
 
   const products = circle?.products || [];
 
@@ -214,42 +236,72 @@ export function CircleCatalogModal({
             {/* Modal Header */}
             <div className="border-b border-zinc-200 bg-zinc-50/80 px-5 sm:px-7 py-4 sm:py-5">
               <div className="flex items-start justify-between gap-4">
-                <div className="space-y-2 min-w-0">
-                  {/* Badges Row: Booth Code Besar + Day Badge + Rating */}
-                  <div className="flex flex-wrap items-center gap-2">
-                    <span
-                      title={`Kode Booth: ${boothCode}`}
-                      className="inline-flex items-center rounded-lg bg-[#111215] px-3 py-1 font-mono text-xs sm:text-sm font-black tracking-wider text-[#D6F834] uppercase border border-white/10 shadow-2xs"
-                    >
-                      BOOTH {boothCode}
-                    </span>
-
-                    <span
+                <div className="flex items-start gap-3.5 sm:gap-4 min-w-0 flex-1">
+                  {/* Circle Cut Thumbnail */}
+                  <div className="relative h-16 w-16 sm:h-20 sm:w-20 shrink-0 overflow-hidden rounded-2xl border border-zinc-200 bg-zinc-100 shadow-sm">
+                    {formattedCircleCut ? (
+                      // eslint-disable-next-line @next/next/no-img-element
+                      <img
+                        src={formattedCircleCut}
+                        alt={circle.name}
+                        loading="lazy"
+                        decoding="async"
+                        referrerPolicy="no-referrer"
+                        className="h-full w-full object-cover"
+                        onError={(e) => {
+                          (e.currentTarget as HTMLElement).style.display = "none";
+                          const fallback = e.currentTarget.nextElementSibling as HTMLElement;
+                          if (fallback) fallback.style.display = "flex";
+                        }}
+                      />
+                    ) : null}
+                    <div
                       className={cn(
-                        "rounded-full px-3 py-1 font-mono text-xs font-black uppercase tracking-wider shadow-2xs",
-                        dayConfig.className
+                        "h-full w-full items-center justify-center bg-[#111215] text-[#D6F834] font-[var(--font-display)] text-2xl uppercase tracking-wider",
+                        formattedCircleCut ? "hidden" : "flex"
                       )}
                     >
-                      {dayConfig.label}
-                    </span>
-
-                    <span
-                      className={cn(
-                        "rounded-full px-2.5 py-1 font-mono text-xs font-bold uppercase tracking-wider",
-                        ratingBadge.className
-                      )}
-                    >
-                      {ratingBadge.label}
-                    </span>
+                      {getInitials(circle.name)}
+                    </div>
                   </div>
 
-                  {/* Nama Circle: Bebas Neue Font Display */}
-                  <h2
-                    id="circle-catalog-modal-title"
-                    className="font-[var(--font-display)] text-3xl sm:text-4xl lg:text-5xl font-normal tracking-tight text-[#111215] leading-none pt-1"
-                  >
-                    {circle.name}
-                  </h2>
+                  <div className="space-y-1.5 min-w-0 flex-1">
+                    {/* Badges Row: Booth Code Besar + Day Badge + Rating */}
+                    <div className="flex flex-wrap items-center gap-2">
+                      <span
+                        title={`Kode Booth: ${boothCode}`}
+                        className="inline-flex items-center rounded-lg bg-[#111215] px-3 py-1 font-mono text-xs sm:text-sm font-black tracking-wider text-[#D6F834] uppercase border border-white/10 shadow-2xs"
+                      >
+                        BOOTH {boothCode}
+                      </span>
+
+                      <span
+                        className={cn(
+                          "rounded-full px-3 py-1 font-mono text-xs font-black uppercase tracking-wider shadow-2xs",
+                          dayConfig.className
+                        )}
+                      >
+                        {dayConfig.label}
+                      </span>
+
+                      <span
+                        className={cn(
+                          "rounded-full px-2.5 py-1 font-mono text-xs font-bold uppercase tracking-wider",
+                          ratingBadge.className
+                        )}
+                      >
+                        {ratingBadge.label}
+                      </span>
+                    </div>
+
+                    {/* Nama Circle: Bebas Neue Font Display */}
+                    <h2
+                      id="circle-catalog-modal-title"
+                      className="font-[var(--font-display)] text-3xl sm:text-4xl lg:text-5xl font-normal tracking-tight text-[#111215] leading-none pt-1"
+                    >
+                      {circle.name}
+                    </h2>
+                  </div>
                 </div>
 
                 {/* Tombol Tutup Header (Pure Typography TUTUP Tanpa Ikon) */}
@@ -349,15 +401,6 @@ export function CircleCatalogModal({
                               className="h-full w-full rounded-none border-0"
                               fallbackLabel="No preview"
                             />
-
-                            {/* Rush Incaran Pagi */}
-                            {product.isRush ? (
-                              <div className="absolute top-2 left-2 z-10">
-                                <span className="rounded-full bg-[#F84632] px-2 py-0.5 font-mono text-[10px] font-black uppercase text-white shadow-sm">
-                                  RUSH
-                                </span>
-                              </div>
-                            ) : null}
 
                             {/* Tombol Wishlist per Produk */}
                             <div className="absolute top-2 right-2 z-10">
