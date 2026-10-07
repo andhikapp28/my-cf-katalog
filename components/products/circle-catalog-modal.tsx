@@ -78,6 +78,45 @@ function getInitials(name: string): string {
   return (parts[0][0] + parts[1][0]).toUpperCase();
 }
 
+/**
+ * Pembersih teks bio/catatan circle:
+ * Menghapus baris-baris data mentah (Booth:, Fandom:, Rating:, Kategori:, Circle Cut URL mentah, Instagram:, dll.)
+ * agar kotak bio hanya memuat narasi deskripsi asli dari kreator tanpa duplikasi dan tanpa leak URL backend.
+ */
+function cleanCircleBio(notes?: string | null): string {
+  if (!notes) return "Circle kreator ini belum menambahkan catatan bio tambahan.";
+
+  const lines = notes.split(/\r?\n/).map((l) => l.trim()).filter(Boolean);
+  const cleanLines = lines.filter((line) => {
+    if (
+      /^(Booth|Fandom|Rating|Kategori|Categories|Circle Cut|X\/Twitter|Twitter|Instagram|Facebook|Pixiv|Tiktok|Website|Marketplace|Bio|Description):\s*/i.test(
+        line
+      )
+    ) {
+      return false;
+    }
+    if (line.startsWith("http://") || line.startsWith("https://")) {
+      return false;
+    }
+    return true;
+  });
+
+  const cleaned = cleanLines.join("\n").trim();
+  return cleaned || "Circle kreator ini belum menambahkan catatan bio tambahan.";
+}
+
+/**
+ * Penamaan rilisan karya (Opsi B - Minimalist Sequential):
+ * Mengubah nama mentah 'Katalog Sample #1 - Nama Circle' menjadi 'Preview Rilisan 01'.
+ * Jika produk memiliki nama kustom asli (seperti 'Summer Memories Artbook'), nama asli tersebut tetap dipertahankan.
+ */
+function formatReleaseName(rawName: string, index: number): string {
+  if (!rawName || /^Katalog Sample/i.test(rawName.trim())) {
+    return `Preview Rilisan ${String(index + 1).padStart(2, "0")}`;
+  }
+  return rawName;
+}
+
 export function CircleCatalogModal({
   circle,
   isOpen,
@@ -87,26 +126,7 @@ export function CircleCatalogModal({
   const shouldReduceMotion = Boolean(useReducedMotion());
   const [copiedPoId, setCopiedPoId] = useState<string | null>(null);
   const [copiedCircleLink, setCopiedCircleLink] = useState(false);
-
-  // Keyboard navigation & body scroll lock
-  useEffect(() => {
-    if (!isOpen) return;
-
-    const handleKeyDown = (e: KeyboardEvent) => {
-      if (e.key === "Escape") {
-        onClose();
-      }
-    };
-
-    window.addEventListener("keydown", handleKeyDown);
-    const originalOverflow = document.body.style.overflow;
-    document.body.style.overflow = "hidden";
-
-    return () => {
-      window.removeEventListener("keydown", handleKeyDown);
-      document.body.style.overflow = originalOverflow;
-    };
-  }, [isOpen, onClose]);
+  const [lightboxIndex, setLightboxIndex] = useState<number | null>(null);
 
   const parsedMeta = useMemo(() => {
     if (!circle) return null;
@@ -151,15 +171,79 @@ export function CircleCatalogModal({
       ? circle.categories
       : parsedMeta?.categories || [];
 
-  const description =
-    circle?.description ||
-    parsedMeta?.description ||
-    circle?.notes ||
-    "Circle ini belum mencantumkan bio resmi.";
+  const cleanBioText = useMemo(() => {
+    return cleanCircleBio(circle?.notes);
+  }, [circle?.notes]);
+
+  const products = useMemo(() => circle?.products || [], [circle?.products]);
+
+  // Koleksi gambar untuk Lightbox Viewer Full Resolution
+  const galleryItems = useMemo(() => {
+    if (!circle) return [];
+    const items: Array<{ src: string; title: string; subtitle?: string }> = [];
+
+    if (formattedCircleCut) {
+      items.push({
+        src: formattedCircleCut,
+        title: `Circle Cut · ${circle.name}`,
+        subtitle: `Booth ${boothCode} · ${dayConfig.label}`
+      });
+    }
+
+    products.forEach((p, idx) => {
+      if (p.imageUrl && p.imageUrl.startsWith("http")) {
+        const url = formatCircleImageUrl(p.imageUrl);
+        if (url && !items.some((it) => it.src === url)) {
+          items.push({
+            src: url,
+            title: `${formatReleaseName(p.name, idx)} · ${circle.name}`,
+            subtitle: p.price > 0 ? formatCurrency(p.price) : "Sampel Karya Pameran"
+          });
+        }
+      }
+    });
+
+    return items;
+  }, [circle, formattedCircleCut, products, boothCode, dayConfig.label]);
+
+  // Keyboard navigation & body scroll lock (Escape & Panah Kiri/Kanan)
+  useEffect(() => {
+    if (!isOpen) {
+      setLightboxIndex(null);
+      return;
+    }
+
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === "Escape") {
+        if (lightboxIndex !== null) {
+          setLightboxIndex(null);
+        } else {
+          onClose();
+        }
+      } else if (e.key === "ArrowRight" && lightboxIndex !== null) {
+        setLightboxIndex((curr) =>
+          curr !== null ? (curr + 1) % galleryItems.length : null
+        );
+      } else if (e.key === "ArrowLeft" && lightboxIndex !== null) {
+        setLightboxIndex((curr) =>
+          curr !== null
+            ? (curr - 1 + galleryItems.length) % galleryItems.length
+            : null
+        );
+      }
+    };
+
+    window.addEventListener("keydown", handleKeyDown);
+    const originalOverflow = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+
+    return () => {
+      window.removeEventListener("keydown", handleKeyDown);
+      document.body.style.overflow = originalOverflow;
+    };
+  }, [isOpen, onClose, lightboxIndex, galleryItems.length]);
 
   if (!isOpen || !circle) return null;
-
-  const products = circle?.products || [];
 
   const handleCopyPo = async (productId: string, notes: string) => {
     try {
@@ -194,332 +278,490 @@ export function CircleCatalogModal({
 
   return (
     <AnimatePresence>
-      {isOpen && circle ? (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 md:p-6 overflow-hidden">
-          {/* Backdrop Blur Gelap */}
-          <motion.div
-            key="circle-modal-backdrop"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            transition={{ duration: 0.2 }}
-            onClick={onClose}
-            className="fixed inset-0 bg-[#111215]/80 backdrop-blur-md"
-            aria-hidden="true"
-          />
+      <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 md:p-6 overflow-hidden">
+        {/* Backdrop Blur Gelap Pekat (100% Mengisolasi Halaman Latar Belakang) */}
+        <motion.div
+          key="circle-modal-backdrop"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          exit={{ opacity: 0 }}
+          transition={{ duration: 0.15 }}
+          onClick={() => {
+            if (lightboxIndex !== null) setLightboxIndex(null);
+            else onClose();
+          }}
+          className="fixed inset-0 bg-[#07090E]/85 backdrop-blur-md"
+          aria-hidden="true"
+        />
 
-          {/* Modal Pop-up Card */}
-          <motion.div
-            key={`circle-modal-content-${circle.id}`}
-            role="dialog"
-            aria-modal="true"
-            aria-labelledby="circle-catalog-modal-title"
-            initial={
-              shouldReduceMotion
-                ? { opacity: 0 }
-                : { opacity: 0, scale: 0.95, y: 16 }
-            }
-            animate={{ opacity: 1, scale: 1, y: 0 }}
-            exit={
-              shouldReduceMotion
-                ? { opacity: 0 }
-                : { opacity: 0, scale: 0.95, y: 16 }
-            }
-            transition={{
-              type: "spring",
-              stiffness: 380,
-              damping: 28
-            }}
-            onClick={(e) => e.stopPropagation()}
-            className="relative z-10 flex w-full max-w-4xl max-h-[92vh] flex-col rounded-3xl border border-zinc-200 bg-white shadow-2xl overflow-hidden"
+        {/* Modal Pop-up Card (100% Solid Opaque White - Bebas Tembus Pandang) */}
+        <motion.div
+          key={`circle-modal-content-${circle.id}`}
+          role="dialog"
+          aria-modal="true"
+          aria-labelledby="circle-catalog-modal-title"
+          initial={
+            shouldReduceMotion
+              ? { opacity: 0 }
+              : { opacity: 0, scale: 0.96, y: 12 }
+          }
+          animate={{ opacity: 1, scale: 1, y: 0 }}
+          exit={
+            shouldReduceMotion
+              ? { opacity: 0 }
+              : { opacity: 0, scale: 0.96, y: 12 }
+          }
+          transition={{
+            opacity: { duration: 0.15, ease: "easeOut" },
+            scale: { type: "spring", stiffness: 360, damping: 26 },
+            y: { type: "spring", stiffness: 360, damping: 26 }
+          }}
+          onClick={(e) => e.stopPropagation()}
+          className="relative z-10 flex w-full max-w-4xl max-h-[92vh] flex-col rounded-3xl border border-zinc-200 bg-[#FFFFFF] shadow-2xl overflow-hidden"
+          style={{ backgroundColor: "#FFFFFF" }}
+        >
+          {/* =================================================================== */}
+          {/* MODAL HEADER (TANALOKA EDITORIAL STYLE - 100% SOLID WHITE)          */}
+          {/* =================================================================== */}
+          <div
+            className="border-b border-zinc-200 bg-[#FFFFFF] px-5 sm:px-7 py-5"
+            style={{ backgroundColor: "#FFFFFF" }}
           >
-            {/* Modal Header */}
-            <div className="border-b border-zinc-200 bg-zinc-50/80 px-5 sm:px-7 py-4 sm:py-5">
-              <div className="flex items-start justify-between gap-4">
-                <div className="flex items-start gap-3.5 sm:gap-4 min-w-0 flex-1">
-                  {/* Circle Cut Thumbnail */}
-                  <div className="relative h-16 w-16 sm:h-20 sm:w-20 shrink-0 overflow-hidden rounded-2xl border border-zinc-200 bg-zinc-100 shadow-sm">
-                    {formattedCircleCut ? (
-                      // eslint-disable-next-line @next/next/no-img-element
-                      <img
-                        src={formattedCircleCut}
-                        alt={circle.name}
-                        loading="lazy"
-                        decoding="async"
-                        referrerPolicy="no-referrer"
-                        className="h-full w-full object-cover"
-                        onError={(e) => {
-                          (e.currentTarget as HTMLElement).style.display = "none";
-                          const fallback = e.currentTarget.nextElementSibling as HTMLElement;
-                          if (fallback) fallback.style.display = "flex";
-                        }}
-                      />
-                    ) : null}
-                    <div
-                      className={cn(
-                        "h-full w-full items-center justify-center bg-[#111215] text-[#D6F834] font-[var(--font-display)] text-2xl uppercase tracking-wider",
-                        formattedCircleCut ? "hidden" : "flex"
-                      )}
-                    >
-                      {getInitials(circle.name)}
-                    </div>
-                  </div>
-
-                  <div className="space-y-1.5 min-w-0 flex-1">
-                    {/* Badges Row: Booth Code Besar + Day Badge + Rating */}
-                    <div className="flex flex-wrap items-center gap-2">
-                      <span
-                        title={`Kode Booth: ${boothCode}`}
-                        className="inline-flex items-center rounded-lg bg-[#111215] px-3 py-1 font-mono text-xs sm:text-sm font-black tracking-wider text-[#D6F834] uppercase border border-white/10 shadow-2xs"
-                      >
-                        BOOTH {boothCode}
-                      </span>
-
-                      <span
-                        className={cn(
-                          "rounded-full px-3 py-1 font-mono text-xs font-black uppercase tracking-wider shadow-2xs",
-                          dayConfig.className
-                        )}
-                      >
-                        {dayConfig.label}
-                      </span>
-
-                      <span
-                        className={cn(
-                          "rounded-full px-2.5 py-1 font-mono text-xs font-bold uppercase tracking-wider",
-                          ratingBadge.className
-                        )}
-                      >
-                        {ratingBadge.label}
-                      </span>
-                    </div>
-
-                    {/* Nama Circle: Bebas Neue Font Display */}
-                    <h2
-                      id="circle-catalog-modal-title"
-                      className="font-[var(--font-display)] text-3xl sm:text-4xl lg:text-5xl font-normal tracking-tight text-[#111215] leading-none pt-1"
-                    >
-                      {circle.name}
-                    </h2>
-                  </div>
-                </div>
-
-                {/* Tombol Tutup Header (Pure Typography TUTUP Tanpa Ikon) */}
-                <div className="shrink-0 flex items-center gap-2">
-                  <button
-                    type="button"
-                    onClick={onClose}
-                    className="rounded-xl bg-[#111215] px-4 py-2 font-mono text-xs font-black uppercase tracking-wider text-white transition hover:bg-[#F84632] active:scale-95 shadow-xs select-none"
-                  >
-                    TUTUP
-                  </button>
-                </div>
-              </div>
-
-              {/* Sub-Header Actions: Social Links & Peta Meja */}
-              <div className="mt-3.5 flex flex-wrap items-center gap-2 pt-2 border-t border-zinc-200/80">
-                {effectiveFloorMapId ? (
-                  <Link
-                    href={`/maps/${effectiveFloorMapId}?circleId=${circle.id}`}
-                    className="inline-flex items-center rounded-xl bg-[#5398DA] px-3.5 py-1.5 font-mono text-xs font-black uppercase tracking-wider text-[#111215] transition hover:bg-[#4083c2] active:scale-95 shadow-2xs select-none"
-                  >
-                    PETA MEJA
-                  </Link>
-                ) : null}
-
+            <div className="flex items-start justify-between gap-4">
+              <div className="flex items-start gap-4 min-w-0 flex-1">
+                {/* Circle Cut Thumbnail dengan Zoom Trigger */}
                 <button
                   type="button"
-                  onClick={handleCopyCircleLink}
-                  className="inline-flex items-center rounded-full border border-zinc-300 bg-white px-3 py-1 font-mono text-xs font-bold uppercase tracking-wider text-[#111215] hover:border-[#111215] hover:bg-[#111215] hover:text-white transition active:scale-95 shadow-2xs select-none"
+                  onClick={() => {
+                    if (formattedCircleCut) {
+                      setLightboxIndex(0);
+                    }
+                  }}
+                  title={
+                    formattedCircleCut
+                      ? "Klik untuk melihat foto circle cut resolusi penuh"
+                      : undefined
+                  }
+                  className="group relative h-20 w-20 sm:h-24 sm:w-24 shrink-0 overflow-hidden rounded-2xl border-2 border-zinc-200 bg-zinc-100 shadow-sm transition hover:border-[#111215]"
                 >
-                  {copiedCircleLink ? "TERSALIN!" : "SALIN TAUTAN"}
+                  {formattedCircleCut ? (
+                    // eslint-disable-next-line @next/next/no-img-element
+                    <img
+                      src={formattedCircleCut}
+                      alt={circle.name}
+                      loading="lazy"
+                      decoding="async"
+                      referrerPolicy="no-referrer"
+                      className="h-full w-full object-cover transition duration-300 group-hover:scale-105"
+                      onError={(e) => {
+                        (e.currentTarget as HTMLElement).style.display = "none";
+                        const fallback = e.currentTarget
+                          .nextElementSibling as HTMLElement;
+                        if (fallback) fallback.style.display = "flex";
+                      }}
+                    />
+                  ) : null}
+                  <div
+                    className={cn(
+                      "h-full w-full items-center justify-center bg-[#111215] text-[#D6F834] font-[var(--font-display)] text-3xl uppercase tracking-wider",
+                      formattedCircleCut ? "hidden" : "flex"
+                    )}
+                  >
+                    {getInitials(circle.name)}
+                  </div>
                 </button>
 
-                {socialLinks.map((link) => (
-                  <a
-                    key={`${link.platform}-${link.url}`}
-                    href={link.url}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="inline-flex items-center rounded-full border border-zinc-200 bg-white px-3 py-1 font-mono text-xs font-bold uppercase tracking-wider text-[#111215] hover:border-[#111215] hover:bg-[#111215] hover:text-white transition active:scale-95 shadow-2xs select-none"
-                  >
-                    {link.label}
-                  </a>
-                ))}
-              </div>
-            </div>
+                {/* Identitas Circle & Badges */}
+                <div className="space-y-2 min-w-0 flex-1">
+                  {/* Badges Row: Booth Code Besar + Day Badge + Rating */}
+                  <div className="flex flex-wrap items-center gap-2">
+                    <span
+                      title={`Kode Booth: ${boothCode}`}
+                      className="inline-flex items-center rounded-lg bg-[#111215] px-3 py-1 font-mono text-xs sm:text-sm font-black tracking-wider text-[#D6F834] uppercase border border-white/10 shadow-xs"
+                    >
+                      BOOTH {boothCode}
+                    </span>
 
-            {/* Modal Body (Scrollable) */}
-            <div className="flex-1 overflow-y-auto p-5 sm:p-7 space-y-6">
-              {/* Bio & Deskripsi Circle */}
-              <section className="space-y-3 rounded-2xl bg-zinc-50 p-4 sm:p-5 border border-zinc-200/70">
-                {(fandom || categories.length > 0) && (
-                  <div className="flex flex-wrap items-center gap-x-4 gap-y-1 font-mono text-xs text-zinc-500 border-b border-zinc-200/80 pb-2">
-                    {fandom ? (
-                      <span>
-                        FANDOM: <strong className="text-[#111215]">{fandom}</strong>
-                      </span>
-                    ) : null}
-                    {categories.length > 0 ? (
-                      <span>
-                        KATEGORI: <strong className="text-[#111215]">{categories.join(", ")}</strong>
-                      </span>
-                    ) : null}
+                    <span
+                      className={cn(
+                        "rounded-full px-3 py-1 font-mono text-xs font-black uppercase tracking-wider shadow-2xs",
+                        dayConfig.className
+                      )}
+                    >
+                      {dayConfig.label}
+                    </span>
+
+                    <span
+                      className={cn(
+                        "rounded-full px-2.5 py-1 font-mono text-xs font-bold uppercase tracking-wider",
+                        ratingBadge.className
+                      )}
+                    >
+                      {ratingBadge.label}
+                    </span>
                   </div>
-                )}
-                <p className="font-sans text-sm sm:text-base leading-relaxed text-zinc-700 whitespace-pre-line">
-                  {description}
-                </p>
-              </section>
 
-              {/* Daftar Karya & Merchandise */}
-              <section className="space-y-4">
-                <div className="flex items-center justify-between border-b border-zinc-200 pb-2.5">
-                  <h3 className="font-[var(--font-display)] text-2xl sm:text-3xl font-normal tracking-tight text-[#111215]">
-                    DAFTAR KARYA & MERCHANDISE
-                  </h3>
-                  <span className="font-mono text-xs font-bold text-zinc-500">
-                    {products.length} KARYA TERDAFTAR
-                  </span>
+                  {/* Nama Circle: Bebas Neue Display Font */}
+                  <h2
+                    id="circle-catalog-modal-title"
+                    className="font-[var(--font-display)] text-3xl sm:text-4xl lg:text-5xl font-black tracking-tight text-[#111215] leading-none pt-0.5"
+                  >
+                    {circle.name}
+                  </h2>
                 </div>
+              </div>
 
-                {products.length > 0 ? (
-                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-                    {products.map((product) => {
-                      const isZeroPrice = product.price <= 0;
-
-                      return (
-                        <article
-                          key={product.id}
-                          className="flex flex-col justify-between overflow-hidden rounded-2xl border border-zinc-200 bg-white transition hover:border-zinc-400 hover:shadow-md"
-                        >
-                          {/* Foto Karya */}
-                          <div className="relative aspect-4/3 w-full overflow-hidden bg-zinc-100">
-                            <ProductImage
-                              src={product.imageUrl}
-                              alt={product.name}
-                              className="h-full w-full rounded-none border-0"
-                              fallbackLabel="No preview"
-                            />
-
-                            {/* Tombol Wishlist per Produk */}
-                            <div className="absolute top-2 right-2 z-10">
-                              <WishlistHeartButton
-                                productId={product.id}
-                                productName={product.name}
-                                size="sm"
-                                className="shadow-sm"
-                              />
-                            </div>
-                          </div>
-
-                          {/* Info Produk */}
-                          <div className="p-3.5 sm:p-4 flex flex-col justify-between flex-1 gap-3">
-                            <div className="space-y-1">
-                              <h4 className="font-sans font-bold text-sm sm:text-base text-[#111215] line-clamp-2 leading-snug">
-                                {product.name}
-                              </h4>
-                            </div>
-
-                            {/* Harga & Tombol Aksi */}
-                            <div className="flex items-center justify-between gap-2 border-t border-zinc-100 pt-3">
-                              {isZeroPrice ? (
-                                <span className="inline-flex items-center rounded-md bg-zinc-100 px-2 py-0.5 font-mono text-xs font-bold uppercase tracking-wider text-zinc-700">
-                                  Sampel Karya
-                                </span>
-                              ) : (
-                                <span className="font-mono text-base font-black tracking-tight text-[#111215]">
-                                  {formatCurrency(product.price)}
-                                </span>
-                              )}
-
-                              {product.productLink ? (
-                                <a
-                                  href={product.productLink}
-                                  target="_blank"
-                                  rel="noopener noreferrer"
-                                  className="rounded-lg border border-zinc-200 bg-white px-2.5 py-1 font-mono text-xs font-bold uppercase tracking-wider text-[#111215] hover:border-[#111215] hover:bg-[#111215] hover:text-white transition active:scale-95 select-none"
-                                >
-                                  LIHAT KARYA
-                                </a>
-                              ) : (
-                                <Link
-                                  href={`/products/${product.id}`}
-                                  className="rounded-lg bg-[#111215] px-2.5 py-1 font-mono text-xs font-bold uppercase tracking-wider text-white hover:bg-[#F84632] transition active:scale-95 select-none"
-                                >
-                                  DETAIL
-                                </Link>
-                              )}
-                            </div>
-
-                            {/* Slip PO jika ada catatan pengambilan */}
-                            {product.poPickupNotes ? (
-                              <div className="rounded-xl border-2 border-dashed border-[#5398DA]/40 bg-[#5398DA]/5 p-2.5 space-y-1.5">
-                                <div className="flex items-center justify-between">
-                                  <span className="font-mono text-[10px] font-black uppercase tracking-wider text-[#111215]">
-                                    SLIP PO
-                                  </span>
-                                  <button
-                                    type="button"
-                                    onClick={() =>
-                                      handleCopyPo(product.id, product.poPickupNotes!)
-                                    }
-                                    className="rounded-md bg-[#111215] px-2 py-0.5 font-mono text-[10px] font-black uppercase tracking-wider text-white hover:bg-[#F84632] transition active:scale-95 select-none"
-                                  >
-                                    {copiedPoId === product.id ? "TERSALIN!" : "SALIN"}
-                                  </button>
-                                </div>
-                                <p className="font-mono text-xs font-bold text-[#111215] break-words select-all leading-snug">
-                                  {product.poPickupNotes}
-                                </p>
-                              </div>
-                            ) : null}
-                          </div>
-                        </article>
-                      );
-                    })}
-                  </div>
-                ) : (
-                  <div className="rounded-2xl border border-dashed border-zinc-300 p-8 text-center bg-zinc-50/50">
-                    <p className="font-mono text-xs font-bold uppercase tracking-wider text-zinc-400">
-                      KATALOG KARYA
-                    </p>
-                    <p className="mt-1 font-sans text-sm text-zinc-600 font-medium">
-                      Circle ini belum mendaftarkan katalog karya spesifik di ComiPocket.
-                    </p>
-                  </div>
-                )}
-              </section>
-            </div>
-
-            {/* Modal Footer */}
-            <div className="border-t border-zinc-200 bg-zinc-50/90 px-5 sm:px-7 py-3.5 flex flex-col sm:flex-row items-center justify-between gap-3">
-              <p className="font-mono text-xs font-bold text-zinc-500 text-center sm:text-left">
-                BOOTH {boothCode} · {dayConfig.label} · {products.length} KARYA
-              </p>
-
-              <div className="flex items-center gap-2 w-full sm:w-auto justify-end">
-                {effectiveFloorMapId ? (
-                  <Link
-                    href={`/maps/${effectiveFloorMapId}?circleId=${circle.id}`}
-                    className="inline-flex items-center rounded-xl bg-[#5398DA] px-4 py-2 font-mono text-xs font-black uppercase tracking-wider text-[#111215] hover:bg-[#4083c2] transition active:scale-95 select-none"
-                  >
-                    PETA MEJA
-                  </Link>
-                ) : null}
-
+              {/* Tombol Tutup Header */}
+              <div className="shrink-0 flex items-center gap-2">
                 <button
                   type="button"
                   onClick={onClose}
-                  className="inline-flex items-center rounded-xl bg-[#111215] px-5 py-2 font-mono text-xs font-bold uppercase tracking-wider text-white hover:bg-[#F84632] transition active:scale-95 shadow-xs select-none"
+                  className="rounded-xl bg-[#111215] px-4 py-2 font-mono text-xs font-black uppercase tracking-wider text-white transition hover:bg-[#F84632] active:scale-95 shadow-xs select-none"
                 >
                   TUTUP
                 </button>
               </div>
             </div>
-          </motion.div>
-        </div>
-      ) : null}
+
+            {/* Sub-Header Actions: Peta Meja & Social Pills */}
+            <div className="mt-4 flex flex-wrap items-center gap-2 pt-3 border-t border-zinc-100">
+              {effectiveFloorMapId ? (
+                <Link
+                  href={`/maps/${effectiveFloorMapId}?circleId=${circle.id}`}
+                  className="inline-flex items-center rounded-xl bg-[#5398DA] px-4 py-1.5 font-mono text-xs font-black uppercase tracking-wider text-[#111215] transition hover:bg-[#4083c2] active:scale-95 shadow-2xs select-none"
+                >
+                  PETA MEJA
+                </Link>
+              ) : null}
+
+              <button
+                type="button"
+                onClick={handleCopyCircleLink}
+                className="inline-flex items-center rounded-full border border-zinc-300 bg-white px-3.5 py-1.5 font-mono text-xs font-bold uppercase tracking-wider text-[#111215] hover:border-[#111215] hover:bg-[#111215] hover:text-white transition active:scale-95 shadow-2xs select-none"
+              >
+                {copiedCircleLink ? "TERSALIN!" : "SALIN TAUTAN"}
+              </button>
+
+              {socialLinks.map((link) => (
+                <a
+                  key={`${link.platform}-${link.url}`}
+                  href={link.url}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center rounded-full border border-zinc-200 bg-white px-3.5 py-1.5 font-mono text-xs font-bold uppercase tracking-wider text-[#111215] hover:border-[#111215] hover:bg-[#111215] hover:text-white transition active:scale-95 shadow-2xs select-none"
+                >
+                  {link.label}
+                </a>
+              ))}
+            </div>
+          </div>
+
+          {/* =================================================================== */}
+          {/* MODAL BODY (SCROLLABLE & 100% SOLID WHITE BACKGROUND)             */}
+          {/* =================================================================== */}
+          <div
+            className="flex-1 overflow-y-auto p-5 sm:p-7 space-y-7 bg-[#FFFFFF]"
+            style={{ backgroundColor: "#FFFFFF" }}
+          >
+            {/* Bio & Metadata Section (Bersih dari Raw Database Dump) */}
+            <section className="space-y-3 rounded-2xl bg-zinc-50 p-5 border border-zinc-200">
+              <div className="flex flex-wrap items-center gap-x-6 gap-y-2 font-mono text-xs text-zinc-500 border-b border-zinc-200 pb-3">
+                {fandom ? (
+                  <span>
+                    FANDOM: <strong className="text-[#111215] font-bold">{fandom}</strong>
+                  </span>
+                ) : null}
+                {categories.length > 0 ? (
+                  <span>
+                    KATEGORI: <strong className="text-[#111215] font-bold">{categories.join(", ")}</strong>
+                  </span>
+                ) : null}
+              </div>
+
+              {/* Teks Deskripsi Alami (Bebas dari URL Mentah Supabase) */}
+              <p className="font-sans text-sm sm:text-base leading-relaxed text-zinc-700 whitespace-pre-line">
+                {cleanBioText}
+              </p>
+            </section>
+
+            {/* Daftar Karya & Merchandise Circle (Opsi B: Minimalist Sequential) */}
+            <section className="space-y-4">
+              <div className="flex items-center justify-between border-b border-zinc-200 pb-3">
+                <h3 className="font-[var(--font-display)] text-2xl sm:text-3xl font-black tracking-tight text-[#111215] uppercase">
+                  DAFTAR KARYA & MERCHANDISE
+                </h3>
+                <span className="font-mono text-xs font-bold text-zinc-500 uppercase">
+                  {products.length} KARYA TERDAFTAR
+                </span>
+              </div>
+
+              {products.length > 0 ? (
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
+                  {products.map((product, pIdx) => {
+                    const isZeroPrice = product.price <= 0;
+                    const displayName = formatReleaseName(product.name, pIdx);
+                    const formattedImg = formatCircleImageUrl(product.imageUrl);
+
+                    // Cari index di galleryItems untuk membuka Lightbox
+                    const targetGalleryIdx = galleryItems.findIndex(
+                      (item) => item.src === formattedImg
+                    );
+
+                    return (
+                      <article
+                        key={product.id}
+                        className="group flex flex-col justify-between overflow-hidden rounded-2xl border border-zinc-200 bg-white transition hover:border-zinc-400 hover:shadow-lg"
+                      >
+                        {/* Foto Karya dengan Trigger Lightbox */}
+                        <div
+                          onClick={() => {
+                            if (targetGalleryIdx !== -1) {
+                              setLightboxIndex(targetGalleryIdx);
+                            } else if (formattedImg) {
+                              setLightboxIndex(0);
+                            }
+                          }}
+                          role="button"
+                          tabIndex={0}
+                          title="Klik untuk melihat karya dalam resolusi penuh"
+                          className="relative aspect-4/3 w-full overflow-hidden bg-zinc-100 cursor-zoom-in"
+                        >
+                          <ProductImage
+                            src={product.imageUrl}
+                            alt={displayName}
+                            className="h-full w-full rounded-none border-0 transition duration-300 group-hover:scale-105"
+                            fallbackLabel="No preview"
+                          />
+
+                          {/* Tombol Wishlist Berkontras Tinggi (Solid White Card Button) */}
+                          <div
+                            onClick={(e) => e.stopPropagation()}
+                            className="absolute top-2.5 right-2.5 z-10"
+                          >
+                            <WishlistHeartButton
+                              productId={product.id}
+                              productName={product.name}
+                              size="sm"
+                              className="bg-white/95 text-zinc-800 shadow-md border border-zinc-200 hover:text-rose-600 rounded-full p-2"
+                            />
+                          </div>
+
+                          {/* Indikator Klik untuk Zoom */}
+                          <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/60 to-transparent p-2 text-center opacity-0 transition-opacity group-hover:opacity-100 pointer-events-none">
+                            <span className="font-mono text-[11px] font-bold text-white uppercase tracking-wider">
+                              Klik untuk Zoom
+                            </span>
+                          </div>
+                        </div>
+
+                        {/* Info Produk & Harga */}
+                        <div className="p-4 flex flex-col justify-between flex-1 gap-3 bg-white">
+                          <div className="space-y-1">
+                            <h4 className="font-sans font-bold text-sm sm:text-base text-[#111215] line-clamp-2 leading-snug">
+                              {displayName}
+                            </h4>
+                          </div>
+
+                          {/* Harga & Tombol Aksi */}
+                          <div className="flex items-center justify-between gap-2 border-t border-zinc-100 pt-3">
+                            {isZeroPrice ? (
+                              <span className="inline-flex items-center rounded-md bg-zinc-100 px-2.5 py-1 font-mono text-xs font-bold uppercase tracking-wider text-zinc-700 border border-zinc-200">
+                                Sampel Karya
+                              </span>
+                            ) : (
+                              <span className="font-mono text-base font-black tracking-tight text-[#111215]">
+                                {formatCurrency(product.price)}
+                              </span>
+                            )}
+
+                            {product.productLink ? (
+                              <a
+                                href={product.productLink}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="rounded-lg border border-zinc-200 bg-white px-3 py-1 font-mono text-xs font-bold uppercase tracking-wider text-[#111215] hover:border-[#111215] hover:bg-[#111215] hover:text-white transition active:scale-95 select-none"
+                              >
+                                TAUTAN KARYA
+                              </a>
+                            ) : (
+                              <Link
+                                href={`/products/${product.id}`}
+                                className="rounded-lg bg-[#111215] px-3 py-1 font-mono text-xs font-bold uppercase tracking-wider text-white hover:bg-[#F84632] transition active:scale-95 select-none"
+                              >
+                                DETAIL
+                              </Link>
+                            )}
+                          </div>
+
+                          {/* Slip PO jika ada catatan */}
+                          {product.poPickupNotes ? (
+                            <div className="rounded-xl border border-dashed border-[#5398DA]/50 bg-[#5398DA]/5 p-2.5 space-y-1.5">
+                              <div className="flex items-center justify-between">
+                                <span className="font-mono text-[10px] font-black uppercase tracking-wider text-[#111215]">
+                                  SLIP PENGAMBILAN PO
+                                </span>
+                                <button
+                                  type="button"
+                                  onClick={() =>
+                                    handleCopyPo(product.id, product.poPickupNotes!)
+                                  }
+                                  className="rounded-md bg-[#111215] px-2 py-0.5 font-mono text-[10px] font-black uppercase tracking-wider text-white hover:bg-[#F84632] transition active:scale-95 select-none"
+                                >
+                                  {copiedPoId === product.id ? "TERSALIN!" : "SALIN"}
+                                </button>
+                              </div>
+                              <p className="font-mono text-xs font-bold text-[#111215] break-words select-all leading-snug">
+                                {product.poPickupNotes}
+                              </p>
+                            </div>
+                          ) : null}
+                        </div>
+                      </article>
+                    );
+                  })}
+                </div>
+              ) : (
+                <div className="rounded-2xl border border-dashed border-zinc-300 p-8 text-center bg-zinc-50">
+                  <p className="font-mono text-xs font-bold uppercase tracking-wider text-zinc-400">
+                    KATALOG KARYA
+                  </p>
+                  <p className="mt-1 font-sans text-sm text-zinc-600 font-medium">
+                    Circle ini belum mendaftarkan katalog karya spesifik di ComiPocket.
+                  </p>
+                </div>
+              )}
+            </section>
+          </div>
+
+          {/* =================================================================== */}
+          {/* MODAL FOOTER (100% SOLID WHITE)                                    */}
+          {/* =================================================================== */}
+          <div
+            className="border-t border-zinc-200 bg-[#FFFFFF] px-5 sm:px-7 py-4 flex flex-col sm:flex-row items-center justify-between gap-3"
+            style={{ backgroundColor: "#FFFFFF" }}
+          >
+            <p className="font-mono text-xs font-bold text-zinc-500 text-center sm:text-left uppercase">
+              BOOTH {boothCode} · {dayConfig.label} · {products.length} KARYA
+            </p>
+
+            <div className="flex items-center gap-2 w-full sm:w-auto justify-end">
+              {effectiveFloorMapId ? (
+                <Link
+                  href={`/maps/${effectiveFloorMapId}?circleId=${circle.id}`}
+                  className="inline-flex items-center rounded-xl bg-[#5398DA] px-4 py-2 font-mono text-xs font-black uppercase tracking-wider text-[#111215] hover:bg-[#4083c2] transition active:scale-95 select-none"
+                >
+                  PETA MEJA
+                </Link>
+              ) : null}
+
+              <button
+                type="button"
+                onClick={onClose}
+                className="inline-flex items-center rounded-xl bg-[#111215] px-5 py-2 font-mono text-xs font-bold uppercase tracking-wider text-white hover:bg-[#F84632] transition active:scale-95 shadow-xs select-none"
+              >
+                TUTUP
+              </button>
+            </div>
+          </div>
+        </motion.div>
+      </div>
+
+      {/* =================================================================== */}
+      {/* INTERACTIVE FULL-RESOLUTION LIGHTBOX (IMAGE ZOOM VIEWER)           */}
+      {/* =================================================================== */}
+      {lightboxIndex !== null && galleryItems[lightboxIndex] && (
+        <motion.div
+          key="full-resolution-lightbox"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          exit={{ opacity: 0 }}
+          transition={{ duration: 0.15 }}
+          onClick={() => setLightboxIndex(null)}
+          className="fixed inset-0 z-[70] flex flex-col items-center justify-between bg-black/95 p-4 sm:p-6 backdrop-blur-md select-none"
+        >
+          {/* Lightbox Top Bar */}
+          <div
+            onClick={(e) => e.stopPropagation()}
+            className="flex w-full max-w-5xl items-center justify-between gap-4 text-white pb-3 border-b border-white/20"
+          >
+            <div className="space-y-0.5 min-w-0">
+              <h3 className="font-[var(--font-display)] text-lg sm:text-xl font-bold uppercase tracking-wide truncate text-[#D6F834]">
+                {galleryItems[lightboxIndex].title}
+              </h3>
+              <p className="font-mono text-xs text-white/60">
+                {galleryItems[lightboxIndex].subtitle}
+              </p>
+            </div>
+
+            <div className="flex items-center gap-3 shrink-0">
+              <span className="font-mono text-xs font-bold text-white/75 bg-white/10 px-3 py-1 rounded-full">
+                {lightboxIndex + 1} / {galleryItems.length}
+              </span>
+              <button
+                type="button"
+                onClick={() => setLightboxIndex(null)}
+                className="rounded-xl bg-white/15 px-3.5 py-1.5 font-mono text-xs font-bold uppercase text-white hover:bg-[#F84632] transition"
+              >
+                TUTUP
+              </button>
+            </div>
+          </div>
+
+          {/* Lightbox Main Image Canvas */}
+          <div
+            onClick={(e) => e.stopPropagation()}
+            className="relative flex flex-1 items-center justify-center p-2 sm:p-4 w-full max-w-5xl max-h-[82vh]"
+          >
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img
+              src={galleryItems[lightboxIndex].src}
+              alt={galleryItems[lightboxIndex].title}
+              referrerPolicy="no-referrer"
+              className="max-h-[80vh] max-w-full object-contain rounded-xl shadow-2xl drop-shadow-2xl"
+            />
+
+            {/* Prev / Next Navigation Buttons (Bila gambar > 1) */}
+            {galleryItems.length > 1 && (
+              <>
+                <button
+                  type="button"
+                  onClick={() =>
+                    setLightboxIndex((curr) =>
+                      curr !== null
+                        ? (curr - 1 + galleryItems.length) % galleryItems.length
+                        : null
+                    )
+                  }
+                  className="absolute left-2 sm:left-4 top-1/2 -translate-y-1/2 rounded-full bg-black/60 p-3 font-mono text-sm font-bold text-white backdrop-blur-md hover:bg-black/90 transition active:scale-95 border border-white/20"
+                  title="Gambar Sebelumnya"
+                >
+                  PREV
+                </button>
+                <button
+                  type="button"
+                  onClick={() =>
+                    setLightboxIndex((curr) =>
+                      curr !== null ? (curr + 1) % galleryItems.length : null
+                    )
+                  }
+                  className="absolute right-2 sm:right-4 top-1/2 -translate-y-1/2 rounded-full bg-black/60 p-3 font-mono text-sm font-bold text-white backdrop-blur-md hover:bg-black/90 transition active:scale-95 border border-white/20"
+                  title="Gambar Selanjutnya"
+                >
+                  NEXT
+                </button>
+              </>
+            )}
+          </div>
+
+          {/* Lightbox Bottom Instructions */}
+          <div
+            onClick={(e) => e.stopPropagation()}
+            className="text-center font-mono text-[11px] text-white/50 pt-2"
+          >
+            Gunakan tombol panah keyboard atau tombol PREV / NEXT untuk beralih gambar. Klik di luar gambar untuk menutup.
+          </div>
+        </motion.div>
+      )}
     </AnimatePresence>
   );
 }
