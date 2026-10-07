@@ -37,8 +37,8 @@ function parseCliArgs(): CliOptions {
   const args = process.argv.slice(2);
   const options: CliOptions = {
     isUrl: false,
-    eventSlug: "comifuro-20",
-    eventName: "Comic Frontier 20 (Comifuro 20)",
+    eventSlug: "cf22",
+    eventName: "Comic Frontier 22 (Comifuro 22)",
     dryRun: false,
     help: false
   };
@@ -120,7 +120,7 @@ Penggunaan:
   npm run db:import [opsi] [file_atau_url]
 
 Contoh:
-  # Impor dari file bawaan (data/comifuro20-sample.json)
+  # Impor dari file bawaan (data/comifuro22-full.json)
   npm run db:import
 
   # Impor dari file JSON lokal
@@ -128,17 +128,17 @@ Contoh:
   npm run db:import -- --file ./katalog.json
 
   # Impor langsung dari REST endpoint / URL Supabase
-  npm run db:import -- https://example.com/cf20-circles.json
+  npm run db:import -- https://example.com/cf22-circles.json
   npm run db:import -- --url https://example.supabase.co/rest/v1/circles?select=*
 
   # Simulasi impor tanpa mengubah database (dry-run)
-  npm run db:import -- --dry-run ./data/comifuro20-sample.json
+  npm run db:import -- --dry-run ./data/comifuro22-full.json
 
 Opsi:
   -f, --file <path>        Lokasi file JSON katalog lokal
   -u, --url <url>          URL endpoint Supabase / file JSON publik
-  --event-slug <slug>      Slug event target di database (default: comifuro-20)
-  --event-name <name>      Nama event jika baru dibuat (default: Comic Frontier 20 (Comifuro 20))
+  --event-slug <slug>      Slug event target di database (default: cf22)
+  --event-name <name>      Nama event jika baru dibuat (default: Comic Frontier 22 (Comifuro 22))
   --dry-run                Jalankan transaksi dan rollback di akhir (simulasi)
   -h, --help               Tampilkan panduan bantuan ini
 `);
@@ -153,8 +153,7 @@ async function loadCatalogData(
   // Jika tidak ada argumen sumber, cari file sampel default
   if (!resolvedSource) {
     const defaultPaths = [
-      resolve(process.cwd(), "data", "comifuro20-sample.json"),
-      resolve(process.cwd(), "data", "cf20-catalog.json")
+      resolve(process.cwd(), "data", "comifuro22-full.json")
     ];
 
     const found = defaultPaths.find((p) => existsSync(p));
@@ -163,7 +162,7 @@ async function loadCatalogData(
       isUrl = false;
     } else {
       throw new Error(
-        "Tidak ada file data atau URL yang ditentukan, dan file default 'data/comifuro20-sample.json' tidak ditemukan.\n" +
+        "Tidak ada file data atau URL yang ditentukan, dan file default 'data/comifuro22-full.json' tidak ditemukan.\n" +
           "Jalankan 'npm run db:import -- --help' untuk melihat panduan penggunaan."
       );
     }
@@ -536,7 +535,7 @@ async function main() {
                   purchaseType: "ON_THE_SPOT",
                   productLink: item.primarySocial,
                   quantity: 1,
-                  notes: `Katalog sample karya circle ${item.name} (${item.fandom || "Comifuro 20"}). Booth ${item.boothCode}.`
+                  notes: `Katalog sample karya circle ${item.name} (${item.fandom || "Comifuro 22"}). Booth ${item.boothCode}.`
                 })
                 .returning();
               circleProducts.push(insertedProd);

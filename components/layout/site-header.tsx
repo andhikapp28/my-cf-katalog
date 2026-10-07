@@ -12,6 +12,7 @@ import {
 
 const navLinks = [
   { href: "/", label: "Dashboard" },
+  { href: "/events", label: "Events" },
   { href: "/products", label: "Katalog" },
   { href: "/maps", label: "Peta Denah" },
   { href: "/wishlist", label: "Wishlist", isWishlist: true },

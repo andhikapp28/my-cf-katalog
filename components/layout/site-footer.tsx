@@ -88,15 +88,15 @@ export function SiteFooter() {
         </div>
 
         {/* TANALOKA Big Display Typography with Overlapping Mascot */}
-        <div className="relative w-full border-t border-[#E5E5E5] pt-10">
-          <div className="relative overflow-hidden select-none text-center">
+        <div className="relative w-full border-t border-[#E5E5E5] pt-12 sm:pt-16 md:pt-20 overflow-visible">
+          <div className="relative overflow-visible select-none text-center px-2 pt-6 sm:pt-8 md:pt-10">
             {/* Giant Coral Red text behind */}
-            <span className="block font-[var(--font-display)] font-black text-6xl sm:text-8xl md:text-9xl lg:text-[11rem] xl:text-[13rem] tracking-tighter text-[#F84632] leading-none uppercase">
+            <span className="block font-[var(--font-display)] font-black text-6xl sm:text-8xl md:text-9xl lg:text-[9.5rem] xl:text-[11.5rem] tracking-tighter text-[#F84632] leading-none uppercase">
               COMIPOCKET
             </span>
 
             {/* Mascot Cutout Standing in the Center Overlapping the Letters */}
-            <div className="absolute inset-0 flex items-end justify-center pointer-events-none">
+            <div className="absolute inset-0 flex items-end justify-center pointer-events-none overflow-visible">
               <Image
                 src="/mascot.png"
                 alt="ComiPocket Mascot Footer"

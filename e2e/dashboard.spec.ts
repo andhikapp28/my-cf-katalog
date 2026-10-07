@@ -20,23 +20,22 @@ test.describe("Public dashboard", () => {
     // 1. Teks Judul & Hero Headline (Struktur palet TANALOKA)
     await expect(page.getByText("WHERE EVERY CREATOR GATHERS")).toBeVisible();
     await expect(page.locator("img[alt='ComiPocket Mascot']")).toBeVisible();
-    await expect(page.getByRole("link", { name: "JELAJAHI 1.400+ CIRCLE" })).toBeVisible();
-    await expect(page.getByRole("link", { name: "Peta Denah Hall" })).toBeVisible();
+    await expect(page.getByRole("link", { name: "JELAJAHI 1.400+ CIRCLE", exact: true })).toBeVisible();
+    await expect(page.getByRole("link", { name: "Peta Denah Hall", exact: true })).toBeVisible();
 
     // 2. Metrik Cards (AISUM Pulse & Metrics)
-    await expect(page.getByText("EVENT PULSE & METRICS")).toBeVisible();
+    await expect(page.getByText("COMIFURO 22 · DATA EVENT AKTIF")).toBeVisible();
     await expect(page.getByRole("heading", { level: 2, name: /CONVENTION MEETS ACTION/i })).toBeVisible();
     await expect(page.getByText("CIRCLES", { exact: true })).toBeVisible();
     await expect(page.getByText("Artist Alley & Creator Alley")).toBeVisible();
     await expect(page.getByText("SAMPEL KARYA", { exact: true })).toBeVisible();
     await expect(page.getByText("Artbook, Merch, Standee & Zine")).toBeVisible();
     await expect(page.getByText("HALL VENUE", { exact: true })).toBeVisible();
-    await expect(page.getByText("Hall 8 & Hall 9 ICE BSD")).toBeVisible();
+    await expect(page.getByText("Hall 8 & Hall 9 ICE BSD", { exact: true })).toBeVisible();
     await expect(page.getByText("OFFLINE READY", { exact: true })).toBeVisible();
     await expect(page.getByText("Service Worker & Local Storage")).toBeVisible();
 
     // 3. Banner CF23 - CF18 16:9 Landscape cards, badges, real images & action routes
-    await expect(page.getByText("COMIFURO EDITIONS & ARCHIVES")).toBeVisible();
     await expect(page.getByRole("heading", { level: 2, name: "COMIFURO EDITIONS" })).toBeVisible();
     await expect(page.getByRole("link", { name: "LIHAT SEMUA CIRCLE" })).toBeVisible();
     await expect(page.getByRole("link", { name: "LIHAT SEMUA CIRCLE" })).toHaveAttribute("href", "/circles");
@@ -44,12 +43,12 @@ test.describe("Public dashboard", () => {
     await expect(page.getByRole("link", { name: "SEMUA EVENT" })).toHaveAttribute("href", "/events");
 
     const editions = [
-      { id: "CF 23", name: "Comic Frontier 23", image: "/banner/cf23.jpg", route: "/events", linkText: "Detail Event" },
-      { id: "CF 22", name: "Comic Frontier 22", image: "/banner/cf22.jpg", route: "/products", linkText: "Jelajahi Katalog" },
-      { id: "CF 21", name: "Comic Frontier 21", image: "/banner/cf21.jpg", route: "/events", linkText: "Lihat Arsip" },
-      { id: "CF 20", name: "Comic Frontier 20", image: "/banner/cf20.jpg", route: "/events", linkText: "Lihat Arsip" },
-      { id: "CF 19", name: "Comic Frontier 19", image: "/banner/cf19.jpg", route: "/events", linkText: "Lihat Arsip" },
-      { id: "CF 18", name: "Comic Frontier 18", image: "/banner/cf18.jpg", route: "/events", linkText: "Lihat Arsip" }
+      { id: "CF 23", name: "Comic Frontier 23", image: "/banner/cf23.jpg", route: "/events/cf23" },
+      { id: "CF 22", name: "Comic Frontier 22", image: "/banner/cf22.jpg", route: "/events/cf22" },
+      { id: "CF 21", name: "Comic Frontier 21", image: "/banner/cf21.jpg", route: "/events/cf21" },
+      { id: "CF 20", name: "Comic Frontier 20", image: "/banner/cf20.jpg", route: "/events/cf20" },
+      { id: "CF 19", name: "Comic Frontier 19", image: "/banner/cf19.jpg", route: "/events/cf19" },
+      { id: "CF 18", name: "Comic Frontier 18", image: "/banner/cf18.jpg", route: "/events/cf18" }
     ];
 
     for (const edition of editions) {
@@ -62,8 +61,8 @@ test.describe("Public dashboard", () => {
       await expect(bannerImg).toBeVisible();
       await expect(bannerImg).toHaveAttribute("src", edition.image);
 
-      // Verifikasi rute aksi 16:9
-      const actionLink = editionCard.getByRole("link", { name: edition.linkText });
+      // Verifikasi rute aksi interaktif 16:9 kartu banner
+      const actionLink = editionCard.locator("a");
       await expect(actionLink).toBeVisible();
       await expect(actionLink).toHaveAttribute("href", edition.route);
     }
@@ -75,7 +74,11 @@ test.describe("Public dashboard", () => {
       await expect(aspect169Banners.nth(i)).toBeVisible();
     }
 
-    // 4. Footer (TANALOKA Design System)
+    // 4. Companion Toolkit & 3-Step Hunting Flow
+    await expect(page.getByRole("heading", { name: /COMPANION TOOLKIT/i })).toBeVisible();
+    await expect(page.getByRole("heading", { name: /3-STEP CONVENTION HUNTING FLOW/i })).toBeVisible();
+
+    // 5. Footer (TANALOKA Design System)
     const footer = page.locator("footer");
     await expect(footer).toBeVisible();
     await expect(
@@ -120,15 +123,15 @@ test.describe("Public dashboard", () => {
   test("kartu banner 16:9 Comifuro dapat dinavigasi ke rute tujuan yang benar", async ({ page }) => {
     await page.goto("/");
 
-    // Navigasi lewat banner 16:9 CF 22 ke rute /products
+    // Navigasi lewat banner 16:9 CF 22 ke rute /events/cf22
     const cf22Card = page.locator("article").filter({ hasText: "Comic Frontier 22" });
-    const katalogBtn = cf22Card.getByRole("link", { name: "Jelajahi Katalog" });
-    await expect(katalogBtn).toBeVisible();
-    await katalogBtn.click();
+    const cardLink = cf22Card.locator("a");
+    await expect(cardLink).toBeVisible();
+    await cardLink.click();
 
-    await expect(page).toHaveURL(/\/products/);
+    await expect(page).toHaveURL(/\/events\/cf22/);
     await expect(
-      page.getByRole("heading", { level: 1, name: /DIREKTORI CIRCLE & KATALOG KARYA COMIFURO/i })
+      page.getByRole("heading", { level: 1, name: /Comic Frontier 22/i })
     ).toBeVisible();
   });
 });

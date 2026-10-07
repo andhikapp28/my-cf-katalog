@@ -12,7 +12,8 @@ export function ProductImage({
   imageClassName,
   fallbackLabel = "No Image",
   fallbackDescription,
-  showLoading = true
+  showLoading = true,
+  loading = "lazy"
 }: {
   src?: string | null;
   alt: string;
@@ -21,6 +22,7 @@ export function ProductImage({
   fallbackLabel?: string;
   fallbackDescription?: string;
   showLoading?: boolean;
+  loading?: "lazy" | "eager";
 }) {
   const normalizedSrc = normalizeUrl(src);
   const [state, setState] = useState<ProductImageState>(normalizedSrc ? "loading" : "empty");
@@ -52,7 +54,7 @@ export function ProductImage({
           ref={imageRef}
           src={normalizedSrc}
           alt={alt}
-          loading="lazy"
+          loading={loading}
           decoding="async"
           referrerPolicy="no-referrer"
           onLoad={() => setState("loaded")}

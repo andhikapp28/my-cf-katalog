@@ -105,18 +105,6 @@ function cleanCircleBio(notes?: string | null): string {
   return cleaned || "Circle kreator ini belum menambahkan catatan bio tambahan.";
 }
 
-/**
- * Penamaan rilisan karya (Opsi B - Minimalist Sequential):
- * Mengubah nama mentah 'Katalog Sample #1 - Nama Circle' menjadi 'Preview Rilisan 01'.
- * Jika produk memiliki nama kustom asli (seperti 'Summer Memories Artbook'), nama asli tersebut tetap dipertahankan.
- */
-function formatReleaseName(rawName: string, index: number): string {
-  if (!rawName || /^Katalog Sample/i.test(rawName.trim())) {
-    return `Preview Rilisan ${String(index + 1).padStart(2, "0")}`;
-  }
-  return rawName;
-}
-
 export function CircleCatalogModal({
   circle,
   isOpen,
@@ -165,7 +153,8 @@ export function CircleCatalogModal({
   const effectiveFloorMapId =
     floorMapId || circle?.locations?.[0]?.floorMapId || null;
 
-  const fandom = circle?.fandom || parsedMeta?.fandom;
+  const rawFandom = circle?.fandom || parsedMeta?.fandom;
+  const fandom = rawFandom?.replace(/\s*\(\s*-\s*\)/g, "").trim() || null;
   const categories =
     circle?.categories && circle.categories.length > 0
       ? circle.categories
@@ -196,8 +185,8 @@ export function CircleCatalogModal({
         if (url && !items.some((it) => it.src === url)) {
           items.push({
             src: url,
-            title: `${formatReleaseName(p.name, idx)} · ${circle.name}`,
-            subtitle: p.price > 0 ? formatCurrency(p.price) : "Sampel Karya Pameran"
+            title: `Karya #${String(idx + 1).padStart(2, "0")} · ${circle.name}`,
+            subtitle: p.price > 0 ? formatCurrency(p.price) : `Booth ${boothCode}`
           });
         }
       }
@@ -484,11 +473,11 @@ export function CircleCatalogModal({
               </p>
             </section>
 
-            {/* Daftar Karya & Merchandise Circle (Opsi B: Minimalist Sequential) */}
+            {/* Daftar Karya & Merchandise Circle (Opsi 1: Clean Art Gallery Grid dengan Floating Badge Nomor) */}
             <section className="space-y-4">
-              <div className="flex items-center justify-between border-b border-zinc-200 pb-3">
+              <div className="flex flex-wrap items-center justify-between gap-2 border-b border-zinc-200 pb-3">
                 <h3 className="font-[var(--font-display)] text-2xl sm:text-3xl font-black tracking-tight text-[#111215] uppercase">
-                  DAFTAR KARYA & MERCHANDISE
+                  KATALOG KARYA
                 </h3>
                 <span className="font-mono text-xs font-bold text-zinc-500 uppercase">
                   {products.length} KARYA TERDAFTAR
@@ -498,8 +487,7 @@ export function CircleCatalogModal({
               {products.length > 0 ? (
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
                   {products.map((product, pIdx) => {
-                    const isZeroPrice = product.price <= 0;
-                    const displayName = formatReleaseName(product.name, pIdx);
+                    const numberLabel = `#${String(pIdx + 1).padStart(2, "0")}`;
                     const formattedImg = formatCircleImageUrl(product.imageUrl);
 
                     // Cari index di galleryItems untuk membuka Lightbox
@@ -510,30 +498,39 @@ export function CircleCatalogModal({
                     return (
                       <article
                         key={product.id}
-                        className="group flex flex-col justify-between overflow-hidden rounded-2xl border border-zinc-200 bg-white transition hover:border-zinc-400 hover:shadow-lg"
+                        className="group flex flex-col justify-between overflow-hidden rounded-2xl border border-zinc-200 bg-white transition hover:border-[#F84632]/50 hover:shadow-xl hover:shadow-[#F84632]/5 cursor-pointer select-none"
+                        onClick={() => {
+                          if (targetGalleryIdx !== -1) {
+                            setLightboxIndex(targetGalleryIdx);
+                          } else if (formattedImg) {
+                            setLightboxIndex(0);
+                          }
+                        }}
                       >
-                        {/* Foto Karya dengan Trigger Lightbox */}
+                        {/* Foto Karya dengan Floating Badges & Trigger Lightbox */}
                         <div
-                          onClick={() => {
-                            if (targetGalleryIdx !== -1) {
-                              setLightboxIndex(targetGalleryIdx);
-                            } else if (formattedImg) {
-                              setLightboxIndex(0);
-                            }
-                          }}
                           role="button"
                           tabIndex={0}
-                          title="Klik untuk melihat karya dalam resolusi penuh"
-                          className="relative aspect-4/3 w-full overflow-hidden bg-zinc-100 cursor-zoom-in"
+                          title={`Klik untuk melihat Karya ${numberLabel} dalam resolusi penuh`}
+                          className="relative aspect-[3/4] w-full overflow-hidden bg-zinc-100 cursor-zoom-in"
                         >
                           <ProductImage
                             src={product.imageUrl}
-                            alt={displayName}
+                            alt={`Karya ${numberLabel} - ${circle.name}`}
                             className="h-full w-full rounded-none border-0 transition duration-300 group-hover:scale-105"
+                            imageClassName="object-cover"
                             fallbackLabel="No preview"
+                            loading="eager"
                           />
 
-                          {/* Tombol Wishlist Berkontras Tinggi (Solid White Card Button) */}
+                          {/* Floating Badge Nomor di Sudut Kiri Atas Foto (Opsi 1) */}
+                          <div className="absolute top-2.5 left-2.5 z-10 pointer-events-none">
+                            <span className="inline-flex items-center rounded-lg bg-black/80 px-2.5 py-1 font-mono text-xs font-black tracking-wider text-white backdrop-blur-md border border-white/20 shadow-md">
+                              {numberLabel}
+                            </span>
+                          </div>
+
+                          {/* Tombol Wishlist di Sudut Kanan Atas Foto */}
                           <div
                             onClick={(e) => e.stopPropagation()}
                             className="absolute top-2.5 right-2.5 z-10"
@@ -546,55 +543,29 @@ export function CircleCatalogModal({
                             />
                           </div>
 
-                          {/* Indikator Klik untuk Zoom */}
-                          <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/60 to-transparent p-2 text-center opacity-0 transition-opacity group-hover:opacity-100 pointer-events-none">
-                            <span className="font-mono text-[11px] font-bold text-white uppercase tracking-wider">
+                          {/* Floating Price Badge jika ada harga riil > 0 */}
+                          {product.price > 0 ? (
+                            <div className="absolute bottom-2.5 left-2.5 z-10 pointer-events-none">
+                              <span className="inline-flex items-center rounded-lg bg-[#D6F834] px-2.5 py-1 font-mono text-xs font-black tracking-tight text-[#111215] shadow-md border border-black/10">
+                                {formatCurrency(product.price)}
+                              </span>
+                            </div>
+                          ) : null}
+
+                          {/* Indikator Hover Zoom */}
+                          <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/70 via-black/30 to-transparent p-3 text-center opacity-0 transition-opacity duration-200 group-hover:opacity-100 pointer-events-none">
+                            <span className="font-mono text-[11px] font-black text-white uppercase tracking-wider drop-shadow-sm">
                               Klik untuk Zoom
                             </span>
                           </div>
                         </div>
 
-                        {/* Info Produk & Harga */}
-                        <div className="p-4 flex flex-col justify-between flex-1 gap-3 bg-white">
-                          <div className="space-y-1">
-                            <h4 className="font-sans font-bold text-sm sm:text-base text-[#111215] line-clamp-2 leading-snug">
-                              {displayName}
-                            </h4>
-                          </div>
-
-                          {/* Harga & Tombol Aksi */}
-                          <div className="flex items-center justify-between gap-2 border-t border-zinc-100 pt-3">
-                            {isZeroPrice ? (
-                              <span className="inline-flex items-center rounded-md bg-zinc-100 px-2.5 py-1 font-mono text-xs font-bold uppercase tracking-wider text-zinc-700 border border-zinc-200">
-                                Sampel Karya
-                              </span>
-                            ) : (
-                              <span className="font-mono text-base font-black tracking-tight text-[#111215]">
-                                {formatCurrency(product.price)}
-                              </span>
-                            )}
-
-                            {product.productLink ? (
-                              <a
-                                href={product.productLink}
-                                target="_blank"
-                                rel="noopener noreferrer"
-                                className="rounded-lg border border-zinc-200 bg-white px-3 py-1 font-mono text-xs font-bold uppercase tracking-wider text-[#111215] hover:border-[#111215] hover:bg-[#111215] hover:text-white transition active:scale-95 select-none"
-                              >
-                                TAUTAN KARYA
-                              </a>
-                            ) : (
-                              <Link
-                                href={`/products/${product.id}`}
-                                className="rounded-lg bg-[#111215] px-3 py-1 font-mono text-xs font-bold uppercase tracking-wider text-white hover:bg-[#F84632] transition active:scale-95 select-none"
-                              >
-                                DETAIL
-                              </Link>
-                            )}
-                          </div>
-
-                          {/* Slip PO jika ada catatan */}
-                          {product.poPickupNotes ? (
+                        {/* Slip PO jika ada catatan khusus */}
+                        {product.poPickupNotes ? (
+                          <div
+                            className="p-3 bg-white border-t border-zinc-100"
+                            onClick={(e) => e.stopPropagation()}
+                          >
                             <div className="rounded-xl border border-dashed border-[#5398DA]/50 bg-[#5398DA]/5 p-2.5 space-y-1.5">
                               <div className="flex items-center justify-between">
                                 <span className="font-mono text-[10px] font-black uppercase tracking-wider text-[#111215]">
@@ -602,9 +573,10 @@ export function CircleCatalogModal({
                                 </span>
                                 <button
                                   type="button"
-                                  onClick={() =>
-                                    handleCopyPo(product.id, product.poPickupNotes!)
-                                  }
+                                  onClick={(e) => {
+                                    e.stopPropagation();
+                                    handleCopyPo(product.id, product.poPickupNotes!);
+                                  }}
                                   className="rounded-md bg-[#111215] px-2 py-0.5 font-mono text-[10px] font-black uppercase tracking-wider text-white hover:bg-[#F84632] transition active:scale-95 select-none"
                                 >
                                   {copiedPoId === product.id ? "TERSALIN!" : "SALIN"}
@@ -614,8 +586,8 @@ export function CircleCatalogModal({
                                 {product.poPickupNotes}
                               </p>
                             </div>
-                          ) : null}
-                        </div>
+                          </div>
+                        ) : null}
                       </article>
                     );
                   })}

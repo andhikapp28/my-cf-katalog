@@ -11,7 +11,9 @@ import { SummaryCard } from "@/components/dashboard/summary-card";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
 import { EmptyState } from "@/components/ui/empty-state";
+import { EventGuidesSection } from "@/components/events/event-guides-section";
 import { priorityStyles, statusStyles } from "@/lib/constants";
+import { getEventDetailDataWithFallback } from "@/lib/event-details-data";
 import { formatCurrency, formatDate } from "@/lib/format";
 
 function getEventState(startsAt?: string | Date | null, isActive?: boolean) {
@@ -47,6 +49,7 @@ export default async function EventDetailPage({ params }: { params: Promise<{ sl
   const eventState = getEventState(event.startsAt, event.isActive);
   const budgetUsage = Math.min(100, Math.round((dashboard.totalActual / Math.max(event.budget, 1)) * 100));
   const trackedCircles = new Set(dashboard.products.map((item: { circleId: string }) => item.circleId)).size;
+  const guideData = getEventDetailDataWithFallback(slug, event.name, event.venue);
 
   return (
     <div className="container-shell space-y-8 py-8 md:py-10">
@@ -271,6 +274,9 @@ export default async function EventDetailPage({ params }: { params: Promise<{ sl
           </CardContent>
         </Card>
       </section>
+
+      {/* Panduan Resmi Event (Tiket, Sorotan, Shuttle Bus & Regulasi Komunitas) */}
+      <EventGuidesSection data={guideData} />
     </div>
   );
 }

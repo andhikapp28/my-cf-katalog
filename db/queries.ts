@@ -1,5 +1,5 @@
 import "server-only";
-import { and, asc, count, desc, eq, gt, ilike, inArray, isNotNull, or } from "drizzle-orm";
+import { and, asc, count, countDistinct, desc, eq, gt, ilike, inArray, isNotNull, or } from "drizzle-orm";
 import { db } from "@/db";
 import {
   boothLocations,
@@ -610,14 +610,19 @@ export async function getEventsWithCounts() {
       id: events.id,
       name: events.name,
       slug: events.slug,
+      description: events.description,
+      venue: events.venue,
       isActive: events.isActive,
       startsAt: events.startsAt,
+      endsAt: events.endsAt,
       budget: events.budget,
       bannerImageUrl: events.bannerImageUrl,
-      productCount: count(products.id)
+      productCount: countDistinct(products.id),
+      circleCount: countDistinct(boothLocations.circleId)
     })
     .from(events)
     .leftJoin(products, eq(products.eventId, events.id))
+    .leftJoin(boothLocations, eq(boothLocations.eventId, events.id))
     .groupBy(events.id)
     .orderBy(desc(events.startsAt));
 }

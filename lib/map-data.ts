@@ -39,8 +39,7 @@ export function getCatalogCache(): Map<string, RawCatalogEntry> {
 
   catalogCache = new Map();
   const candidatePaths = [
-    resolve(process.cwd(), "data", "comifuro22-full.json"),
-    resolve(process.cwd(), "data", "comifuro20-sample.json")
+    resolve(process.cwd(), "data", "comifuro22-full.json")
   ];
 
   for (const p of candidatePaths) {

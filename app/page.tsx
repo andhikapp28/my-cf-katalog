@@ -8,7 +8,6 @@ import {
   Calendar,
   Layers,
   MapPin,
-  Sparkles,
   Users2,
   WifiOff
 } from "lucide-react";
@@ -22,6 +21,7 @@ import {
   BannerCardMotion,
   BannerBadgeMotion
 } from "@/components/landing/landing-motion";
+import { CompanionToolkit } from "@/components/landing/companion-toolkit";
 import { getLandingPageData } from "@/db/queries";
 import { cn } from "@/lib/utils";
 
@@ -29,7 +29,7 @@ interface ComifuroEdition {
   id: string;
   editionBadge: string;
   title: string;
-  status: "Coming Soon" | "Past Event";
+  status: "Coming Soon" | "Active Event" | "Past Event";
   date: string;
   venue: string;
   bannerImage: string;
@@ -44,72 +44,72 @@ const comifuroEditions: ComifuroEdition[] = [
     editionBadge: "CF 23",
     title: "Comic Frontier 23",
     status: "Coming Soon",
-    date: "Q4 2026",
-    venue: "ICE BSD City, Tangerang",
+    date: "31 Okt - 1 Nov 2026",
+    venue: "ICE BSD City (Hall 6 - 10 & Hall 5)",
     bannerImage: "/banner/cf23.jpg",
-    linkHref: "/events",
+    linkHref: "/events/cf23",
     linkText: "Detail Event",
-    description: "Perhelatan akbar Comic Frontier mendatang. Siapkan wishlist dan tabungan untuk karya kreator terbaru."
+    description: "Edisi tematik Halloween Weekend di ICE BSD City dengan seleksi circle terkurasi ketat dan free community booth."
   },
   {
     id: "cf22",
     editionBadge: "CF 22",
     title: "Comic Frontier 22",
-    status: "Past Event",
-    date: "11 - 12 Mei 2024",
-    venue: "ICE BSD City (Hall 8 & 9)",
+    status: "Active Event",
+    date: "16 - 17 Mei 2026",
+    venue: "ICE BSD City (Hall 6 - 10)",
     bannerImage: "/banner/cf22.jpg",
-    linkHref: "/products",
+    linkHref: "/events/cf22",
     linkText: "Jelajahi Katalog",
-    description: "1.400+ Circle kreator independen, artist alley, panggung kreator, dan ribuan rilisan eksklusif."
+    description: "1.500+ Circle kreator independen, Bushiroad EXPO 2026, kolaborasi resmi Kartu Multi Trip KAI Commuter, dan stage kreatif."
   },
   {
     id: "cf21",
     editionBadge: "CF 21",
     title: "Comic Frontier 21",
     status: "Past Event",
-    date: "16 - 17 Desember 2023",
-    venue: "ICE BSD City (Hall 7, 8 & 9)",
+    date: "15 - 16 November 2025",
+    venue: "ICE BSD City (Hall 6 - 10)",
     bannerImage: "/banner/cf21.jpg",
-    linkHref: "/events",
+    linkHref: "/events/cf21",
     linkText: "Lihat Arsip",
-    description: "Perayaan akhir tahun komunitas komik dan pop-kultur terbesar di Indonesia dengan area multi-hall."
+    description: "Edisi pemecah rekor 70.000 pengunjung dengan konser akbar hololive ID 5th Anniversary LIVE 'Chromatic Future' dan guest author LN Roshidere."
   },
   {
     id: "cf20",
     editionBadge: "CF 20",
     title: "Comic Frontier 20",
     status: "Past Event",
-    date: "11 - 12 Maret 2023",
-    venue: "ICE BSD City (Hall 8 & 9)",
+    date: "24 - 25 Mei 2025",
+    venue: "ICE BSD City (Hall 6 - 10)",
     bannerImage: "/banner/cf20.jpg",
-    linkHref: "/events",
+    linkHref: "/events/cf20",
     linkText: "Lihat Arsip",
-    description: "Dua dekade gelaran Comic Frontier menyatukan karya doujinshi, kreator lokal, dan merchandise eksklusif."
+    description: "Perayaan edisi ke-20 menyatukan Bushiroad EXPO 2025, Q&A CEO Takaaki Kidani, seiyuu BanG Dream!, dan panggung kreator lokal."
   },
   {
     id: "cf19",
     editionBadge: "CF 19",
     title: "Comic Frontier 19",
     status: "Past Event",
-    date: "24 - 25 September 2022",
-    venue: "ICE BSD City (Hall 10)",
+    date: "9 - 10 November 2024",
+    venue: "ICE BSD City (Hall 7 - 10)",
     bannerImage: "/banner/cf19.jpg",
-    linkHref: "/events",
+    linkHref: "/events/cf19",
     linkText: "Lihat Arsip",
-    description: "Kembalinya pameran tatap muka Comic Frontier pasca pandemi di hall megah ICE BSD City."
+    description: "Menghadirkan konser anisong Konomi Suzuki dan panggung kolaborasi Yuko Suzuhana (Wagakki Band) x Upiko di 4 hall ICE BSD."
   },
   {
     id: "cf18",
     editionBadge: "CF 18",
     title: "Comic Frontier 18",
     status: "Past Event",
-    date: "17 - 18 Juli 2021",
-    venue: "Online Virtual Edition",
+    date: "11 - 12 Mei 2024",
+    venue: "ICE BSD City (Hall 6 - 10)",
     bannerImage: "/banner/cf18.jpg",
-    linkHref: "/events",
+    linkHref: "/events/cf18",
     linkText: "Lihat Arsip",
-    description: "Edisi perhelatan virtual spesial yang menghubungkan lingkaran kreator dan penikmat seni di ruang digital."
+    description: "Penyelenggaraan Bushiroad EXPO 2024, bintang tamu seiyuu Aina Aiba & Yuka Nishio, serta pembukaan Hall 6 terdedikasi kuliner F&B."
   }
 ];
 
@@ -172,7 +172,7 @@ export default async function HomePage() {
               </HeroEntranceItem>
               <HeroEntranceItem>
                 <p className="text-xs sm:text-sm font-medium text-white/80 max-w-xs sm:ml-auto leading-relaxed">
-                  1.400+ circle kreator, denah booth hall 8 & 9, kalkulator cash ATM, dan checklist offline.
+                  1.400+ circle kreator, denah booth, kalkulator cash ATM, dan checklist offline.
                 </p>
               </HeroEntranceItem>
             </HeroEntranceMotion>
@@ -186,7 +186,7 @@ export default async function HomePage() {
           <div className="relative w-full min-h-[380px] sm:min-h-[480px] md:min-h-[560px] lg:min-h-[640px] flex items-center justify-center pt-2 sm:pt-4">
             {/* Layer 0: Giant Typography Spanning Across the Screen Behind Mascot */}
             <div className="absolute inset-0 flex items-center justify-center pointer-events-none select-none z-0 overflow-hidden">
-              <span className="font-[var(--font-display)] font-black text-[16vw] sm:text-[17vw] lg:text-[18vw] tracking-tighter text-[#D6F834] uppercase leading-none select-none drop-shadow-sm whitespace-nowrap opacity-95">
+              <span className="font-[var(--font-display)] font-black text-[12.8vw] tracking-tight w-full text-center text-[#D6F834] uppercase leading-none select-none drop-shadow-sm whitespace-nowrap opacity-95">
                 COMIPOCKET
               </span>
             </div>
@@ -249,8 +249,11 @@ export default async function HomePage() {
             <div className="grid gap-6 lg:grid-cols-12 lg:items-end border-b border-black/15 pb-8">
               <div className="lg:col-span-7 space-y-3">
                 <div className="inline-flex items-center gap-2 text-xs font-mono font-bold tracking-widest text-[#111215] uppercase bg-black/10 px-3.5 py-1.5 rounded-full border border-black/10 shadow-xs">
-                  <Sparkles className="h-3.5 w-3.5 text-[#F84632]" />
-                  <span>EVENT PULSE & METRICS</span>
+                  <span className="relative flex h-2 w-2">
+                    <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-500 opacity-75" />
+                    <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500" />
+                  </span>
+                  <span>COMIFURO 22 · DATA EVENT AKTIF</span>
                 </div>
                 <h2 className="font-[var(--font-display)] text-3xl font-black tracking-tight sm:text-4xl md:text-5xl lg:text-6xl text-[#111215] uppercase leading-[0.92]">
                   CONVENTION MEETS ACTION<span className="text-[#F84632]">*</span>
@@ -258,7 +261,7 @@ export default async function HomePage() {
               </div>
               <div className="lg:col-span-5">
                 <p className="text-sm sm:text-base leading-relaxed text-[#111215]/85 font-medium">
-                  Direktori komprehensif ribuan kreator independen dan booth karya. Diindeks ke dalam arsitektur offline-first untuk keandalan maksimal di dalam hall konvensi tanpa ketergantungan sinyal.
+                  Direktori komprehensif ribuan kreator independen dan booth karya aktif Comic Frontier 22. Diindeks ke dalam arsitektur offline-first untuk keandalan maksimal di dalam hall konvensi tanpa ketergantungan sinyal seluler.
                 </p>
               </div>
             </div>
@@ -367,9 +370,6 @@ export default async function HomePage() {
           <FadeInView>
             <div className="flex flex-col gap-6 sm:flex-row sm:items-end sm:justify-between border-b border-zinc-200 pb-8">
               <div>
-                <p className="text-xs font-mono font-bold tracking-widest text-[#F84632] uppercase">
-                  COMIFURO EDITIONS & ARCHIVES
-                </p>
                 <h2 className="mt-2 font-[var(--font-display)] text-3xl sm:text-4xl lg:text-6xl font-black tracking-tight uppercase text-[#F84632]">
                   COMIFURO EDITIONS
                 </h2>
@@ -400,48 +400,53 @@ export default async function HomePage() {
           <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
             {comifuroEditions.map((edition, idx) => (
               <FadeInView key={edition.id} delay={idx * 0.08} duration={0.45}>
-                <article className="group relative flex flex-col justify-between overflow-hidden rounded-2xl border border-zinc-200 bg-white transition duration-300 hover:border-[#F84632]/50 hover:shadow-xl hover:shadow-[#F84632]/10 h-full">
-                  {/* 16:9 Thumbnail Banner with BannerCardMotion */}
-                  <BannerCardMotion
-                    imageSrc={edition.bannerImage}
-                    imageAlt={edition.title}
-                    badge={
-                      <span className="rounded-lg bg-black/75 px-3 py-1 font-mono text-xs font-black text-white backdrop-blur-md border border-white/20 shadow-md">
-                        {edition.editionBadge}
-                      </span>
-                    }
-                    className="aspect-[16/9] rounded-t-2xl rounded-b-none border-0"
+                <article className="h-full">
+                  <Link
+                    href={edition.linkHref}
+                    className="group relative flex flex-col justify-between overflow-hidden rounded-2xl border border-zinc-200 bg-white transition-all duration-300 hover:border-[#F84632]/50 hover:shadow-2xl hover:shadow-[#F84632]/15 hover:scale-[1.015] hover:-translate-y-1 h-full block"
                   >
-                    {/* Contrast scrim */}
-                    <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/30 to-transparent pointer-events-none" />
-
-                    {/* Top Right Status Badge: CF 23 Coral Red, others dark charcoal */}
-                    <div className="absolute top-3 right-3 z-20">
-                      <BannerBadgeMotion>
-                        <span
-                          className={cn(
-                            "rounded-full px-3 py-0.5 text-[11px] font-mono font-bold backdrop-blur-md shadow-md",
-                            edition.status === "Coming Soon"
-                              ? "bg-[#F84632] text-white"
-                              : "bg-[#111215]/80 text-white border border-white/20"
-                          )}
-                        >
-                          {edition.status}
+                    {/* 16:9 Thumbnail Banner with BannerCardMotion */}
+                    <BannerCardMotion
+                      imageSrc={edition.bannerImage}
+                      imageAlt={edition.title}
+                      badge={
+                        <span className="rounded-lg bg-black/75 px-3 py-1 font-mono text-xs font-black text-white backdrop-blur-md border border-white/20 shadow-md">
+                          {edition.editionBadge}
                         </span>
-                      </BannerBadgeMotion>
-                    </div>
+                      }
+                      className="aspect-[16/9] rounded-t-2xl rounded-b-none border-0"
+                    >
+                      {/* Contrast scrim */}
+                      <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/30 to-transparent pointer-events-none" />
 
-                    {/* Title overlay on bottom of banner */}
-                    <div className="absolute bottom-3 left-3 right-3 z-20">
-                      <p className="font-[var(--font-display)] text-lg font-bold text-white group-hover:text-[#D6F834] transition-colors drop-shadow-md">
-                        {edition.title}
-                      </p>
-                    </div>
-                  </BannerCardMotion>
+                      {/* Top Right Status Badge: CF 23 Coral Red, others dark charcoal */}
+                      <div className="absolute top-3 right-3 z-20">
+                        <BannerBadgeMotion>
+                          <span
+                            className={cn(
+                              "rounded-full px-3 py-0.5 text-[11px] font-mono font-bold backdrop-blur-md shadow-md",
+                              edition.status === "Coming Soon"
+                                ? "bg-[#F84632] text-white"
+                                : edition.status === "Active Event"
+                                  ? "bg-emerald-500 text-white"
+                                  : "bg-[#111215]/80 text-white border border-white/20"
+                            )}
+                          >
+                            {edition.status}
+                          </span>
+                        </BannerBadgeMotion>
+                      </div>
 
-                  {/* Card Content & Metadata on White Background */}
-                  <div className="p-5 flex flex-col justify-between flex-1 space-y-4">
-                    <div className="space-y-2">
+                      {/* Title overlay on bottom of banner */}
+                      <div className="absolute bottom-3 left-3 right-3 z-20">
+                        <p className="font-[var(--font-display)] text-lg font-bold text-white group-hover:text-[#D6F834] transition-colors drop-shadow-md">
+                          {edition.title}
+                        </p>
+                      </div>
+                    </BannerCardMotion>
+
+                    {/* Card Content & Metadata on White Background */}
+                    <div className="p-5 flex flex-col justify-between flex-1 space-y-3">
                       <div className="flex flex-wrap items-center gap-x-3 gap-y-1 text-xs font-mono text-zinc-500">
                         <div className="flex items-center gap-1 text-zinc-800 font-medium">
                           <Calendar className="h-3 w-3 text-[#F84632]" />
@@ -457,63 +462,18 @@ export default async function HomePage() {
                         {edition.description}
                       </p>
                     </div>
-
-                    {/* Card Bottom Link */}
-                    <div className="pt-3 border-t border-zinc-100 flex items-center justify-between text-xs font-mono">
-                      <Link
-                        href={edition.linkHref}
-                        className="font-bold text-[#F84632] group-hover:underline inline-flex items-center gap-1"
-                      >
-                        <span>{edition.linkText}</span>
-                        <ArrowUpRight className="h-3 w-3" />
-                      </Link>
-                      <span className="text-[10px] font-mono text-zinc-400 uppercase font-semibold">
-                        {edition.editionBadge}
-                      </span>
-                    </div>
-                  </div>
+                  </Link>
                 </article>
               </FadeInView>
             ))}
           </div>
-
-          {/* Quick Fandom & Category Tags on White Background */}
-          <FadeInView delay={0.2}>
-            <div className="rounded-2xl border border-zinc-200 bg-zinc-50 p-6 space-y-4">
-              <div className="flex flex-wrap items-center justify-between gap-3">
-                <span className="text-xs font-mono font-bold uppercase tracking-wider text-zinc-500">
-                  PENCARIAN CEPAT FANDOM COMIFURO:
-                </span>
-                <Link href="/products" className="text-xs font-mono font-bold text-[#F84632] hover:underline">
-                  Buka Filter Lengkap
-                </Link>
-              </div>
-              <div className="flex flex-wrap gap-2 text-xs font-mono font-semibold">
-                {[
-                  "Original",
-                  "Genshin Impact",
-                  "Honkai Star Rail",
-                  "Hoyoverse",
-                  "Hololive",
-                  "Blue Archive",
-                  "Love and Deepspace",
-                  "Pokemon",
-                  "Haikyuu",
-                  "Uma Musume"
-                ].map((fandom) => (
-                  <Link
-                    key={fandom}
-                    href={`/products?q=${encodeURIComponent(fandom)}`}
-                    className="rounded-lg border border-zinc-200 bg-white px-3 py-1.5 text-zinc-700 transition hover:border-[#F84632] hover:text-[#F84632] hover:bg-[#F84632]/5"
-                  >
-                    {fandom}
-                  </Link>
-                ))}
-              </div>
-            </div>
-          </FadeInView>
         </div>
       </section>
+
+      {/* ========================================================================= */}
+      {/* SECTION 4 & 5: COMPANION TOOLKIT & 3-STEP HUNTING FLOW                     */}
+      {/* ========================================================================= */}
+      <CompanionToolkit />
     </div>
   );
 }
