@@ -46,8 +46,7 @@ const comifuroEditions: ComifuroEdition[] = [
     status: "Coming Soon",
     date: "Q4 2026",
     venue: "ICE BSD City, Tangerang",
-    bannerImage:
-      "https://images.unsplash.com/photo-1540575467063-178a50c2df87?auto=format&fit=crop&w=1200&q=80",
+    bannerImage: "/banner/cf23.jpg",
     linkHref: "/events",
     linkText: "Detail Event",
     description: "Perhelatan akbar Comic Frontier mendatang. Siapkan wishlist dan tabungan untuk karya kreator terbaru."
@@ -59,8 +58,7 @@ const comifuroEditions: ComifuroEdition[] = [
     status: "Past Event",
     date: "11 - 12 Mei 2024",
     venue: "ICE BSD City (Hall 8 & 9)",
-    bannerImage:
-      "https://images.unsplash.com/photo-1511578314322-379afb476865?auto=format&fit=crop&w=1200&q=80",
+    bannerImage: "/banner/cf22.jpg",
     linkHref: "/products",
     linkText: "Jelajahi Katalog",
     description: "1.400+ Circle kreator independen, artist alley, panggung kreator, dan ribuan rilisan eksklusif."
@@ -72,8 +70,7 @@ const comifuroEditions: ComifuroEdition[] = [
     status: "Past Event",
     date: "16 - 17 Desember 2023",
     venue: "ICE BSD City (Hall 7, 8 & 9)",
-    bannerImage:
-      "https://images.unsplash.com/photo-1515187029135-18ee286d815b?auto=format&fit=crop&w=1200&q=80",
+    bannerImage: "/banner/cf21.jpg",
     linkHref: "/events",
     linkText: "Lihat Arsip",
     description: "Perayaan akhir tahun komunitas komik dan pop-kultur terbesar di Indonesia dengan area multi-hall."
@@ -85,8 +82,7 @@ const comifuroEditions: ComifuroEdition[] = [
     status: "Past Event",
     date: "11 - 12 Maret 2023",
     venue: "ICE BSD City (Hall 8 & 9)",
-    bannerImage:
-      "https://images.unsplash.com/photo-1526478806334-5fd488fcaabc?auto=format&fit=crop&w=1200&q=80",
+    bannerImage: "/banner/cf20.jpg",
     linkHref: "/events",
     linkText: "Lihat Arsip",
     description: "Dua dekade gelaran Comic Frontier menyatukan karya doujinshi, kreator lokal, dan merchandise eksklusif."
@@ -98,8 +94,7 @@ const comifuroEditions: ComifuroEdition[] = [
     status: "Past Event",
     date: "24 - 25 September 2022",
     venue: "ICE BSD City (Hall 10)",
-    bannerImage:
-      "https://images.unsplash.com/photo-1492684223066-81342ee5ff30?auto=format&fit=crop&w=1200&q=80",
+    bannerImage: "/banner/cf19.jpg",
     linkHref: "/events",
     linkText: "Lihat Arsip",
     description: "Kembalinya pameran tatap muka Comic Frontier pasca pandemi di hall megah ICE BSD City."
@@ -111,8 +106,7 @@ const comifuroEditions: ComifuroEdition[] = [
     status: "Past Event",
     date: "17 - 18 Juli 2021",
     venue: "Online Virtual Edition",
-    bannerImage:
-      "https://images.unsplash.com/photo-1518709268805-4e9042af9f23?auto=format&fit=crop&w=1200&q=80",
+    bannerImage: "/banner/cf18.jpg",
     linkHref: "/events",
     linkText: "Lihat Arsip",
     description: "Edisi perhelatan virtual spesial yang menghubungkan lingkaran kreator dan penikmat seni di ruang digital."
@@ -416,7 +410,7 @@ export default async function HomePage() {
                         {edition.editionBadge}
                       </span>
                     }
-                    className="rounded-t-2xl rounded-b-none border-0"
+                    className="aspect-[16/9] rounded-t-2xl rounded-b-none border-0"
                   >
                     {/* Contrast scrim */}
                     <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/30 to-transparent pointer-events-none" />

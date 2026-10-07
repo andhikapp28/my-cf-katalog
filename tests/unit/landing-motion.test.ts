@@ -17,6 +17,8 @@ import {
   getMetricCardHoverVariants,
   getBannerImageVariants,
   getBannerBadgeVariants,
+  getBannerCardHoverVariants,
+  getBannerCardVariants,
 } from "@/components/landing/landing-motion";
 
 describe("Landing Motion Module - Ekspor Komponen & Subkomponen", () => {
@@ -134,13 +136,14 @@ describe("Metric Card Motion & Coral Red Hover Effects", () => {
 });
 
 describe("Banner 16:9 Landscape Card, Image Zoom & Badge Lift", () => {
-  it("getBannerImageVariants melakukan zoom halus (scale: 1.05) pada hover normal", () => {
+  it("getBannerImageVariants melakukan zoom halus (scale: 1.05) dengan ease-out pada hover normal", () => {
     const variants = getBannerImageVariants(false);
     expect(variants.initial).toEqual({ scale: 1 });
     expect(variants.hover).toMatchObject({
       scale: 1.05,
       transition: {
         duration: 0.45,
+        ease: "easeOut",
       },
     });
   });
@@ -151,12 +154,12 @@ describe("Banner 16:9 Landscape Card, Image Zoom & Badge Lift", () => {
     expect(variants.hover).toEqual({ scale: 1 });
   });
 
-  it("getBannerBadgeVariants mengangkat badge dan menambahkan shadow saat hover normal", () => {
+  it("getBannerBadgeVariants mengangkat badge (y: -3, scale: 1.02) dan menambahkan shadow saat hover normal", () => {
     const variants = getBannerBadgeVariants(false);
     expect(variants.initial).toEqual({ y: 0, scale: 1 });
     expect(variants.hover).toMatchObject({
       y: -3,
-      scale: 1.03,
+      scale: 1.02,
       boxShadow: expect.stringContaining("rgba(0, 0, 0,"),
       transition: {
         type: "spring",
@@ -170,6 +173,35 @@ describe("Banner 16:9 Landscape Card, Image Zoom & Badge Lift", () => {
     const variants = getBannerBadgeVariants(true);
     expect(variants.initial).toEqual({ y: 0, scale: 1 });
     expect(variants.hover).toEqual({ y: 0, scale: 1 });
+  });
+
+  it("getBannerCardHoverVariants menghasilkan efek border glow subtle dengan transisi spring", () => {
+    const hover = getBannerCardHoverVariants();
+    expect(hover.borderColor).toBe(TANALOKA_PALETTE.borderColor);
+    expect(hover.boxShadow).toContain(TANALOKA_PALETTE.glowColor);
+    expect(hover.transition).toMatchObject({
+      type: "spring",
+      stiffness: 400,
+      damping: 25,
+    });
+  });
+
+  it("getBannerCardVariants merespons hover dan mengabaikan saat prefers-reduced-motion aktif", () => {
+    const normalVariants = getBannerCardVariants(false);
+    expect(normalVariants.initial).toEqual({
+      borderColor: "rgba(255, 255, 255, 0.1)",
+      boxShadow: "0 0 0 0 rgba(0, 0, 0, 0)",
+    });
+    expect(normalVariants.hover).toMatchObject({
+      borderColor: TANALOKA_PALETTE.borderColor,
+      boxShadow: expect.stringContaining(TANALOKA_PALETTE.glowColor),
+    });
+
+    const reducedVariants = getBannerCardVariants(true);
+    expect(reducedVariants.hover).toEqual({
+      borderColor: "rgba(255, 255, 255, 0.1)",
+      boxShadow: "0 0 0 0 rgba(0, 0, 0, 0)",
+    });
   });
 });
 

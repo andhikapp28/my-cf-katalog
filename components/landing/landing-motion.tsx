@@ -283,11 +283,48 @@ export function MetricCardMotion({
 
 // =============================================================================
 // 4. BannerCardMotion, BannerImageMotion & BannerBadgeMotion
-// Efek hover halus pada kartu banner 16:9 (zoom halus dan elevasi badge)
+// Efek hover halus pada kartu banner 16:9 (zoom halus, border glow, dan elevasi badge)
 // selaras dengan estetika TANALOKA.
 // =============================================================================
 
-export function getBannerImageVariants(shouldReduceMotion: boolean): Variants {
+export function getBannerCardHoverVariants(
+  glowColor: string = TANALOKA_PALETTE.glowColor,
+  borderColor: string = TANALOKA_PALETTE.borderColor
+) {
+  return {
+    borderColor,
+    boxShadow: `0 12px 28px -8px ${glowColor}`,
+    transition: {
+      type: "spring" as const,
+      stiffness: 400,
+      damping: 25,
+    },
+  };
+}
+
+export function getBannerCardVariants(
+  shouldReduceMotion: boolean,
+  glowColor: string = TANALOKA_PALETTE.glowColor,
+  borderColor: string = TANALOKA_PALETTE.borderColor
+): Variants {
+  return {
+    initial: {
+      borderColor: "rgba(255, 255, 255, 0.1)",
+      boxShadow: "0 0 0 0 rgba(0, 0, 0, 0)",
+    },
+    hover: shouldReduceMotion
+      ? {
+          borderColor: "rgba(255, 255, 255, 0.1)",
+          boxShadow: "0 0 0 0 rgba(0, 0, 0, 0)",
+        }
+      : getBannerCardHoverVariants(glowColor, borderColor),
+  };
+}
+
+export function getBannerImageVariants(
+  shouldReduceMotion: boolean,
+  duration: number = 0.45
+): Variants {
   return {
     initial: { scale: 1 },
     hover: shouldReduceMotion
@@ -295,21 +332,24 @@ export function getBannerImageVariants(shouldReduceMotion: boolean): Variants {
       : {
           scale: 1.05,
           transition: {
-            duration: 0.45,
-            ease: [0.25, 1, 0.5, 1],
+            duration,
+            ease: "easeOut",
           },
         },
   };
 }
 
-export function getBannerBadgeVariants(shouldReduceMotion: boolean): Variants {
+export function getBannerBadgeVariants(
+  shouldReduceMotion: boolean,
+  scale: number = 1.02
+): Variants {
   return {
     initial: { y: 0, scale: 1 },
     hover: shouldReduceMotion
       ? { y: 0, scale: 1 }
       : {
           y: -3,
-          scale: 1.03,
+          scale,
           boxShadow: "0 8px 18px -2px rgba(0, 0, 0, 0.35)",
           transition: {
             type: "spring",
@@ -372,6 +412,7 @@ export function BannerImageMotion({
     return (
       <motion.div
         variants={imageVariants}
+        whileHover="hover"
         className={cn("h-full w-full overflow-hidden", className)}
         {...props}
       >
@@ -383,6 +424,7 @@ export function BannerImageMotion({
   return (
     <motion.div
       variants={imageVariants}
+      whileHover="hover"
       className={cn("h-full w-full overflow-hidden", className)}
       {...props}
     >
@@ -422,7 +464,12 @@ export function BannerBadgeMotion({
   }
 
   return (
-    <motion.div variants={badgeVariants} className={className} {...props}>
+    <motion.div
+      variants={badgeVariants}
+      whileHover="hover"
+      className={className}
+      {...props}
+    >
       {children}
     </motion.div>
   );
@@ -436,6 +483,8 @@ export interface BannerCardMotionProps extends HTMLMotionProps<"div"> {
   badge?: React.ReactNode;
   badgePosition?: "top-left" | "top-right" | "bottom-left" | "bottom-right";
   delay?: number;
+  glowColor?: string;
+  borderColor?: string;
 }
 
 export function BannerCardMotion({
@@ -446,10 +495,17 @@ export function BannerCardMotion({
   badge,
   badgePosition = "top-left",
   delay = 0,
+  glowColor = TANALOKA_PALETTE.glowColor,
+  borderColor = TANALOKA_PALETTE.borderColor,
   ...props
 }: BannerCardMotionProps) {
   const shouldReduceMotion = Boolean(useReducedMotion());
   const [imgError, setImgError] = useState(false);
+  const cardVariants = getBannerCardVariants(
+    shouldReduceMotion,
+    glowColor,
+    borderColor
+  );
 
   const badgePositionClass = {
     "top-left": "top-3 left-3 sm:top-4 sm:left-4",
@@ -506,6 +562,7 @@ export function BannerCardMotion({
 
   return (
     <motion.div
+      variants={cardVariants}
       initial="initial"
       whileHover="hover"
       whileInView={{
