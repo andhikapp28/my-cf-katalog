@@ -37,8 +37,8 @@ test.describe("Public dashboard", () => {
 
     // 3. Banner CF23 - CF18 16:9 Landscape cards, badges, real images & action routes
     await expect(page.getByRole("heading", { level: 2, name: "COMIFURO EDITIONS" })).toBeVisible();
-    await expect(page.getByRole("link", { name: "LIHAT SEMUA CIRCLE" })).toBeVisible();
-    await expect(page.getByRole("link", { name: "LIHAT SEMUA CIRCLE" })).toHaveAttribute("href", "/circles");
+    await expect(page.getByRole("link", { name: "SEMUA CIRCLE" })).toBeVisible();
+    await expect(page.getByRole("link", { name: "SEMUA CIRCLE" })).toHaveAttribute("href", "/circles");
     await expect(page.getByRole("link", { name: "SEMUA EVENT" })).toBeVisible();
     await expect(page.getByRole("link", { name: "SEMUA EVENT" })).toHaveAttribute("href", "/events");
 
@@ -88,7 +88,7 @@ test.describe("Public dashboard", () => {
       footer.getByRole("link", { name: "Andhika Putra Pratama" })
     ).toBeVisible();
     await expect(
-      footer.getByText(/Built with Next\.js, Drizzle & PostgreSQL/i)
+      footer.getByText(/PWA Companion & Offline Catalog/i)
     ).toBeVisible();
     await expect(
       footer.getByText("COMIPOCKET", { exact: true })

@@ -9,11 +9,7 @@ import {
 } from "motion/react";
 import { cn } from "@/lib/utils";
 
-// =============================================================================
-// Palet Warna Resmi TANALOKA
-// Surface: Gelap (#1B1D24)
-// Accent: Coral Red (#FF4838 / #F84632)
-// =============================================================================
+// Palet warna TANALOKA: Surface (#1B1D24), Accent (#FF4838 / #F84632)
 export const TANALOKA_PALETTE = {
   cardDark: "#1B1D24",
   coralRed: "#FF4838",
@@ -24,11 +20,10 @@ export const TANALOKA_PALETTE = {
 
 export const TANALOKA_COLORS = TANALOKA_PALETTE;
 
-// =============================================================================
-// 1. FadeInView
-// Pembungkus animasi masuk bertahap (fade + slight translate) saat elemen
-// masuk ke viewport. Menghormati prefers-reduced-motion tanpa rAF / scroll listener.
-// =============================================================================
+/**
+ * Animasi fade + translate saat elemen masuk viewport.
+ * Menghormati prefers-reduced-motion tanpa rAF atau scroll listener.
+ */
 
 export function getFadeInOffsets(
   direction: "up" | "down" | "left" | "right" | "none" = "up",
@@ -100,11 +95,7 @@ export function FadeInView({
   );
 }
 
-// =============================================================================
-// 2. HeroEntranceMotion & HeroEntranceItem
-// Animasi staggered masuk untuk judul headline, subjudul, dan tombol aksi hero
-// dengan transisi spring natural.
-// =============================================================================
+/** Animasi staggered masuk untuk headline dan CTA hero. */
 
 export function getHeroContainerVariants(
   shouldReduceMotion: boolean,
@@ -204,11 +195,7 @@ export function HeroEntranceMotion({
 
 HeroEntranceMotion.Item = HeroEntranceItem;
 
-// =============================================================================
-// 3. MetricCardMotion
-// Efek hover kartu metrik gelap (#1B1D24) dengan border glow Coral Red (#FF4838 / #F84632)
-// dan transisi spring natural.
-// =============================================================================
+/** Hover motion untuk kartu metrik dengan border glow dan transisi spring. */
 
 export function getMetricCardHoverVariants(
   glowColor: string = TANALOKA_PALETTE.glowColor,
@@ -281,11 +268,7 @@ export function MetricCardMotion({
   );
 }
 
-// =============================================================================
-// 4. BannerCardMotion, BannerImageMotion & BannerBadgeMotion
-// Efek hover halus pada kartu banner 16:9 (zoom halus, border glow, dan elevasi badge)
-// selaras dengan estetika TANALOKA.
-// =============================================================================
+/** Hover motion kartu banner 16:9 (zoom, border glow, elevasi badge). */
 
 export function getBannerCardHoverVariants(
   glowColor: string = TANALOKA_PALETTE.glowColor,

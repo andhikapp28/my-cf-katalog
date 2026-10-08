@@ -24,7 +24,7 @@ export function EventCardBanner({
   return (
     <div
       className={cn(
-        "relative aspect-[16/9] overflow-hidden rounded-[24px] border border-line bg-[radial-gradient(circle_at_top,_rgba(212,106,58,0.16),_transparent_58%),linear-gradient(135deg,#fff7f2_0%,#fffdfb_52%,#f7ede7_100%)]",
+        "relative aspect-[16/9] overflow-hidden rounded-2xl border border-line bg-[radial-gradient(circle_at_top,_rgba(212,106,58,0.16),_transparent_58%),linear-gradient(135deg,#fff7f2_0%,#fffdfb_52%,#f7ede7_100%)]",
         className
       )}
     >
@@ -45,7 +45,7 @@ export function EventCardBanner({
       ) : null}
 
       {state === "loading" ? (
-        <div className="absolute inset-0 animate-pulse bg-[linear-gradient(135deg,rgba(212,106,58,0.14),rgba(255,255,255,0.92),rgba(212,106,58,0.08))]" />
+        <div className="absolute inset-0 animate-pulse motion-reduce:animate-none bg-[linear-gradient(135deg,rgba(212,106,58,0.14),rgba(255,255,255,0.92),rgba(212,106,58,0.08))]" />
       ) : null}
 
       {(state === "empty" || state === "error") ? (

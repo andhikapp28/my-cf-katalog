@@ -14,10 +14,6 @@ import {
 import { FadeInView } from "@/components/landing/landing-motion";
 import { cn } from "@/lib/utils";
 
-// =============================================================================
-// DATA KONFIGURASI TOOLKIT & HUNTING FLOW (TANALOKA DESIGN SYSTEM)
-// =============================================================================
-
 export interface SurvivalToolkitItem {
   id: string;
   title: string;
@@ -90,18 +86,18 @@ export const SURVIVAL_TOOLKIT_ITEMS: SurvivalToolkitItem[] = [
     badge: "LOCAL-FIRST PWA",
     icon: CheckSquare,
     description:
-      "Manajemen belanja personal dengan pemisahan prioritas Rush Pagi vs Pre-Order PO. Semua data tersimpan aman di client storage browser Anda tanpa perlu repot login akun atau koneksi server.",
+      "Manajemen belanja personal dengan pemisahan prioritas Rush Pagi vs Pre-Order PO. Semua data tersimpan aman di penyimpanan lokal peramban kamu tanpa perlu login akun atau koneksi server.",
     highlights: [
       "Prioritas Rush Pagi vs Pre-Order PO untuk membedakan target krusial",
       "100% Client Storage Browser: Tersimpan di IndexedDB tanpa risiko logout",
-      "Ceklis interaktif real-time on-site dengan indikator status item terbeli"
+      "Ceklis item terbeli langsung di tempat saat menyusuri lorong booth"
     ],
     mockData: {
       label: "CHECKLIST STATUS PREVIEW",
       items: [
-        { label: "⚡ RUSH PAGI", value: "Target Sold-Out Pukul 09:30", active: true },
-        { label: "📦 PRE-ORDER PO", value: "Slip Pengambilan Terverifikasi", active: false },
-        { label: "✓ CLIENT SYNC", value: "Tersimpan di Storage Browser", active: true }
+        { label: "RUSH PAGI", value: "Target Sold-Out Pukul 09:30", active: true },
+        { label: "PRE-ORDER PO", value: "Slip Pengambilan Terverifikasi", active: false },
+        { label: "CLIENT SYNC", value: "Tersimpan di Storage Browser", active: true }
       ]
     },
     linkHref: "/wishlist",
@@ -128,10 +124,10 @@ export const HUNTING_FLOW_STEPS: HuntingFlowStep[] = [
     phaseBadge: "H-7 S/D H-1 · PERSIAPAN DI RUMAH",
     title: "Riset & Susun Wishlist di Rumah",
     description:
-      "Jelajahi 1.400+ circle kreator, kurasi sampel karya impian, dan tandai target dengan label Rush Pagi untuk rilisan cepat habis atau Pre-Order PO untuk pengambilan terencana.",
+      "Sisir karya dari 1.400+ circle kreator, pilih item incaran, dan tandai target dengan label Rush Pagi untuk rilisan cepat habis atau Pre-Order (PO) untuk pengambilan terencana.",
     highlights: [
-      "Jelajahi direktori 1.400+ circle kreator & ribuan sampel karya",
-      "Klasifikasikan target: prioritas Rush Pagi vs jadwal ambil Pre-Order PO",
+      "Telusuri direktori 1.400+ circle kreator dan ribuan karya",
+      "Kelompokkan target: prioritas Rush Pagi vs jadwal ambil Pre-Order PO",
       "Hitung estimasi total anggaran belanja otomatis tanpa perlu registrasi"
     ],
     icon: Search,
@@ -172,10 +168,6 @@ export const HUNTING_FLOW_STEPS: HuntingFlowStep[] = [
   }
 ];
 
-// =============================================================================
-// SECTION A: EVENT DAY SURVIVAL & COMPANION TOOLKIT
-// =============================================================================
-
 export interface CompanionToolkitSectionProps {
   className?: string;
   id?: string;
@@ -194,7 +186,6 @@ export function CompanionToolkitSection({
       )}
     >
       <div className="container-shell max-w-7xl mx-auto space-y-12">
-        {/* Section Header (TANALOKA Editorial Style) */}
         <FadeInView>
           <div className="grid gap-6 lg:grid-cols-12 lg:items-end border-b border-sky-200/60 pb-8">
             <div className="lg:col-span-8 space-y-3">
@@ -210,15 +201,12 @@ export function CompanionToolkitSection({
             </div>
           </div>
         </FadeInView>
-
-        {/* 3 Highlight Cards (TANALOKA Design System: Subtle Borders, Lucide Icons, Crisp Typography) */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8">
           {SURVIVAL_TOOLKIT_ITEMS.map((item, idx) => {
             const Icon = item.icon;
             return (
               <FadeInView key={item.id} delay={idx * 0.1} duration={0.45}>
                 <article className="group relative flex flex-col justify-between h-full rounded-2xl sm:rounded-3xl border border-sky-100/90 bg-white p-6 sm:p-8 shadow-sm hover:border-[#F84632]/50 hover:shadow-xl hover:shadow-[#F84632]/5 transition-all duration-300">
-                  {/* Top Bar: Icon + Heading (Clean & Uncluttered Lockup) */}
                   <div className="space-y-6">
                     <div className="space-y-4">
                       <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-[#F84632]/10 text-[#F84632] group-hover:bg-[#F84632] group-hover:text-white transition-colors duration-300">
@@ -234,8 +222,6 @@ export function CompanionToolkitSection({
                         </p>
                       </div>
                     </div>
-
-                    {/* Key Technical Highlights */}
                     <div className="space-y-2 pt-2 border-t border-zinc-100">
                       <p className="text-[11px] font-mono font-bold uppercase tracking-wider text-zinc-400">
                         FITUR UTAMA:
@@ -251,12 +237,10 @@ export function CompanionToolkitSection({
                         ))}
                       </ul>
                     </div>
-
-                    {/* Technical Mockup Preview Box */}
                     <div className="rounded-xl border border-zinc-200/80 bg-zinc-50/90 p-3.5 space-y-2 font-mono text-xs">
                       <div className="flex items-center justify-between text-[10px] font-bold tracking-wider text-zinc-500 uppercase border-b border-zinc-200 pb-1.5">
                         <span>{item.mockData.label}</span>
-                        <span className="flex h-2 w-2 rounded-full bg-emerald-500 animate-pulse" />
+                        <span className="flex h-1.5 w-1.5 rounded-full bg-emerald-500" />
                       </div>
                       <div className="space-y-1.5">
                         {item.mockData.items.map((mock, mIdx) => (
@@ -278,17 +262,15 @@ export function CompanionToolkitSection({
                       </div>
                     </div>
                   </div>
-
-                    {/* Card Bottom CTA Link */}
                   <div className="mt-6 pt-4 border-t border-zinc-100 flex items-center justify-between">
                     <Link
                       href={item.linkHref}
-                      className="inline-flex items-center gap-1.5 font-mono text-xs font-bold text-[#F84632] group-hover:text-[#111215] transition-colors"
+                      className="inline-flex min-h-[44px] items-center gap-1.5 font-mono text-xs font-bold text-[#F84632] group-hover:text-[#111215] transition-colors active:scale-[0.98] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#111215] rounded-md"
                     >
                       <span>{item.linkText}</span>
                       <ArrowUpRight className="h-4 w-4 transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
                     </Link>
-                    <span className="font-mono text-[10px] font-semibold text-zinc-400">
+                    <span className="font-mono text-[10px] font-semibold text-zinc-600">
                       TANALOKA PROTOCOL
                     </span>
                   </div>
@@ -301,10 +283,6 @@ export function CompanionToolkitSection({
     </section>
   );
 }
-
-// =============================================================================
-// SECTION B: 3-STEP CONVENTION HUNTING FLOW
-// =============================================================================
 
 export interface ConventionHuntingFlowSectionProps {
   className?: string;
@@ -323,18 +301,9 @@ export function ConventionHuntingFlowSection({
         className
       )}
     >
-      {/* Seamless Soft Top Transition from Ice-Blue Section 4 */}
       <div className="absolute inset-x-0 top-0 h-24 sm:h-36 bg-gradient-to-b from-[#F0F5FA] via-[#EAF7B0]/75 to-transparent pointer-events-none z-1" />
 
-      {/* Subtle Technical Ambient Lighting (Depth like AISUM / CONVENTION MEETS ACTION) */}
-      <div className="pointer-events-none absolute inset-0 overflow-hidden">
-        <div className="absolute -top-28 left-1/3 h-96 w-96 rounded-full bg-white/40 blur-[130px]" />
-        <div className="absolute -bottom-24 right-1/4 h-80 w-80 rounded-full bg-[#D6F834]/60 blur-[110px]" />
-        <div className="absolute inset-0 bg-[linear-gradient(to_right,rgba(0,0,0,0.02)_1px,transparent_1px),linear-gradient(to_bottom,rgba(0,0,0,0.02)_1px,transparent_1px)] bg-[size:4rem_4rem]" />
-      </div>
-
       <div className="container-shell max-w-7xl mx-auto space-y-12 relative z-10">
-        {/* Section Header (TANALOKA Editorial Style) */}
         <FadeInView>
           <div className="grid gap-6 lg:grid-cols-12 lg:items-end border-b border-black/15 pb-8">
             <div className="lg:col-span-8 space-y-3">
@@ -349,8 +318,6 @@ export function ConventionHuntingFlowSection({
             </div>
           </div>
         </FadeInView>
-
-        {/* 3 Sequential Step Cards */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8 relative">
           {HUNTING_FLOW_STEPS.map((step, idx) => {
             const Icon = step.icon;
@@ -358,7 +325,6 @@ export function ConventionHuntingFlowSection({
               <FadeInView key={step.step} delay={idx * 0.12} duration={0.45}>
                 <div className="group relative flex flex-col justify-between h-full rounded-2xl sm:rounded-3xl border-2 border-black/10 bg-white p-6 sm:p-8 shadow-xl hover:border-[#F84632]/50 hover:shadow-2xl hover:shadow-[#F84632]/10 transition-all duration-300">
                   <div className="space-y-6">
-                    {/* Top Row: Giant Step Number + Step Icon */}
                     <div className="flex items-center justify-between border-b border-black/10 pb-3">
                       <span className="font-[var(--font-display)] text-5xl sm:text-6xl font-black tracking-tight text-[#111215] group-hover:text-[#F84632] transition-colors duration-200">
                         {step.step}
@@ -367,8 +333,6 @@ export function ConventionHuntingFlowSection({
                         <Icon className="h-5 w-5" />
                       </div>
                     </div>
-
-                    {/* Step Title & Description */}
                     <div className="space-y-2">
                       <h3 className="font-[var(--font-display)] text-2xl font-black uppercase tracking-tight text-[#111215] group-hover:text-[#F84632] transition-colors duration-200">
                         {step.title}
@@ -377,8 +341,6 @@ export function ConventionHuntingFlowSection({
                         {step.description}
                       </p>
                     </div>
-
-                    {/* Tactical Checklist Items */}
                     <div className="space-y-2 pt-2 border-t border-zinc-100">
                       <p className="text-[11px] font-mono font-bold uppercase tracking-wider text-zinc-400">
                         ACTION CHECKLIST:
@@ -395,12 +357,10 @@ export function ConventionHuntingFlowSection({
                       </ul>
                     </div>
                   </div>
-
-                  {/* Step Action Button Link */}
                   <div className="mt-8 pt-4 border-t border-zinc-100 flex items-center justify-between">
                     <Link
                       href={step.linkHref}
-                      className="inline-flex items-center gap-1.5 font-mono text-xs font-bold text-[#F84632] group-hover:text-[#111215] transition-colors"
+                      className="inline-flex items-center gap-1.5 font-mono text-xs font-bold text-[#F84632] group-hover:text-[#111215] transition-colors active:scale-[0.98]"
                     >
                       <span>{step.linkText}</span>
                       <ArrowUpRight className="h-4 w-4 transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
@@ -415,16 +375,10 @@ export function ConventionHuntingFlowSection({
           })}
         </div>
       </div>
-
-      {/* Seamless Soft Bottom Transition into White Footer */}
       <div className="absolute inset-x-0 bottom-0 h-24 sm:h-36 bg-gradient-to-b from-transparent via-[#f0fbbd]/60 to-[#FFFFFF] pointer-events-none z-1" />
     </section>
   );
 }
-
-// =============================================================================
-// COMBINED COMPONENT & DEFAULT EXPORT
-// =============================================================================
 
 export interface CompanionToolkitProps {
   className?: string;
@@ -444,8 +398,6 @@ export function CompanionToolkit({
     </div>
   );
 }
-
-// Aliases for clear import naming
 export const EventDaySurvivalToolkit = CompanionToolkitSection;
 export const ThreeStepHuntingFlow = ConventionHuntingFlowSection;
 

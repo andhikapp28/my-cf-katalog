@@ -49,7 +49,7 @@ const comifuroEditions: ComifuroEdition[] = [
     bannerImage: "/banner/cf23.jpg",
     linkHref: "/events/cf23",
     linkText: "Detail Event",
-    description: "Edisi tematik Halloween Weekend di ICE BSD City dengan seleksi circle terkurasi ketat dan free community booth."
+    description: "Edisi Halloween dengan 1.500+ circle dan community booth."
   },
   {
     id: "cf22",
@@ -60,8 +60,8 @@ const comifuroEditions: ComifuroEdition[] = [
     venue: "ICE BSD City (Hall 6 - 10)",
     bannerImage: "/banner/cf22.jpg",
     linkHref: "/events/cf22",
-    linkText: "Jelajahi Katalog",
-    description: "1.500+ Circle kreator independen, Bushiroad EXPO 2026, kolaborasi resmi Kartu Multi Trip KAI Commuter, dan stage kreatif."
+    linkText: "Buka Katalog",
+    description: "1.500+ circle kreator, Bushiroad EXPO, dan tiket KMT KAI."
   },
   {
     id: "cf21",
@@ -73,7 +73,7 @@ const comifuroEditions: ComifuroEdition[] = [
     bannerImage: "/banner/cf21.jpg",
     linkHref: "/events/cf21",
     linkText: "Lihat Arsip",
-    description: "Edisi pemecah rekor 70.000 pengunjung dengan konser akbar hololive ID 5th Anniversary LIVE 'Chromatic Future' dan guest author LN Roshidere."
+    description: "Rekor 70.000 pengunjung dan konser akbar hololive ID."
   },
   {
     id: "cf20",
@@ -85,7 +85,7 @@ const comifuroEditions: ComifuroEdition[] = [
     bannerImage: "/banner/cf20.jpg",
     linkHref: "/events/cf20",
     linkText: "Lihat Arsip",
-    description: "Perayaan edisi ke-20 menyatukan Bushiroad EXPO 2025, Q&A CEO Takaaki Kidani, seiyuu BanG Dream!, dan panggung kreator lokal."
+    description: "Edisi ke-20 (CF XX), Bushiroad EXPO, dan temu kreator."
   },
   {
     id: "cf19",
@@ -97,7 +97,7 @@ const comifuroEditions: ComifuroEdition[] = [
     bannerImage: "/banner/cf19.jpg",
     linkHref: "/events/cf19",
     linkText: "Lihat Arsip",
-    description: "Menghadirkan konser anisong Konomi Suzuki dan panggung kolaborasi Yuko Suzuhana (Wagakki Band) x Upiko di 4 hall ICE BSD."
+    description: "Konser anisong Konomi Suzuki dan panggung musik J-pop."
   },
   {
     id: "cf18",
@@ -109,7 +109,7 @@ const comifuroEditions: ComifuroEdition[] = [
     bannerImage: "/banner/cf18.jpg",
     linkHref: "/events/cf18",
     linkText: "Lihat Arsip",
-    description: "Penyelenggaraan Bushiroad EXPO 2024, bintang tamu seiyuu Aina Aiba & Yuka Nishio, serta pembukaan Hall 6 terdedikasi kuliner F&B."
+    description: "Bushiroad EXPO 2024 dan temu bintang seiyuu Jepang."
   }
 ];
 
@@ -131,12 +131,7 @@ export default async function HomePage() {
 
   return (
     <div className="relative min-h-screen selection:bg-[#D6F834] selection:text-[#111215]">
-      {/* ========================================================================= */}
-      {/* SECTION 1: COVER HERO (TANALOKA EDITORIAL STYLE WITH MASKING TYPOGRAPHY)  */}
-      {/* Sky Blue Canvas (#5398DA) + Giant Acid Lime Text Behind Cutout Mascot    */}
-      {/* ========================================================================= */}
       <section className="relative z-10 overflow-hidden bg-[#5398DA] text-white pt-8 pb-20 sm:pb-28 lg:pb-36">
-        {/* Subtle technical background grid */}
         <div className="pointer-events-none absolute inset-0">
           <div className="absolute inset-0 bg-[linear-gradient(to_right,rgba(255,255,255,0.06)_1px,transparent_1px),linear-gradient(to_bottom,rgba(255,255,255,0.06)_1px,transparent_1px)] bg-[size:4rem_4rem]" />
           <div className="absolute -top-32 left-1/3 h-96 w-96 rounded-full bg-white/10 blur-[120px]" />
@@ -144,7 +139,6 @@ export default async function HomePage() {
         </div>
 
         <div className="container-shell max-w-7xl mx-auto relative z-10 px-4 sm:px-6 lg:px-8 space-y-6">
-          {/* Top Editorial Slogans Flanking the Canvas (Exact TANALOKA Style) */}
           <div className="flex flex-col sm:flex-row items-start sm:items-start justify-between gap-6 pt-2">
             <HeroEntranceMotion className="space-y-2">
               <HeroEntranceItem>
@@ -154,12 +148,12 @@ export default async function HomePage() {
               </HeroEntranceItem>
               <HeroEntranceItem>
                 <p className="text-xs sm:text-sm font-medium text-white/90 max-w-xs leading-relaxed">
-                  Kurasi independen untuk penjelajah, seniman komik, dan pemburu merchandise Comic Frontier.
+                  Kurasi independen untuk kreator komik, kolektor doujin, dan pemburu merchandise Comic Frontier.
                 </p>
               </HeroEntranceItem>
             </HeroEntranceMotion>
 
-            <HeroEntranceMotion className="space-y-2 sm:text-right">
+            <HeroEntranceMotion className="space-y-2 sm:text-right hidden sm:block">
               <HeroEntranceItem>
                 <p className="font-mono text-[11px] font-bold tracking-[0.2em] text-white/90 uppercase">
                   CURATED FOR CONVENTIONS · ICE BSD CITY
@@ -177,21 +171,12 @@ export default async function HomePage() {
               </HeroEntranceItem>
             </HeroEntranceMotion>
           </div>
-
-          {/* ===================================================================== */}
-          {/* THE MASKING COMPOSITION: GIANT COMIPOCKET LETTERS + OVERLAPPING MASCOT */}
-          {/* Layer 0: Giant Acid Lime '#D6F834' Text                               */}
-          {/* Layer 1: Cutout Mascot in Front (Physically Overlaps & Masks Text)     */}
-          {/* ===================================================================== */}
           <div className="relative w-full min-h-[380px] sm:min-h-[480px] md:min-h-[560px] lg:min-h-[640px] flex items-center justify-center pt-2 sm:pt-4">
-            {/* Layer 0: Giant Typography Spanning Across the Screen Behind Mascot */}
             <div className="absolute inset-0 flex items-center justify-center pointer-events-none select-none z-0 overflow-hidden">
               <span className="font-[var(--font-display)] font-black text-[12.8vw] tracking-tight w-full text-center text-[#D6F834] uppercase leading-none select-none drop-shadow-sm whitespace-nowrap opacity-95">
                 COMIPOCKET
               </span>
             </div>
-
-            {/* Layer 1: Mascot Cutout Standing in the Foreground Overlapping the Letters */}
             <div className="relative z-10 mx-auto flex items-end justify-center pointer-events-none">
               <Image
                 src="/mascot.png"
@@ -204,13 +189,11 @@ export default async function HomePage() {
               />
             </div>
           </div>
-
-          {/* Layer 2: Floating High-Contrast CTA Buttons */}
           <HeroEntranceMotion className="relative z-20 flex flex-wrap items-center justify-center gap-3 pt-2 sm:pt-4">
             <HeroEntranceItem>
               <Link
                 href="/products"
-                className="inline-flex items-center justify-center rounded-full bg-[#D6F834] px-8 py-3.5 text-sm font-extrabold text-[#111215] shadow-xl hover:bg-[#cbf128] transition active:scale-[0.98] uppercase tracking-wide"
+                className="inline-flex items-center justify-center rounded-full bg-[#D6F834] px-8 py-3.5 text-sm font-extrabold text-[#111215] shadow-xl hover:bg-[#cbf128] transition active:scale-[0.98] uppercase tracking-wide focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#111215] focus-visible:ring-offset-2"
               >
                 JELAJAHI 1.400+ CIRCLE
               </Link>
@@ -219,7 +202,7 @@ export default async function HomePage() {
             <HeroEntranceItem>
               <Link
                 href="/maps"
-                className="inline-flex items-center justify-center rounded-full border border-white/40 bg-white/15 backdrop-blur px-6 py-3.5 text-sm font-bold text-white transition hover:bg-white/25 active:scale-[0.98]"
+                className="inline-flex items-center justify-center rounded-full border border-white/40 bg-white/15 backdrop-blur px-6 py-3.5 text-sm font-bold text-white transition hover:bg-white/25 active:scale-[0.98] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-offset-2"
               >
                 Peta Denah Hall
               </Link>
@@ -233,26 +216,15 @@ export default async function HomePage() {
             </HeroEntranceItem>
           </HeroEntranceMotion>
         </div>
-
-        {/* Seamless Soft Transition into Acid Lime Section 2 */}
         <div className="absolute inset-x-0 bottom-0 h-28 sm:h-36 bg-gradient-to-b from-transparent via-[#88c592]/50 to-[#D6F834] pointer-events-none" />
       </section>
-
-      {/* ========================================================================= */}
-      {/* SECTION 2: DATA PULSE INFOGRAPH (AISUM Style on Acid Lime #D6F834 Block)  */}
-      {/* 2-Column Header + 4 Clean White Cards with Large Numbers & Coral Accents  */}
-      {/* ========================================================================= */}
       <section className="relative z-10 bg-[#D6F834] px-4 py-20 text-[#111215] sm:px-6 md:py-28 lg:px-8 border-t border-black/10">
         <div className="container-shell max-w-7xl mx-auto space-y-12">
-          {/* 2-Column Editorial Header (Image 2 - AISUM Style) */}
           <FadeInView>
             <div className="grid gap-6 lg:grid-cols-12 lg:items-end border-b border-black/15 pb-8">
               <div className="lg:col-span-7 space-y-3">
                 <div className="inline-flex items-center gap-2 text-xs font-mono font-bold tracking-widest text-[#111215] uppercase bg-black/10 px-3.5 py-1.5 rounded-full border border-black/10 shadow-xs">
-                  <span className="relative flex h-2 w-2">
-                    <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-500 opacity-75" />
-                    <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500" />
-                  </span>
+                  <span className="inline-flex h-2 w-2 rounded-full bg-emerald-600" />
                   <span>COMIFURO 22 · DATA EVENT AKTIF</span>
                 </div>
                 <h2 className="font-[var(--font-display)] text-3xl font-black tracking-tight sm:text-4xl md:text-5xl lg:text-6xl text-[#111215] uppercase leading-[0.92]">
@@ -261,15 +233,12 @@ export default async function HomePage() {
               </div>
               <div className="lg:col-span-5">
                 <p className="text-sm sm:text-base leading-relaxed text-[#111215]/85 font-medium">
-                  Direktori komprehensif ribuan kreator independen dan booth karya aktif Comic Frontier 22. Diindeks ke dalam arsitektur offline-first untuk keandalan maksimal di dalam hall konvensi tanpa ketergantungan sinyal seluler.
+                  Direktori ribuan kreator independen dan booth aktif Comic Frontier 22. Disimpan langsung ke memori offline peramban agar tetap cepat diakses di tengah hall tanpa bergantung pada sinyal seluler.
                 </p>
               </div>
             </div>
           </FadeInView>
-
-          {/* 4 Portrait Metric Cards (Exact AISUM Style on White with Coral Red Accents) */}
           <div className="grid grid-cols-2 gap-4 sm:gap-6 lg:grid-cols-4">
-            {/* Metric 1: Circles */}
             <MetricCardMotion
               delay={0.05}
               glowColor="rgba(0, 0, 0, 0.12)"
@@ -278,7 +247,7 @@ export default async function HomePage() {
             >
               <div>
                 <div className="font-mono text-4xl sm:text-5xl lg:text-6xl font-black tracking-tight text-[#111215] group-hover:text-[#F84632] transition-colors">
-                  {stats.totalCircles ? stats.totalCircles.toLocaleString("id-ID") : "1.487"}
+                  {stats.totalCircles ? stats.totalCircles.toLocaleString("id-ID") : "0"}
                 </div>
               </div>
               <div className="pt-6 border-t border-black/10">
@@ -289,8 +258,6 @@ export default async function HomePage() {
                 <p className="mt-1 text-[11px] text-zinc-600 font-mono">Artist Alley & Creator Alley</p>
               </div>
             </MetricCardMotion>
-
-            {/* Metric 2: Sampel Karya */}
             <MetricCardMotion
               delay={0.1}
               glowColor="rgba(0, 0, 0, 0.12)"
@@ -299,7 +266,7 @@ export default async function HomePage() {
             >
               <div>
                 <div className="font-mono text-4xl sm:text-5xl lg:text-6xl font-black tracking-tight text-[#111215] group-hover:text-[#F84632] transition-colors">
-                  {stats.totalProducts ? stats.totalProducts.toLocaleString("id-ID") : "5.144"}
+                  {stats.totalProducts ? stats.totalProducts.toLocaleString("id-ID") : "0"}
                 </div>
               </div>
               <div className="pt-6 border-t border-black/10">
@@ -310,8 +277,6 @@ export default async function HomePage() {
                 <p className="mt-1 text-[11px] text-zinc-600 font-mono">Artbook, Merch, Standee & Zine</p>
               </div>
             </MetricCardMotion>
-
-            {/* Metric 3: Hall Venue */}
             <MetricCardMotion
               delay={0.15}
               glowColor="rgba(0, 0, 0, 0.12)"
@@ -331,8 +296,6 @@ export default async function HomePage() {
                 <p className="mt-1 text-[11px] text-zinc-600 font-mono">Hall 8 & Hall 9 ICE BSD</p>
               </div>
             </MetricCardMotion>
-
-            {/* Metric 4: Offline Ready */}
             <MetricCardMotion
               delay={0.2}
               glowColor="rgba(0, 0, 0, 0.12)"
@@ -354,19 +317,10 @@ export default async function HomePage() {
             </MetricCardMotion>
           </div>
         </div>
-
-        {/* Seamless Soft Transition into White Section 3 */}
         <div className="absolute inset-x-0 bottom-0 h-20 sm:h-28 bg-gradient-to-b from-transparent via-[#ebfcb9]/60 to-[#FFFFFF] pointer-events-none" />
       </section>
-
-      {/* ========================================================================= */}
-      {/* SECTION 3: COMIFURO EDITIONS 16:9 LANDSCAPE BANNERS (PURE WHITE #FFFFFF)  */}
-      {/* Judul Section Besar Coral Red (#F84632): 'COMIFURO EDITIONS'              */}
-      {/* 6 Kartu banner berasio 16:9 Landscape (aspect-video) CF 23 s/d CF 18      */}
-      {/* ========================================================================= */}
       <section className="relative z-10 bg-[#FFFFFF] px-4 py-20 text-[#111215] sm:px-6 md:py-28 lg:px-8 border-t border-zinc-200">
         <div className="container-shell max-w-7xl mx-auto space-y-12">
-          {/* Section Header with Coral Red Title (TANALOKA Style) */}
           <FadeInView>
             <div className="flex flex-col gap-6 sm:flex-row sm:items-end sm:justify-between border-b border-zinc-200 pb-8">
               <div>
@@ -377,17 +331,17 @@ export default async function HomePage() {
                   Arsip direktori katalog dan denah booth Comic Frontier lintas edisi di ICE BSD City.
                 </p>
               </div>
-              <div className="flex items-center gap-3">
+              <div className="flex flex-wrap items-center gap-3">
                 <Link
                   href="/circles"
-                  className="inline-flex items-center gap-1.5 rounded-full border border-zinc-300 bg-zinc-100 px-5 py-2.5 text-xs font-bold font-mono text-[#111215] transition hover:bg-[#111215] hover:text-white shadow-xs"
+                  className="inline-flex min-h-[44px] items-center gap-1.5 rounded-full border border-zinc-300 bg-zinc-100 px-5 py-2.5 text-xs font-bold font-mono text-[#111215] transition hover:bg-[#111215] hover:text-white shadow-xs focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#111215]"
                 >
-                  <span>LIHAT SEMUA CIRCLE</span>
+                  <span>SEMUA CIRCLE</span>
                   <ArrowUpRight className="h-3.5 w-3.5" />
                 </Link>
                 <Link
                   href="/events"
-                  className="inline-flex items-center gap-1.5 rounded-full border border-zinc-300 bg-zinc-100 px-5 py-2.5 text-xs font-bold font-mono text-[#111215] transition hover:bg-[#111215] hover:text-white shadow-xs"
+                  className="inline-flex min-h-[44px] items-center gap-1.5 rounded-full border border-zinc-300 bg-zinc-100 px-5 py-2.5 text-xs font-bold font-mono text-[#111215] transition hover:bg-[#111215] hover:text-white shadow-xs focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#111215]"
                 >
                   <span>SEMUA EVENT</span>
                   <ArrowUpRight className="h-3.5 w-3.5" />
@@ -395,8 +349,6 @@ export default async function HomePage() {
               </div>
             </div>
           </FadeInView>
-
-          {/* 6 Event Banner Cards in 16:9 Landscape Aspect Ratio */}
           <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
             {comifuroEditions.map((edition, idx) => (
               <FadeInView key={edition.id} delay={idx * 0.08} duration={0.45}>
@@ -405,7 +357,6 @@ export default async function HomePage() {
                     href={edition.linkHref}
                     className="group relative flex flex-col justify-between overflow-hidden rounded-2xl border border-zinc-200 bg-white transition-all duration-300 hover:border-[#F84632]/50 hover:shadow-2xl hover:shadow-[#F84632]/15 hover:scale-[1.015] hover:-translate-y-1 h-full block"
                   >
-                    {/* 16:9 Thumbnail Banner with BannerCardMotion */}
                     <BannerCardMotion
                       imageSrc={edition.bannerImage}
                       imageAlt={edition.title}
@@ -416,10 +367,7 @@ export default async function HomePage() {
                       }
                       className="aspect-[16/9] rounded-t-2xl rounded-b-none border-0"
                     >
-                      {/* Contrast scrim */}
                       <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/30 to-transparent pointer-events-none" />
-
-                      {/* Top Right Status Badge: CF 23 Coral Red, others dark charcoal */}
                       <div className="absolute top-3 right-3 z-20">
                         <BannerBadgeMotion>
                           <span
@@ -436,16 +384,12 @@ export default async function HomePage() {
                           </span>
                         </BannerBadgeMotion>
                       </div>
-
-                      {/* Title overlay on bottom of banner */}
                       <div className="absolute bottom-3 left-3 right-3 z-20">
                         <p className="font-[var(--font-display)] text-lg font-bold text-white group-hover:text-[#D6F834] transition-colors drop-shadow-md">
                           {edition.title}
                         </p>
                       </div>
                     </BannerCardMotion>
-
-                    {/* Card Content & Metadata on White Background */}
                     <div className="p-5 flex flex-col justify-between flex-1 space-y-3">
                       <div className="flex flex-wrap items-center gap-x-3 gap-y-1 text-xs font-mono text-zinc-500">
                         <div className="flex items-center gap-1 text-zinc-800 font-medium">
@@ -469,10 +413,6 @@ export default async function HomePage() {
           </div>
         </div>
       </section>
-
-      {/* ========================================================================= */}
-      {/* SECTION 4 & 5: COMPANION TOOLKIT & 3-STEP HUNTING FLOW                     */}
-      {/* ========================================================================= */}
       <CompanionToolkit />
     </div>
   );

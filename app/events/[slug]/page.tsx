@@ -4,37 +4,41 @@ import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { eq } from "drizzle-orm";
+import {
+  ArrowLeft,
+  ArrowUpRight,
+  Bus,
+  Calendar,
+  Clock,
+  Layers,
+  MapPin,
+  Ticket
+} from "lucide-react";
 import { db } from "@/db";
 import { events } from "@/db/schema";
 import { getDashboardData } from "@/db/queries";
-import { SummaryCard } from "@/components/dashboard/summary-card";
-import { Badge } from "@/components/ui/badge";
-import { Card, CardContent } from "@/components/ui/card";
-import { EmptyState } from "@/components/ui/empty-state";
+import { EventCompanionPlanner } from "@/components/events/event-companion-planner";
 import { EventGuidesSection } from "@/components/events/event-guides-section";
-import { priorityStyles, statusStyles } from "@/lib/constants";
 import { getEventDetailDataWithFallback } from "@/lib/event-details-data";
-import { formatCurrency, formatDate } from "@/lib/format";
+import { formatDate } from "@/lib/format";
 
-function getEventState(startsAt?: string | Date | null, isActive?: boolean) {
-  if (isActive) {
-    return "Active Event";
+function getEditionBadge(slug: string, name: string) {
+  const match = slug.match(/cf(\d+)/i) || name.match(/cf\s*(\d+)/i);
+  if (match) {
+    return `CF ${match[1]}`;
   }
-
-  if (startsAt && new Date(startsAt).getTime() > Date.now()) {
-    return "Upcoming Event";
-  }
-
-  return "Archived Event";
+  return "CF";
 }
 
-function formatStatusLabel(value: string) {
-  return value.replaceAll("_", " ");
-}
-
-export default async function EventDetailPage({ params }: { params: Promise<{ slug: string }> }) {
+export default async function EventDetailPage({
+  params
+}: {
+  params: Promise<{ slug: string }>;
+}) {
   const { slug } = await params;
-  const event = await db.query.events.findFirst({ where: eq(events.slug, slug) });
+  const event = await db.query.events.findFirst({
+    where: eq(events.slug, slug)
+  });
 
   if (!event) {
     notFound();
@@ -46,236 +50,215 @@ export default async function EventDetailPage({ params }: { params: Promise<{ sl
     notFound();
   }
 
-  const eventState = getEventState(event.startsAt, event.isActive);
-  const budgetUsage = Math.min(100, Math.round((dashboard.totalActual / Math.max(event.budget, 1)) * 100));
-  const trackedCircles = new Set(dashboard.products.map((item: { circleId: string }) => item.circleId)).size;
+  const editionBadge = getEditionBadge(slug, event.name);
+  const isUpcoming = new Date(event.startsAt ?? 0).getTime() > Date.now();
   const guideData = getEventDetailDataWithFallback(slug, event.name, event.venue);
 
+  const statusBadgeConfig = event.isActive
+    ? { label: "ACTIVE EVENT", className: "bg-[#D6F834] text-[#111215] font-black" }
+    : isUpcoming
+      ? { label: "COMING SOON", className: "bg-[#111215] text-white border border-white/20" }
+      : { label: "PAST EVENT", className: "bg-[#111215]/85 text-white/90 border border-white/20" };
+
+  const trackedCirclesCount = new Set(
+    dashboard.products.map((item) => item.circleId)
+  ).size;
+
+  const plannerSummary = {
+    totalEstimated: dashboard.totalEstimated,
+    totalActual: dashboard.totalActual,
+    remainingBudget: dashboard.remainingBudget,
+    highPriorityItems: dashboard.highPriorityItems.map((item) => ({
+      id: item.id,
+      name: item.name,
+      price: item.price,
+      status: item.status,
+      priority: item.priority,
+      circle: {
+        id: item.circle.id,
+        name: item.circle.name
+      }
+    })),
+    upcomingDeadlines: dashboard.upcomingDeadlines.map((item) => ({
+      id: item.id,
+      name: item.name,
+      poDeadline: item.poDeadline,
+      circle: {
+        id: item.circle.id,
+        name: item.circle.name
+      }
+    })),
+    priorityCircles: dashboard.priorityCircles,
+    trackedItemsCount: dashboard.products.length,
+    trackedCirclesCount
+  };
+
+  const wristbandCutoff =
+    guideData.ticketInfo.wristbandExchangeHours.split("-")[1]?.trim() || "18:15 WIB";
+
   return (
-    <div className="container-shell space-y-8 py-8 md:py-10">
-      <section className="panel overflow-hidden p-3 md:p-4">
-        <div className="relative overflow-hidden rounded-[34px] border border-line/70 bg-ink-900 text-white">
-          {event.bannerImageUrl ? (
-            <>
-              <Image src={event.bannerImageUrl} alt={event.name} fill priority unoptimized className="object-cover object-center" />
-              <div className="absolute inset-0 bg-[linear-gradient(90deg,rgba(19,14,12,0.84)_0%,rgba(19,14,12,0.72)_34%,rgba(19,14,12,0.38)_62%,rgba(19,14,12,0.18)_100%)]" />
-              <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_left,rgba(212,106,58,0.22),transparent_34%)]" />
-            </>
-          ) : (
-            <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_left,rgba(255,255,255,0.14),transparent_28%),linear-gradient(115deg,#211815_0%,#563528_44%,#d46a3a_100%)]" />
-          )}
+    <div className="container-shell space-y-8 py-6 md:py-8">
+      {/* 1. Breadcrumb Navigation */}
+      <nav aria-label="Breadcrumb" className="flex items-center gap-2 font-mono text-xs text-zinc-500">
+        <Link
+          href="/events"
+          className="inline-flex items-center gap-1.5 font-bold text-zinc-600 transition hover:text-[#111215]"
+        >
+          <ArrowLeft className="h-3.5 w-3.5" />
+          <span>Direktori Event</span>
+        </Link>
+        <span>/</span>
+        <span className="font-bold text-zinc-900 uppercase">{editionBadge}</span>
+      </nav>
 
-          <div className="relative grid min-h-[248px] gap-5 p-5 sm:min-h-[280px] sm:p-6 md:p-8 lg:grid-cols-[minmax(0,1.08fr)_minmax(260px,0.72fr)] lg:items-end">
-            <div className="flex h-full flex-col justify-between gap-6">
-              <div className="space-y-4">
-                <div className="flex flex-wrap gap-2">
-                  <Badge className="border-white/20 bg-white/10 text-white ring-white/20">{eventState}</Badge>
-                  {event.isActive ? <Badge className="bg-emerald-200/90 text-emerald-900">ACTIVE</Badge> : null}
-                </div>
-                <div>
-                  <h1 className="max-w-3xl font-[var(--font-display)] text-3xl font-semibold tracking-tight sm:text-4xl lg:text-[2.85rem]">
-                    {event.name}
-                  </h1>
-                  <p className="mt-3 max-w-2xl text-sm leading-6 text-white/80 sm:text-base">
-                    {event.description ||
-                      "Semua target item, booth circle, floor map, dan pengeluaran event ini dirangkum dalam satu hub yang cepat dibuka saat persiapan maupun hari H."}
-                  </p>
-                </div>
-              </div>
+      {/* 2. Hero Banner Event (Clean, Atmospheric & Punchy) */}
+      <section className="relative overflow-hidden rounded-3xl border border-zinc-200/90 bg-[#111215] text-white shadow-sm">
+        {event.bannerImageUrl ? (
+          <>
+            <Image
+              src={event.bannerImageUrl}
+              alt={event.name}
+              fill
+              priority
+              unoptimized
+              className="object-cover object-center opacity-40 blur-[1px] transition-all duration-700 hover:opacity-50"
+            />
+            <div className="absolute inset-0 bg-gradient-to-t from-[#111215] via-[#111215]/80 to-transparent" />
+            <div className="absolute inset-0 bg-radial-[at_top_right] from-[#5398DA]/20 via-transparent to-transparent" />
+          </>
+        ) : (
+          <div className="absolute inset-0 bg-gradient-to-br from-[#111215] via-[#181a20] to-[#252830]" />
+        )}
 
-              <div className="flex flex-col gap-4">
-                <div className="flex flex-wrap gap-3">
-                  <Link href={`/products?eventId=${event.id}`} className="rounded-full bg-white px-5 py-3 text-sm font-medium text-ink-900 transition hover:bg-brand-50">
-                    Browse products
-                  </Link>
-                  <Link
-                    href="/maps"
-                    className="rounded-full border border-white/18 bg-white/10 px-5 py-3 text-sm font-medium text-white transition hover:bg-white/14"
-                  >
-                    Open floor maps
-                  </Link>
-                </div>
+        <div className="relative z-10 flex flex-col justify-between gap-8 p-6 sm:p-10 lg:p-12 min-h-[340px]">
+          <div className="flex flex-wrap items-center gap-2">
+            <span className="rounded-lg bg-black/80 px-3.5 py-1 font-mono text-xs font-black text-white backdrop-blur-md border border-white/20 shadow-xs">
+              {editionBadge}
+            </span>
+            <span
+              className={`rounded-full px-3.5 py-1 font-mono text-[11px] backdrop-blur-md shadow-xs ${statusBadgeConfig.className}`}
+            >
+              {statusBadgeConfig.label}
+            </span>
+          </div>
 
-                <div className="flex flex-wrap gap-3 text-sm text-white/82">
-                  <div className="rounded-full border border-white/14 bg-black/18 px-4 py-2 backdrop-blur-sm">
-                    {event.venue || "Venue belum diisi"}
-                  </div>
-                  <div className="rounded-full border border-white/14 bg-black/18 px-4 py-2 backdrop-blur-sm">
-                    {formatDate(event.startsAt)} - {formatDate(event.endsAt)}
-                  </div>
-                </div>
-              </div>
+          <div className="space-y-3 max-w-4xl">
+            <h1 className="font-[var(--font-display)] text-3xl sm:text-5xl lg:text-6xl font-black uppercase text-white tracking-tight leading-[0.98]">
+              {event.name}
+            </h1>
+            <p className="text-sm sm:text-base text-white/85 leading-relaxed font-medium max-w-2xl">
+              {event.description ||
+                "Direktori katalog karya kreator independen, denah stan ICE BSD, dan perencana belanja acara."}
+            </p>
+          </div>
+
+          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-6 border-t border-white/15 pt-6">
+            <div className="flex flex-wrap items-center gap-3">
+              <Link
+                href={`/products?eventId=${event.id}`}
+                className="inline-flex min-h-[44px] items-center gap-2 rounded-full bg-[#D6F834] px-6 py-2.5 font-mono text-xs font-black text-[#111215] transition hover:bg-[#cbf128] shadow-xs uppercase active:scale-[0.98]"
+              >
+                <span>JELAJAHI 1.400+ CIRCLE</span>
+                <ArrowUpRight className="h-4 w-4" />
+              </Link>
+              <Link
+                href="/maps"
+                className="inline-flex min-h-[44px] items-center gap-2 rounded-full border border-white/30 bg-white/10 px-5 py-2.5 font-mono text-xs font-bold text-white backdrop-blur-md transition hover:bg-white hover:text-[#111215] active:scale-[0.98]"
+              >
+                <span>BUKA PETA DENAH</span>
+                <ArrowUpRight className="h-3.5 w-3.5" />
+              </Link>
             </div>
 
-            <div className="flex h-full flex-col justify-end">
-              <div className="grid gap-3 sm:grid-cols-3 lg:grid-cols-1 xl:grid-cols-3">
-                <div className="rounded-[24px] border border-white/14 bg-white/10 px-4 py-3 backdrop-blur-md">
-                  <p className="text-[11px] uppercase tracking-[0.18em] text-white/62">Budget</p>
-                  <p className="mt-2 text-base font-semibold text-white">{formatCurrency(event.budget)}</p>
-                </div>
-                <div className="rounded-[24px] border border-white/14 bg-white/10 px-4 py-3 backdrop-blur-md">
-                  <p className="text-[11px] uppercase tracking-[0.18em] text-white/62">Planned</p>
-                  <p className="mt-2 text-base font-semibold text-white">{formatCurrency(dashboard.totalEstimated)}</p>
-                </div>
-                <div className="rounded-[24px] border border-white/14 bg-white/10 px-4 py-3 backdrop-blur-md">
-                  <div className="flex items-start justify-between gap-3">
-                    <div>
-                      <p className="text-[11px] uppercase tracking-[0.18em] text-white/62">Remaining</p>
-                      <p className="mt-2 text-base font-semibold text-white">{formatCurrency(dashboard.remainingBudget)}</p>
-                    </div>
-                    <span className="rounded-full border border-white/12 bg-black/16 px-2.5 py-1 text-[11px] font-medium text-white/78">
-                      {budgetUsage}%
-                    </span>
-                  </div>
-                </div>
+            <div className="flex flex-wrap items-center gap-3 text-xs font-mono text-white/80">
+              <div className="flex items-center gap-1.5 rounded-full border border-white/15 bg-black/30 px-3.5 py-1.5 backdrop-blur-md">
+                <Calendar className="h-3.5 w-3.5 text-zinc-300" />
+                <span>
+                  {formatDate(event.startsAt)} - {formatDate(event.endsAt)}
+                </span>
+              </div>
+              <div className="flex items-center gap-1.5 rounded-full border border-white/15 bg-black/30 px-3.5 py-1.5 backdrop-blur-md">
+                <MapPin className="h-3.5 w-3.5 text-zinc-300" />
+                <span>{event.venue || "ICE BSD City"}</span>
               </div>
             </div>
           </div>
         </div>
       </section>
 
-      <section className="grid gap-4 md:grid-cols-2 xl:grid-cols-5">
-        <SummaryCard label="Budget" value={event.budget} helper="Batas pengeluaran untuk event ini." />
-        <SummaryCard label="Planned" value={dashboard.totalEstimated} helper="Total semua target item x quantity." />
-        <SummaryCard label="Actual" value={dashboard.totalActual} helper="Total actual expense yang sudah tercatat." />
-        <SummaryCard
-          label="Remaining"
-          value={dashboard.remainingBudget}
-          helper={dashboard.remainingBudget >= 0 ? "Masih aman terhadap budget." : "Perlu rem pengeluaran tambahan."}
-        />
-        <SummaryCard label="Tracked Circles" value={String(trackedCircles)} helper="Jumlah circle yang sedang dipantau di event ini." />
+      {/* 3. Essential Quick Info Strip (Satu Baris Bersih & Terpadu - Zero Card Fatigue) */}
+      <section className="rounded-2xl border border-zinc-200/90 bg-white p-4 sm:p-5 shadow-xs">
+        <div className="grid grid-cols-2 gap-4 divide-y sm:divide-y-0 sm:divide-x divide-zinc-100 lg:grid-cols-4">
+          <div className="flex items-center gap-3 px-2 sm:px-4">
+            <Ticket className="h-5 w-5 text-[#F84632] shrink-0" />
+            <div>
+              <p className="font-mono text-[10px] font-bold uppercase tracking-wider text-zinc-500">
+                TIKET MASUK
+              </p>
+              <p className="font-mono text-sm font-black text-zinc-900">
+                {guideData.ticketInfo.regularPriceFormatted}
+              </p>
+              <p className="text-[11px] text-zinc-500">
+                {guideData.ticketInfo.salesModel} ({guideData.ticketInfo.platform})
+              </p>
+            </div>
+          </div>
+
+          <div className="flex items-center gap-3 px-2 sm:px-4 pt-3 sm:pt-0">
+            <Clock className="h-5 w-5 text-zinc-700 shrink-0" />
+            <div>
+              <p className="font-mono text-[10px] font-bold uppercase tracking-wider text-zinc-500">
+                JAM KUNJUNGAN
+              </p>
+              <p className="font-mono text-sm font-black text-zinc-900">
+                08:00 - {guideData.ticketInfo.gateCloseHour}
+              </p>
+              <p className="text-[11px] text-zinc-500">
+                Batas Tukar: {wristbandCutoff}
+              </p>
+            </div>
+          </div>
+
+          <div className="flex items-center gap-3 px-2 sm:px-4 pt-3 sm:pt-0">
+            <Bus className="h-5 w-5 text-emerald-600 shrink-0" />
+            <div>
+              <p className="font-mono text-[10px] font-bold uppercase tracking-wider text-zinc-500">
+                SHUTTLE BUS GRATIS
+              </p>
+              <p className="font-mono text-sm font-black text-zinc-900 truncate">
+                Lorena (100% Gratis)
+              </p>
+              <p className="text-[11px] text-zinc-500 truncate">
+                St. Cisauk ⇄ Hall 10 ICE BSD
+              </p>
+            </div>
+          </div>
+
+          <div className="flex items-center gap-3 px-2 sm:px-4 pt-3 sm:pt-0">
+            <Layers className="h-5 w-5 text-[#5398DA] shrink-0" />
+            <div>
+              <p className="font-mono text-[10px] font-bold uppercase tracking-wider text-zinc-500">
+                AREA VENUE
+              </p>
+              <p className="font-mono text-sm font-black text-zinc-900 truncate">
+                {guideData.attendance.venueHalls}
+              </p>
+              <p className="text-[11px] text-zinc-500 truncate">
+                {guideData.attendance.estimatedCircles}
+              </p>
+            </div>
+          </div>
+        </div>
       </section>
 
-      <section className="grid gap-6 xl:grid-cols-[1.05fr_0.95fr]">
-        <Card>
-          <CardContent className="space-y-4">
-            <div className="flex items-start justify-between gap-4">
-              <div>
-                <h2 className="font-[var(--font-display)] text-2xl font-semibold">Priority items</h2>
-                <p className="mt-1 text-sm text-ink-500">Item prioritas tinggi yang paling relevan untuk dibuka cepat saat persiapan event.</p>
-              </div>
-              <Link href={`/products?eventId=${event.id}&priority=HIGH`} className="text-sm font-medium text-brand-700 hover:text-brand-800">
-                View all
-              </Link>
-            </div>
+      {/* 4. Core Feature: Tas Khilaf & Perencana Belanja (Directly Visible!) */}
+      <EventCompanionPlanner
+        eventId={event.id}
+        eventBudget={event.budget}
+        summary={plannerSummary}
+      />
 
-            {dashboard.highPriorityItems.length ? (
-              <div className="space-y-3">
-                {dashboard.highPriorityItems.map((item) => (
-                  <Link
-                    key={item.id}
-                    href={`/products/${item.id}`}
-                    className="flex items-start justify-between gap-4 rounded-2xl border border-line bg-white/70 px-4 py-4 transition hover:border-brand-300"
-                  >
-                    <div className="min-w-0">
-                      <div className="flex flex-wrap gap-2">
-                        <Badge className={statusStyles[item.status]}>{formatStatusLabel(item.status)}</Badge>
-                        <Badge className={priorityStyles[item.priority]}>{item.priority}</Badge>
-                      </div>
-                      <p className="mt-3 font-medium text-ink-900">{item.name}</p>
-                      <p className="mt-1 text-sm text-ink-500">{item.circle.name}</p>
-                    </div>
-                    <span className="shrink-0 font-semibold text-ink-900">{formatCurrency(item.price)}</span>
-                  </Link>
-                ))}
-              </div>
-            ) : (
-              <EmptyState title="Belum ada item prioritas tinggi" description="Tambahkan priority HIGH pada target item penting agar mudah dipantau di event hub." />
-            )}
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardContent className="space-y-4">
-            <div className="flex items-start justify-between gap-4">
-              <div>
-                <h2 className="font-[var(--font-display)] text-2xl font-semibold">PO deadlines</h2>
-                <p className="mt-1 text-sm text-ink-500">Deadline preorder terdekat supaya keputusan belanja tidak kelewatan.</p>
-              </div>
-              <Link href={`/products?eventId=${event.id}`} className="text-sm font-medium text-brand-700 hover:text-brand-800">
-                Browse catalog
-              </Link>
-            </div>
-
-            {dashboard.upcomingDeadlines.length ? (
-              <div className="space-y-3">
-                {dashboard.upcomingDeadlines.map((item) => (
-                  <Link
-                    key={item.id}
-                    href={`/products/${item.id}`}
-                    className="flex items-center justify-between gap-4 rounded-2xl border border-line bg-white/70 px-4 py-4 transition hover:border-brand-300"
-                  >
-                    <div className="min-w-0">
-                      <p className="font-medium text-ink-900">{item.name}</p>
-                      <p className="mt-1 text-sm text-ink-500">{item.circle.name}</p>
-                    </div>
-                    <div className="shrink-0 text-right">
-                      <p className="text-sm font-semibold text-ink-900">{formatDate(item.poDeadline)}</p>
-                      <p className="mt-1 text-xs uppercase tracking-[0.18em] text-ink-500">Deadline</p>
-                    </div>
-                  </Link>
-                ))}
-              </div>
-            ) : (
-              <EmptyState title="Tidak ada deadline aktif" description="Belum ada produk dengan deadline PO yang perlu dipantau untuk event ini." />
-            )}
-          </CardContent>
-        </Card>
-      </section>
-
-      <section className="grid gap-6 lg:grid-cols-2">
-        <Card>
-          <CardContent className="space-y-4">
-            <h2 className="font-[var(--font-display)] text-2xl font-semibold">Circle quick links</h2>
-            <p className="text-sm text-ink-500">Circle prioritas dari target item penting, lengkap dengan booth code jika sudah ditentukan.</p>
-            {dashboard.priorityCircles.length ? (
-              <div className="grid gap-3 sm:grid-cols-2">
-                {dashboard.priorityCircles.map((item) => (
-                  <div key={item.circleId} className="rounded-3xl border border-line bg-white/70 px-5 py-5">
-                    <p className="font-medium text-ink-900">{item.circleName}</p>
-                    <p className="mt-1 text-sm text-ink-500">Booth {item.boothCode}</p>
-                    <div className="mt-4 flex flex-wrap gap-2">
-                      <Link href={`/circles/${item.circleId}`} className="rounded-full border border-line px-3 py-2 text-sm font-medium text-ink-700 hover:border-brand-300 hover:text-brand-700">
-                        Open circle
-                      </Link>
-                      {item.floorMapId ? (
-                        <Link href={`/maps/${item.floorMapId}`} className="rounded-full border border-line px-3 py-2 text-sm font-medium text-ink-700 hover:border-brand-300 hover:text-brand-700">
-                          View map
-                        </Link>
-                      ) : null}
-                    </div>
-                  </div>
-                ))}
-              </div>
-            ) : (
-              <EmptyState title="Belum ada quick links circle" description="Isi target item prioritas tinggi dan booth location agar shortcut circle muncul di halaman ini." />
-            )}
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardContent className="space-y-4">
-            <h2 className="font-[var(--font-display)] text-2xl font-semibold">Quick access</h2>
-            <p className="text-sm text-ink-500">Shortcut paling sering dipakai saat buka event hub dari HP maupun desktop.</p>
-            <div className="grid gap-3 sm:grid-cols-2">
-              <Link href={`/products?eventId=${event.id}`} className="rounded-3xl border border-line bg-white/70 px-5 py-5 text-sm font-medium text-ink-800 transition hover:border-brand-300 hover:text-brand-700">
-                Open product catalog
-              </Link>
-              <Link href="/maps" className="rounded-3xl border border-line bg-white/70 px-5 py-5 text-sm font-medium text-ink-800 transition hover:border-brand-300 hover:text-brand-700">
-                Check floor maps
-              </Link>
-              <Link href="/wishlist" className="rounded-3xl border border-line bg-white/70 px-5 py-5 text-sm font-medium text-ink-800 transition hover:border-brand-300 hover:text-brand-700">
-                Buka wishlist & checklist
-              </Link>
-              <Link href="/circles" className="rounded-3xl border border-line bg-white/70 px-5 py-5 text-sm font-medium text-ink-800 transition hover:border-brand-300 hover:text-brand-700">
-                Browse circles
-              </Link>
-            </div>
-          </CardContent>
-        </Card>
-      </section>
-
-      {/* Panduan Resmi Event (Tiket, Sorotan, Shuttle Bus & Regulasi Komunitas) */}
+      {/* 5. Informasi Operasional & Regulasi Acara (Clean Reference Section) */}
       <EventGuidesSection data={guideData} />
     </div>
   );
