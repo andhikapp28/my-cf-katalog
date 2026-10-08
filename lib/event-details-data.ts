@@ -131,9 +131,7 @@ export interface EventDetailMetadata {
   communityRules: EventCommunityRules;
 }
 
-// =============================================================================
-// DEFAULT OPERATIONAL TRANSPORT GUIDE & COMMUNITY RULES (ICE BSD STANDARD)
-// =============================================================================
+// Panduan operasional transportasi dan regulasi komunitas standar ICE BSD
 
 export const DEFAULT_TRANSPORT_GUIDE: EventTransportGuide = {
   shuttleBus: {
@@ -245,9 +243,7 @@ export const DEFAULT_COMMUNITY_RULES: EventCommunityRules = {
   }
 };
 
-// =============================================================================
-// MASTER DATA METADATA TIAP EDISI COMIC FRONTIER (CF 16 – CF 23)
-// =============================================================================
+// Master data metadata tiap edisi Comic Frontier (CF 16 - CF 23)
 
 export const EVENT_DETAILS_MAP: Record<string, EventDetailMetadata> = {
   cf16: {
@@ -707,9 +703,7 @@ export const EVENT_DETAILS_MAP: Record<string, EventDetailMetadata> = {
   }
 };
 
-// =============================================================================
-// HELPER LOOKUP FUNCTIONS
-// =============================================================================
+// Helper lookup functions
 
 export function normalizeEventSlug(slug: string): string {
   if (!slug) return "";

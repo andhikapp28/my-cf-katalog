@@ -4,7 +4,7 @@ import { priorities, productStatuses } from "./constants";
  * Status produk yang masih relevan untuk mode checklist di venue: item yang
  * masih perlu "diburu"/dibeli. Status akhir (PURCHASED/CANCELLED/SOLD_OUT)
  * sengaja tidak masuk daftar aktif checklist supaya daftar tetap ringkas
- * sambil jalan — tapi tetap bisa dilihat riwayatnya lewat log status produk.
+ * sambil jalan, tapi tetap bisa dilihat riwayatnya lewat log status produk.
  */
 export const checklistStatuses = ["TARGET", "PO_OPEN", "PO_DONE"] as const;
 export type ChecklistStatus = (typeof checklistStatuses)[number];

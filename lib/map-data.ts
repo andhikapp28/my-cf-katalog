@@ -75,7 +75,6 @@ export function getCatalogCache(): Map<string, RawCatalogEntry> {
  * Muat data lengkap untuk Interactive Floor Map Viewer (Hall 8 & Hall 9).
  */
 export async function getInteractiveMapData(targetMapId?: string) {
-  // 1. Dapatkan daftar event aktif atau terbaru
   const activeEvent =
     (await db.query.events.findFirst({
       where: eq(events.isActive, true),
@@ -89,7 +88,6 @@ export async function getInteractiveMapData(targetMapId?: string) {
     return null;
   }
 
-  // 2. Dapatkan semua floor maps untuk event ini (mis. Hall 8 & Hall 9)
   const allFloorMaps = await db.query.floorMaps.findMany({
     where: eq(floorMaps.eventId, activeEvent.id),
     orderBy: [asc(floorMaps.hall), asc(floorMaps.name)],
@@ -102,12 +100,10 @@ export async function getInteractiveMapData(targetMapId?: string) {
     return null;
   }
 
-  // 3. Tentukan floor map yang dipilih
   const currentMap =
     (targetMapId ? allFloorMaps.find((m) => m.id === targetMapId) : allFloorMaps[0]) ??
     allFloorMaps[0];
 
-  // 4. Ambil lokasi booth untuk map yang dipilih beserta circle terkait
   const locations = await db.query.boothLocations.findMany({
     where: eq(boothLocations.floorMapId, currentMap.id),
     with: {
@@ -115,12 +111,11 @@ export async function getInteractiveMapData(targetMapId?: string) {
     }
   });
 
-  // 5. Ambil semua target produk untuk event ini sekaligus dalam 1 query (efisien)
+  // Batch-load produk target event dalam 1 query
   const eventProducts = await db.query.products.findMany({
     where: eq(products.eventId, currentMap.eventId)
   });
 
-  // Kelompokkan produk berdasarkan circleId
   const productsByCircleId = new Map<string, typeof eventProducts>();
   for (const prod of eventProducts) {
     const list = productsByCircleId.get(prod.circleId) ?? [];
@@ -130,7 +125,6 @@ export async function getInteractiveMapData(targetMapId?: string) {
 
   const catalog = getCatalogCache();
 
-  // 6. Bentuk daftar CircleMarker yang kaya metadata untuk Circle Detail Sheet
   const markers: CircleMarker[] = locations.map((location) => {
     const circle = location.circle;
     const circleProducts = productsByCircleId.get(circle.id) ?? [];
@@ -192,7 +186,6 @@ export async function getInteractiveMapData(targetMapId?: string) {
       posY = computed.y;
     }
 
-    // Format label hari
     const dayLabel =
       location.day === "DAY_1"
         ? "Day 1 (Sabtu)"

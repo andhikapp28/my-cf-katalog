@@ -18,7 +18,7 @@ const comifuroMasterEvents: EventSeedData[] = [
   {
     slug: "cf23",
     name: "Comic Frontier 23 (Comifuro 23)",
-    description: "Edisi tematik Halloween Weekend di ICE BSD City dengan seleksi circle terkurasi ketat dan free community booth.",
+    description: "Edisi Halloween dengan 1.500+ circle dan community booth.",
     venue: "ICE BSD City (Hall 6 - 10 & Hall 5)",
     bannerImageUrl: "/banner/cf23.jpg",
     startsAt: new Date("2026-10-31T09:00:00+07:00"),
@@ -29,7 +29,7 @@ const comifuroMasterEvents: EventSeedData[] = [
   {
     slug: "cf22",
     name: "Comic Frontier 22 (Comifuro 22)",
-    description: "1.500+ Circle kreator independen, Bushiroad EXPO 2026, kolaborasi resmi Kartu Multi Trip KAI Commuter, dan stage kreatif.",
+    description: "1.500+ circle kreator, Bushiroad EXPO, dan tiket KMT KAI.",
     venue: "ICE BSD City (Hall 6 - 10)",
     bannerImageUrl: "/banner/cf22.jpg",
     startsAt: new Date("2026-05-16T09:00:00+07:00"),
@@ -40,7 +40,7 @@ const comifuroMasterEvents: EventSeedData[] = [
   {
     slug: "cf21",
     name: "Comic Frontier 21 (Comifuro 21)",
-    description: "Edisi pemecah rekor 70.000 pengunjung dengan konser akbar hololive ID 5th Anniversary LIVE 'Chromatic Future' dan guest author LN Roshidere.",
+    description: "Rekor 70.000 pengunjung dan konser akbar hololive ID.",
     venue: "ICE BSD City (Hall 6 - 10)",
     bannerImageUrl: "/banner/cf21.jpg",
     startsAt: new Date("2025-11-15T09:00:00+07:00"),
@@ -51,7 +51,7 @@ const comifuroMasterEvents: EventSeedData[] = [
   {
     slug: "cf20",
     name: "Comic Frontier 20 (Comic Frontier XX)",
-    description: "Perayaan edisi ke-20 menyatukan Bushiroad EXPO 2025, Q&A CEO Takaaki Kidani, seiyuu BanG Dream!, dan panggung kreator lokal.",
+    description: "Edisi ke-20 (CF XX), Bushiroad EXPO, dan temu kreator.",
     venue: "ICE BSD City (Hall 6 - 10)",
     bannerImageUrl: "/banner/cf20.jpg",
     startsAt: new Date("2025-05-24T09:00:00+07:00"),
@@ -62,7 +62,7 @@ const comifuroMasterEvents: EventSeedData[] = [
   {
     slug: "cf19",
     name: "Comic Frontier 19 (Comifuro 19)",
-    description: "Menghadirkan konser anisong Konomi Suzuki dan panggung kolaborasi Yuko Suzuhana (Wagakki Band) x Upiko di 4 hall ICE BSD.",
+    description: "Konser anisong Konomi Suzuki dan panggung musik J-pop.",
     venue: "ICE BSD City (Hall 7 - 10)",
     bannerImageUrl: "/banner/cf19.jpg",
     startsAt: new Date("2024-11-09T09:00:00+07:00"),
@@ -73,7 +73,7 @@ const comifuroMasterEvents: EventSeedData[] = [
   {
     slug: "cf18",
     name: "Comic Frontier 18 (Comifuro 18)",
-    description: "Penyelenggaraan Bushiroad EXPO 2024, bintang tamu seiyuu Aina Aiba & Yuka Nishio, serta pembukaan Hall 6 terdedikasi kuliner F&B.",
+    description: "Bushiroad EXPO 2024 dan temu bintang seiyuu Jepang.",
     venue: "ICE BSD City (Hall 6 - 10)",
     bannerImageUrl: "/banner/cf18.jpg",
     startsAt: new Date("2024-05-11T09:00:00+07:00"),
@@ -84,7 +84,7 @@ const comifuroMasterEvents: EventSeedData[] = [
   {
     slug: "cf17",
     name: "Comic Frontier 17 (Comifuro 17)",
-    description: "Ekspansi 4 hall di ICE BSD, peluncuran perdana shuttle bus gratis Lorena, dan implementasi 100% online ticketing via Ticket2u.",
+    description: "Ekspansi 4 hall ICE BSD dan rute shuttle bus Lorena.",
     venue: "ICE BSD City (Hall 7 - 10)",
     bannerImageUrl: "/banner/cf17.jpg",
     startsAt: new Date("2023-12-16T09:00:00+07:00"),
@@ -95,7 +95,7 @@ const comifuroMasterEvents: EventSeedData[] = [
   {
     slug: "cf16",
     name: "Comic Frontier 16 (Comifuro 16)",
-    description: "Perluasan ke 3 hall ICE BSD, sesi Meet & Greet hololive ID, dan pasar doujinshi 800+ circle kreator.",
+    description: "Ekspansi 3 hall ICE BSD dan temu virtual hololive.",
     venue: "ICE BSD City (Hall 8 - 10)",
     bannerImageUrl: "/banner/cf16.jpg",
     startsAt: new Date("2023-05-06T09:00:00+07:00"),

@@ -5,7 +5,7 @@ describe("formatCurrency", () => {
   it("memformat angka menjadi mata uang IDR tanpa desimal", () => {
     const result = formatCurrency(185000);
     // Intl.NumberFormat id-ID bisa memakai "Rp" atau "IDR" tergantung runtime ICU,
-    // dan pemisah ribuan id-ID memakai titik (mis. "185.000") — bukan desimal.
+    // dan pemisah ribuan id-ID memakai titik (mis. "185.000"), bukan desimal.
     // Karena maximumFractionDigits: 0, hasil tidak boleh diakhiri koma-desimal.
     expect(result).toContain("185");
     expect(result).toContain("000");
