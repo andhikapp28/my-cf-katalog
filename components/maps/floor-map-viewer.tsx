@@ -68,9 +68,6 @@ export function FloorMapViewer({
   currentHallId,
   onSelectHall
 }: FloorMapViewerProps) {
-  // ---------------------------------------------------------------------------
-  // STATE MANAGEMENT
-  // ---------------------------------------------------------------------------
   const [selectedCircleId, setSelectedCircleId] = useState<string | undefined>(initialCircleId);
   const [searchQuery, setSearchQuery] = useState("");
   const [isSearchFocused, setIsSearchFocused] = useState(false);
@@ -102,10 +99,6 @@ export function FloorMapViewer({
     startMidpoint: { x: 0, y: 0 },
     startDistance: 0
   });
-
-  // ---------------------------------------------------------------------------
-  // FILTERING & PENCARIAN
-  // ---------------------------------------------------------------------------
   const { filtered: displayedMarkers, matchedIds } = useMemo(() => {
     return filterCircleMarkers(markers, {
       search: searchQuery,
@@ -132,10 +125,6 @@ export function FloorMapViewer({
     if (!searchQuery.trim()) return [];
     return displayedMarkers.slice(0, 6);
   }, [displayedMarkers, searchQuery]);
-
-  // ---------------------------------------------------------------------------
-  // AUTO-PAN / FOCUS MARKER
-  // ---------------------------------------------------------------------------
   const focusMarker = useCallback(
     (marker: CircleMarker, scale = TARGET_ZOOM_SCALE) => {
       setSelectedCircleId(marker.circleId);
@@ -170,10 +159,6 @@ export function FloorMapViewer({
       }
     }
   }, [initialCircleId, markers, focusMarker]);
-
-  // ---------------------------------------------------------------------------
-  // POINTER & GESTURE HANDLERS (PAN & PINCH-ZOOM)
-  // ---------------------------------------------------------------------------
   const clampTranslate = useCallback((next: Transform, rect: { width: number; height: number }) => {
     const minX = rect.width * (1 - next.scale);
     const minY = rect.height * (1 - next.scale);
@@ -333,9 +318,6 @@ export function FloorMapViewer({
 
   return (
     <div className="space-y-4">
-      {/* =================================================================== */}
-      {/* 1. VENUE HALL SWITCHER (HALL 8 VS HALL 9)                           */}
-      {/* =================================================================== */}
       {halls && halls.length > 1 ? (
         <div className="flex flex-wrap items-center justify-between gap-3 rounded-2xl border border-line bg-card/90 p-3 sm:p-4 shadow-sm backdrop-blur">
           <div className="flex items-center gap-2">
@@ -355,7 +337,7 @@ export function FloorMapViewer({
                   type="button"
                   onClick={() => onSelectHall(h.id)}
                   className={cn(
-                    "flex items-center gap-2 rounded-full px-4 py-2 text-xs font-bold transition shadow-sm border",
+                    "flex min-h-[44px] items-center gap-2 rounded-full px-4 py-2.5 text-xs font-bold transition shadow-sm border",
                     isActive
                       ? "bg-[#111215] text-[#D6F834] border-[#D6F834] shadow-md ring-2 ring-[#D6F834]/30"
                       : "bg-white text-ink-700 border-line hover:border-[#5398DA] hover:text-[#5398DA]"
@@ -374,7 +356,7 @@ export function FloorMapViewer({
                   key={h.id}
                   href={`/maps/${h.id}`}
                   className={cn(
-                    "flex items-center gap-2 rounded-full px-4 py-2 text-xs font-bold transition shadow-sm border",
+                    "flex min-h-[44px] items-center gap-2 rounded-full px-4 py-2.5 text-xs font-bold transition shadow-sm border",
                     isActive
                       ? "bg-[#111215] text-[#D6F834] border-[#D6F834] shadow-md ring-2 ring-[#D6F834]/30"
                       : "bg-white text-ink-700 border-line hover:border-[#5398DA] hover:text-[#5398DA]"
@@ -391,8 +373,6 @@ export function FloorMapViewer({
               );
             })}
           </div>
-
-          {/* Toggle View Mode (Bila tersedia foto gambar floor map) */}
           {imageUrl ? (
             <div className="flex items-center gap-1 rounded-full border border-line bg-muted/60 p-1 text-xs">
               <button
@@ -423,17 +403,9 @@ export function FloorMapViewer({
           ) : null}
         </div>
       ) : null}
-
-      {/* =================================================================== */}
-      {/* 2. INTERACTIVE CANVAS CONTAINER                                     */}
-      {/* =================================================================== */}
       <div className="relative overflow-hidden rounded-3xl border border-line bg-[#111215] shadow-2xl">
-        {/* ----------------------------------------------------------------- */}
-        {/* FLOATING TOP BAR: PENCARIAN & FILTER CHIPS                        */}
-        {/* ----------------------------------------------------------------- */}
         <div className="absolute inset-x-0 top-0 z-20 p-3 sm:p-4 space-y-2 pointer-events-none">
           <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-2.5 max-w-3xl pointer-events-auto">
-            {/* Search Input Mengambang */}
             <div className="relative flex-1">
               <div className="flex items-center rounded-2xl border border-white/20 bg-[#161922]/90 px-3.5 py-2.5 shadow-xl backdrop-blur-md transition focus-within:border-[#D6F834] focus-within:ring-2 focus-within:ring-[#D6F834]/30">
                 <Search className="h-4 w-4 text-[#D6F834] shrink-0" />
@@ -443,7 +415,8 @@ export function FloorMapViewer({
                   onChange={(e) => setSearchQuery(e.target.value)}
                   onFocus={() => setIsSearchFocused(true)}
                   placeholder="Cari circle, booth (AA-01, TC-12), atau fandom..."
-                  className="w-full bg-transparent px-2.5 text-xs sm:text-sm text-white placeholder:text-white/50 focus:outline-hidden"
+                  aria-label="Cari circle, nomor booth, atau fandom pada denah"
+                  className="w-full bg-transparent px-2.5 text-xs sm:text-sm text-white placeholder:text-white/60 focus:outline-none"
                 />
                 {searchQuery ? (
                   <button
@@ -452,14 +425,13 @@ export function FloorMapViewer({
                       setSearchQuery("");
                       setIsSearchFocused(false);
                     }}
-                    className="flex h-5 w-5 items-center justify-center rounded-full bg-white/20 text-white hover:bg-white/30"
+                    aria-label="Hapus kata kunci pencarian denah"
+                    className="flex min-h-[36px] min-w-[36px] items-center justify-center rounded-full bg-white/20 text-white hover:bg-white/30 active:scale-[0.98] transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#D6F834]"
                   >
-                    <X className="h-3 w-3" />
+                    <X className="h-3.5 w-3.5" />
                   </button>
                 ) : null}
               </div>
-
-              {/* Autocomplete Dropdown Hasil Pencarian */}
               {isSearchFocused && searchSuggestions.length > 0 ? (
                 <div className="absolute left-0 right-0 top-full mt-1.5 max-h-72 overflow-y-auto rounded-2xl border border-white/20 bg-[#161922]/95 p-2 shadow-2xl backdrop-blur-xl z-30">
                   <p className="px-2 py-1 text-[10px] font-bold uppercase tracking-wider text-white/50">
@@ -474,7 +446,7 @@ export function FloorMapViewer({
                           focusMarker(m);
                           setIsSearchFocused(false);
                         }}
-                        className="flex w-full items-center justify-between rounded-xl px-3 py-2 text-left text-xs transition hover:bg-white/10"
+                        className="flex min-h-[44px] w-full items-center justify-between rounded-xl px-3 py-2 text-left text-xs transition hover:bg-white/10"
                       >
                         <div className="space-y-0.5">
                           <p className="font-bold text-white">{m.circleName}</p>
@@ -491,27 +463,24 @@ export function FloorMapViewer({
                 </div>
               ) : null}
             </div>
-
-            {/* Quick Fandom Clear Pill (bila aktif) */}
             {selectedFandom ? (
               <button
                 type="button"
                 onClick={() => setSelectedFandom(null)}
-                className="inline-flex items-center gap-1.5 rounded-full bg-[#D6F834] px-3 py-1.5 text-xs font-bold text-[#111215] shadow-lg"
+                aria-label={`Hapus filter fandom: ${selectedFandom}`}
+                className="inline-flex items-center gap-1.5 rounded-full bg-[#D6F834] px-3 py-1.5 text-xs font-bold text-[#111215] shadow-lg focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#111215]"
               >
                 <span>Fandom: {selectedFandom}</span>
                 <X className="h-3 w-3" />
               </button>
             ) : null}
           </div>
-
-          {/* Filter Chips Bar (Semua Meja, Day 1, Day 2, Wishlist) */}
           <div className="flex items-center gap-1.5 overflow-x-auto pb-1 pointer-events-auto scrollbar-none">
             <button
               type="button"
               onClick={() => setDayFilter("ALL")}
               className={cn(
-                "shrink-0 rounded-full px-3.5 py-1.5 text-xs font-bold transition shadow-md backdrop-blur border",
+                "shrink-0 rounded-full px-4 py-2 text-xs font-bold transition shadow-md backdrop-blur border min-h-[40px] sm:min-h-[44px] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#D6F834]",
                 dayFilter === "ALL"
                   ? "bg-white text-[#111215] border-white shadow-lg"
                   : "bg-[#141720]/80 text-white/80 border-white/15 hover:bg-white/20"
@@ -524,7 +493,7 @@ export function FloorMapViewer({
               type="button"
               onClick={() => setDayFilter("DAY_1")}
               className={cn(
-                "flex shrink-0 items-center gap-1.5 rounded-full px-3.5 py-1.5 text-xs font-bold transition shadow-md backdrop-blur border",
+                "flex shrink-0 items-center gap-1.5 rounded-full px-4 py-2 text-xs font-bold transition shadow-md backdrop-blur border min-h-[40px] sm:min-h-[44px] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#D6F834]",
                 dayFilter === "DAY_1"
                   ? "bg-[#5398DA] text-white border-[#5398DA] shadow-lg shadow-[#5398DA]/30"
                   : "bg-[#141720]/80 text-white/80 border-white/15 hover:bg-[#5398DA]/20"
@@ -538,7 +507,7 @@ export function FloorMapViewer({
               type="button"
               onClick={() => setDayFilter("DAY_2")}
               className={cn(
-                "flex shrink-0 items-center gap-1.5 rounded-full px-3.5 py-1.5 text-xs font-bold transition shadow-md backdrop-blur border",
+                "flex shrink-0 items-center gap-1.5 rounded-full px-4 py-2 text-xs font-bold transition shadow-md backdrop-blur border min-h-[40px] sm:min-h-[44px] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#D6F834]",
                 dayFilter === "DAY_2"
                   ? "bg-[#D6F834] text-[#111215] border-[#D6F834] shadow-lg shadow-[#D6F834]/30"
                   : "bg-[#141720]/80 text-white/80 border-white/15 hover:bg-[#D6F834]/20"
@@ -552,7 +521,7 @@ export function FloorMapViewer({
               type="button"
               onClick={() => setDayFilter("WISHLIST")}
               className={cn(
-                "flex shrink-0 items-center gap-1.5 rounded-full px-3.5 py-1.5 text-xs font-bold transition shadow-md backdrop-blur border",
+                "flex shrink-0 items-center gap-1.5 rounded-full px-4 py-2 text-xs font-bold transition shadow-md backdrop-blur border min-h-[40px] sm:min-h-[44px]",
                 dayFilter === "WISHLIST"
                   ? "bg-[#FF4838] text-white border-[#FF4838] shadow-lg shadow-[#FF4838]/30"
                   : "bg-[#141720]/80 text-white/80 border-white/15 hover:bg-[#FF4838]/20"
@@ -568,28 +537,24 @@ export function FloorMapViewer({
             </button>
           </div>
         </div>
-
-        {/* ----------------------------------------------------------------- */}
-        {/* FLOATING CONTROLS (KANAN BAWAH PETA)                              */}
-        {/* ----------------------------------------------------------------- */}
-        <div className="absolute right-4 bottom-4 z-20 flex flex-col items-end gap-2 pointer-events-none">
+        <div className="absolute right-3 sm:right-4 bottom-3 sm:bottom-4 z-20 flex flex-col items-end gap-2 pointer-events-none">
           <div className="flex items-center gap-1.5 rounded-2xl border border-white/15 bg-[#141720]/90 p-1.5 shadow-xl backdrop-blur-md pointer-events-auto">
             <button
               type="button"
               onClick={() => zoomBy(-0.5)}
               aria-label="Perkecil denah"
-              className="flex h-9 w-9 items-center justify-center rounded-xl text-white/80 transition hover:bg-white/15 hover:text-white"
+              className="flex min-h-[44px] min-w-[44px] sm:h-9 sm:w-9 items-center justify-center rounded-xl text-white/80 transition hover:bg-white/15 hover:text-white active:scale-[0.98]"
             >
               <Minus className="h-4 w-4" />
             </button>
-            <span className="w-9 text-center font-[var(--font-mono)] text-xs font-bold text-white/60">
+            <span className="w-10 text-center font-[var(--font-mono)] text-xs font-bold text-white/60">
               {Math.round(transform.scale * 100)}%
             </span>
             <button
               type="button"
               onClick={() => zoomBy(0.5)}
               aria-label="Perbesar denah"
-              className="flex h-9 w-9 items-center justify-center rounded-xl text-white/80 transition hover:bg-white/15 hover:text-white"
+              className="flex min-h-[44px] min-w-[44px] sm:h-9 sm:w-9 items-center justify-center rounded-xl text-white/80 transition hover:bg-white/15 hover:text-white active:scale-[0.98]"
             >
               <Plus className="h-4 w-4" />
             </button>
@@ -598,7 +563,7 @@ export function FloorMapViewer({
               type="button"
               onClick={resetZoom}
               aria-label="Reset zoom"
-              className="flex h-9 w-9 items-center justify-center rounded-xl text-white/80 transition hover:bg-white/15 hover:text-white"
+              className="flex min-h-[44px] min-w-[44px] sm:h-9 sm:w-9 items-center justify-center rounded-xl text-white/80 transition hover:bg-white/15 hover:text-white active:scale-[0.98]"
             >
               <RotateCcw className="h-4 w-4" />
             </button>
@@ -607,16 +572,12 @@ export function FloorMapViewer({
           <button
             type="button"
             onClick={goToNextBooth}
-            className="flex items-center gap-2 rounded-2xl bg-[#D6F834] px-4 py-3 text-xs sm:text-sm font-extrabold text-[#111215] shadow-xl hover:bg-[#c6e926] transition active:scale-95 pointer-events-auto"
+            className="flex min-h-[44px] items-center gap-2 rounded-2xl bg-[#D6F834] px-4 py-3 text-xs sm:text-sm font-extrabold text-[#111215] shadow-xl hover:bg-[#c6e926] transition active:scale-[0.98] pointer-events-auto"
           >
             <Navigation className="h-4 w-4" />
             Booth Berikutnya
           </button>
         </div>
-
-        {/* ----------------------------------------------------------------- */}
-        {/* INTERACTIVE ZOOMABLE MAP VIEWPORT                                */}
-        {/* ----------------------------------------------------------------- */}
         <div
           ref={containerRef}
           className="relative touch-none select-none overflow-hidden bg-[#111215] cursor-grab active:cursor-grabbing"
@@ -636,7 +597,6 @@ export function FloorMapViewer({
               transition: gestureRef.current.mode === "none" ? "transform 140ms cubic-bezier(0.16, 1, 0.3, 1)" : "none"
             }}
           >
-            {/* Latar Belakang Denah: Vektor SVG Arsitektural atau Foto Asli */}
             {viewMode === "image" && imageUrl ? (
               <Image
                 src={imageUrl}
@@ -649,10 +609,6 @@ export function FloorMapViewer({
             ) : (
               <IceHallCanvas hall={effectiveHall} />
             )}
-
-            {/* =============================================================== */}
-            {/* BOOTH MARKERS LAYER                                             */}
-            {/* =============================================================== */}
             {markers.map((marker) => {
               const isSelected = marker.circleId === selectedCircleId || marker.id === selectedCircleId;
               const isWish = isCircleInWishlist(
@@ -681,7 +637,7 @@ export function FloorMapViewer({
                     focusMarker(marker);
                   }}
                   className={cn(
-                    "absolute -translate-x-1/2 -translate-y-1/2 transition-all duration-200 group focus:outline-hidden",
+                    "absolute -translate-x-1/2 -translate-y-1/2 transition-all duration-200 group focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#D6F834] focus-visible:ring-offset-2 focus-visible:ring-offset-[#111215]",
                     // Dimmed saat tidak cocok dengan filter aktif
                     isDimmed ? "opacity-20 pointer-events-none scale-75" : "opacity-100",
                     // Z-index prioritas
@@ -690,28 +646,22 @@ export function FloorMapViewer({
                   style={{ left: `${marker.posX}%`, top: `${marker.posY}%` }}
                   aria-label={`${marker.circleName} (Booth ${marker.boothCode})`}
                 >
-                  {/* Titik Marker / Dot */}
                   <div
                     className={cn(
                       "relative flex h-5 w-5 sm:h-6 sm:w-6 items-center justify-center rounded-full border-2 border-white shadow-md transition",
                       dayColor,
-                      isSelected && "ring-4 ring-[#D6F834] shadow-xl animate-bounce",
-                      isMatchedByFilter && isSearching && !isSelected && "ring-4 ring-[#D6F834]/70 animate-pulse",
+                      isSelected && "ring-4 ring-[#D6F834] shadow-xl",
+                      isMatchedByFilter && isSearching && !isSelected && "ring-4 ring-[#D6F834]/80",
                       marker.hasRush && "ring-2 ring-rose-400"
                     )}
                   >
-                    {/* Ikon Bookmark / Heart jika tersimpan di Wishlist */}
                     {isWish ? (
                       <div className="absolute -top-1.5 -right-1.5 flex h-3.5 w-3.5 items-center justify-center rounded-full bg-[#FF4838] text-white shadow-xs">
                         <Heart className="h-2 w-2 fill-white" />
                       </div>
                     ) : null}
-
-                    {/* Titik pusat bila normal */}
                     <span className="h-1.5 w-1.5 rounded-full bg-white/90" />
                   </div>
-
-                  {/* Label Kode Meja Mengambang saat Zoom Mendekat atau Hover */}
                   {(transform.scale >= 1.6 || isSelected) && (
                     <div
                       className={cn(
@@ -730,10 +680,6 @@ export function FloorMapViewer({
             })}
           </div>
         </div>
-
-        {/* ----------------------------------------------------------------- */}
-        {/* BOTTOM HELPER GUIDE TEXT                                          */}
-        {/* ----------------------------------------------------------------- */}
         <div className="flex flex-wrap items-center justify-between gap-2 border-t border-white/10 bg-[#0E1017] px-4 py-2.5 text-[11px] text-white/50">
           <div className="flex items-center gap-3">
             <span className="flex items-center gap-1.5">
@@ -753,10 +699,6 @@ export function FloorMapViewer({
             Cubit dua jari di layar HP atau scroll mouse untuk zoom • Geser untuk navigasi denah
           </p>
         </div>
-
-        {/* ----------------------------------------------------------------- */}
-        {/* CIRCLE DETAIL DRAWER / SHEET COMPONENT                            */}
-        {/* ----------------------------------------------------------------- */}
         <CircleDetailSheet
           marker={activeMarker}
           onClose={() => setSelectedCircleId(undefined)}

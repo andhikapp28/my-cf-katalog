@@ -33,7 +33,6 @@ export function ProductCard({ product, boothCode }: ProductCardProps) {
 
   return (
     <article className="group relative flex flex-col justify-between overflow-hidden rounded-2xl border border-zinc-200 bg-white transition-all duration-300 hover:border-zinc-400 hover:shadow-xl hover:shadow-zinc-950/5">
-      {/* Visual Showcase (Aspect 4/3) with badges overlay */}
       <div className="relative aspect-[4/3] w-full overflow-hidden bg-zinc-100">
         <ProductImage
           src={product.imageUrl}
@@ -43,13 +42,8 @@ export function ProductCard({ product, boothCode }: ProductCardProps) {
           fallbackLabel="No image"
           fallbackDescription="Preview karya belum tersedia dari circle."
         />
-
-        {/* Subtle gradient scrim on top for badge contrast */}
         <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-black/30 pointer-events-none" />
-
-        {/* Top-Left: Prominent High-Contrast Booth Badge + Day Badge + Rush */}
         <div className="absolute top-2.5 left-2.5 z-10 flex flex-wrap items-center gap-1.5 max-w-[calc(100%-48px)]">
-          {/* Booth Badge: Bold Black + Acid Lime */}
           <span
             title={boothCode ? `Lokasi Booth: ${boothCode}` : "Lokasi Booth Belum Diumumkan"}
             className="inline-flex items-center gap-1 rounded-md bg-[#111215] px-2.5 py-1 font-mono text-xs font-black tracking-wider text-[#D6F834] shadow-md border border-white/10 uppercase"
@@ -57,8 +51,6 @@ export function ProductCard({ product, boothCode }: ProductCardProps) {
             <span>BOOTH</span>
             <span className="text-white">{boothCode || "TBA"}</span>
           </span>
-
-          {/* Hunting Day Badge (TANALOKA Palette) */}
           {targetDay ? (
             <span
               className={cn(
@@ -71,17 +63,13 @@ export function ProductCard({ product, boothCode }: ProductCardProps) {
               {eventDayShortLabels[targetDay] || targetDay}
             </span>
           ) : null}
-
-          {/* Rush Incaran Pagi (Coral Red) */}
           {product.isRush ? (
-            <span className="inline-flex items-center gap-1 rounded-full bg-[#F84632] px-2 py-0.5 font-mono text-[10px] font-black uppercase text-white shadow-sm animate-pulse">
+            <span className="inline-flex items-center gap-1 rounded-full bg-[#F84632] px-2 py-0.5 font-mono text-[10px] font-black uppercase text-white shadow-sm">
               <Zap className="h-2.5 w-2.5 fill-white" />
               <span>RUSH</span>
             </span>
           ) : null}
         </div>
-
-        {/* Top-Right: Wishlist Heart Button */}
         <div className="absolute top-2.5 right-2.5 z-10">
           <WishlistHeartButton
             productId={product.id}
@@ -90,45 +78,35 @@ export function ProductCard({ product, boothCode }: ProductCardProps) {
             className="shadow-md"
           />
         </div>
-
-        {/* Optional visitor indicator: PO vs On The Spot */}
         {product.purchaseType === "PO" ? (
           <div className="absolute bottom-2.5 left-2.5 z-10">
-            <span className="rounded-md bg-[#111215]/80 backdrop-blur-xs px-2 py-0.5 font-mono text-[10px] font-bold text-white uppercase border border-white/10 shadow-xs">
-              📦 Pre-Order
+            <span className="rounded-md bg-[#111215]/85 px-2 py-0.5 font-mono text-[10px] font-bold text-white uppercase border border-white/10 shadow-xs">
+              Pre-Order
             </span>
           </div>
         ) : null}
       </div>
-
-      {/* Card Details: Clean Editorial & Visitor-Friendly (No Admin Badges) */}
       <div className="p-4 sm:p-5 flex flex-col justify-between flex-1 gap-4">
         <div className="space-y-1.5">
-          {/* Clickable Circle Link */}
           <Link
             href={`/circles/${product.circle.id}`}
-            className="group/circle inline-flex items-center gap-1 font-mono text-xs font-bold text-zinc-500 hover:text-[#F84632] transition-colors max-w-full"
+            className="group/circle inline-flex items-center gap-1 font-mono text-xs font-bold text-zinc-600 hover:text-[#F84632] transition-colors max-w-full focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#111215] rounded-sm"
             title={`Lihat profil circle ${product.circle.name}`}
           >
             <span className="truncate group-hover/circle:underline">{product.circle.name}</span>
             <ArrowUpRight className="h-3 w-3 shrink-0 opacity-0 group-hover/circle:opacity-100 transition-opacity" />
           </Link>
-
-          {/* Product Title */}
           <Link
             href={`/products/${product.id}`}
-            className="block font-[var(--font-display)] text-xl sm:text-2xl font-bold tracking-tight text-[#111215] group-hover:text-[#F84632] transition-colors line-clamp-2 leading-snug"
+            className="block font-[var(--font-display)] text-xl sm:text-2xl font-bold tracking-tight text-[#111215] group-hover:text-[#F84632] transition-colors line-clamp-2 leading-snug focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#111215] rounded-sm"
           >
             {product.name}
           </Link>
         </div>
-
-        {/* Bottom Bar: Price (Bug-Free Rp 0) + Actions */}
         <div className="pt-3.5 border-t border-zinc-100 flex items-center justify-between gap-3">
-          {/* Price or 'Sampel Karya' display */}
           {isZeroPrice ? (
             <div className="flex flex-col">
-              <span className="text-[10px] font-mono font-semibold uppercase tracking-wider text-zinc-400">
+              <span className="text-[10px] font-mono font-semibold uppercase tracking-wider text-zinc-600">
                 Display
               </span>
               <span className="inline-flex items-center rounded-md bg-zinc-100 px-2.5 py-0.5 font-mono text-xs font-bold uppercase tracking-wider text-zinc-700">
@@ -137,7 +115,7 @@ export function ProductCard({ product, boothCode }: ProductCardProps) {
             </div>
           ) : (
             <div className="flex flex-col">
-              <span className="text-[10px] font-mono font-semibold uppercase tracking-wider text-zinc-400">
+              <span className="text-[10px] font-mono font-semibold uppercase tracking-wider text-zinc-600">
                 Harga
               </span>
               <span className="font-mono text-base sm:text-lg font-black tracking-tight text-[#111215]">
@@ -145,8 +123,6 @@ export function ProductCard({ product, boothCode }: ProductCardProps) {
               </span>
             </div>
           )}
-
-          {/* Action CTAs */}
           <div className="flex items-center gap-1.5 shrink-0">
             {product.productLink ? (
               <a
@@ -154,7 +130,7 @@ export function ProductCard({ product, boothCode }: ProductCardProps) {
                 target="_blank"
                 rel="noopener noreferrer"
                 aria-label={`Buka tautan eksternal untuk ${product.name}`}
-                className="inline-flex h-9 w-9 items-center justify-center rounded-xl border border-zinc-200 bg-white text-zinc-600 transition hover:border-[#111215] hover:text-[#111215] active:scale-95"
+                className="inline-flex min-h-[44px] min-w-[44px] items-center justify-center rounded-xl border border-zinc-200 bg-white text-zinc-600 transition hover:border-[#111215] hover:text-[#111215] active:scale-[0.98] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#111215]"
                 title="Buka tautan katalog circle"
               >
                 <ExternalLink className="h-3.5 w-3.5" />
@@ -163,7 +139,7 @@ export function ProductCard({ product, boothCode }: ProductCardProps) {
 
             <Link
               href={`/products/${product.id}`}
-              className="inline-flex items-center gap-1.5 rounded-xl bg-[#111215] px-3.5 py-2 font-mono text-xs font-bold uppercase tracking-wider text-white transition-all duration-200 hover:bg-[#F84632] shadow-xs active:scale-95"
+              className="inline-flex min-h-[44px] items-center gap-1.5 rounded-xl bg-[#111215] px-3.5 py-2 font-mono text-xs font-bold uppercase tracking-wider text-white transition-all duration-200 hover:bg-[#F84632] shadow-xs active:scale-[0.98] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#111215]"
             >
               <span>Detail</span>
               <ArrowUpRight className="h-3.5 w-3.5" />

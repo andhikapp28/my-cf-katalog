@@ -47,7 +47,7 @@ export function ProductImage({
   }, [normalizedSrc]);
 
   return (
-    <div className={cn("relative overflow-hidden rounded-[26px] border border-line bg-brand-50", className)}>
+    <div className={cn("relative overflow-hidden rounded-2xl border border-line bg-brand-50", className)}>
       {normalizedSrc && state !== "error" ? (
         // eslint-disable-next-line @next/next/no-img-element
         <img
@@ -64,7 +64,7 @@ export function ProductImage({
       ) : null}
 
       {state === "loading" && showLoading ? (
-        <div className="absolute inset-0 animate-pulse bg-[linear-gradient(135deg,rgba(212,106,58,0.16),rgba(255,255,255,0.92),rgba(212,106,58,0.10))]" />
+        <div className="absolute inset-0 animate-pulse motion-reduce:animate-none bg-[linear-gradient(135deg,rgba(212,106,58,0.16),rgba(255,255,255,0.92),rgba(212,106,58,0.10))]" />
       ) : null}
 
       {state === "empty" || state === "error" ? (

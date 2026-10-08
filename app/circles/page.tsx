@@ -64,11 +64,11 @@ export default async function CirclesPage({
                   </div>
                   <div className="flex flex-wrap gap-3">
                     <Link href={`/products?circle=${circle.id}`} className="rounded-full border border-line px-4 py-2 text-sm font-medium text-ink-700 hover:bg-brand-50">
-                      View items
+                      Lihat karya
                     </Link>
                     {circle.socialLink ? (
                       <Link href={circle.socialLink} target="_blank" className="rounded-full bg-brand-50 px-4 py-2 text-sm font-medium text-brand-700 hover:bg-brand-100">
-                        Social link
+                        Media sosial
                       </Link>
                     ) : null}
                   </div>

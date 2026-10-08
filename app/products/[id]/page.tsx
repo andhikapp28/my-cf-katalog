@@ -38,15 +38,12 @@ export default async function ProductDetailPage({
 
   const targetDay = product.targetDay as EventDay | undefined;
   const isZeroPrice = product.price <= 0;
-
-  // Filter other products from the same circle
   const otherProducts = circleData?.products
     ? circleData.products.filter((p) => p.id !== product.id).slice(0, 3)
     : [];
 
   return (
     <div className="container-shell space-y-10 py-8 sm:py-12">
-      {/* Top Breadcrumb & Back Navigation */}
       <div className="flex flex-wrap items-center justify-between gap-4 border-b border-zinc-200 pb-5">
         <Link
           href="/products"
@@ -62,10 +59,7 @@ export default async function ProductDetailPage({
           <span className="text-[#F84632]">Detail Karya</span>
         </div>
       </div>
-
-      {/* Main Editorial Hero Section */}
       <section className="grid gap-8 lg:grid-cols-[1.05fr_1fr] items-start">
-        {/* Left Column: Full Resolution Artwork Showcase */}
         <div className="space-y-3">
           <div className="relative overflow-hidden rounded-3xl border border-zinc-200 bg-white p-3 sm:p-5 shadow-xs">
             <div className="relative aspect-[4/3] sm:aspect-square md:aspect-[4/3] w-full overflow-hidden rounded-2xl bg-zinc-50 flex items-center justify-center">
@@ -79,8 +73,6 @@ export default async function ProductDetailPage({
               />
             </div>
           </div>
-
-          {/* Direct Full-Resolution Link */}
           {product.imageUrl ? (
             <div className="flex items-center justify-between px-2">
               <a
@@ -100,12 +92,8 @@ export default async function ProductDetailPage({
             </div>
           ) : null}
         </div>
-
-        {/* Right Column: Information, Booth, Day & Actions (No Admin Clutter) */}
         <div className="space-y-6">
-          {/* Metadata Badges: Booth, Hunting Day, Rush (TANALOKA Palette) */}
           <div className="flex flex-wrap items-center gap-2">
-            {/* Prominent Booth Badge */}
             {booth ? (
               <Link
                 href={`/maps/${booth.floorMapId}?circleId=${product.circleId}`}
@@ -123,8 +111,6 @@ export default async function ProductDetailPage({
                 <span>BOOTH TBA</span>
               </span>
             )}
-
-            {/* Hunting Day Badge (TANALOKA Colors) */}
             {targetDay ? (
               <span
                 className={cn(
@@ -137,29 +123,21 @@ export default async function ProductDetailPage({
                 {eventDayLabels[targetDay] || targetDay}
               </span>
             ) : null}
-
-            {/* Rush Badge (Coral Red) */}
             {product.isRush ? (
-              <span className="inline-flex items-center gap-1.5 rounded-full bg-[#F84632] px-3 py-1 font-mono text-xs font-black uppercase tracking-wider text-white shadow-xs animate-pulse">
+              <span className="inline-flex items-center gap-1.5 rounded-full bg-[#F84632] px-3 py-1 font-mono text-xs font-black uppercase tracking-wider text-white shadow-xs">
                 <Zap className="h-3.5 w-3.5 fill-white" />
                 <span>INCARAN RUSH</span>
               </span>
             ) : null}
-
-            {/* Pre-Order Tag */}
             {product.purchaseType === "PO" ? (
               <span className="inline-flex items-center rounded-md bg-sky-100 px-2.5 py-1 font-mono text-xs font-bold uppercase tracking-wider text-sky-800">
-                📦 Pre-Order
+                Pre-Order
               </span>
             ) : null}
           </div>
-
-          {/* Product Title (Bebas Neue Display Typography) */}
           <h1 className="font-[var(--font-display)] text-3xl sm:text-4xl lg:text-5xl font-black uppercase tracking-tight text-[#111215] leading-[0.98]">
             {product.name}
           </h1>
-
-          {/* Circle Link */}
           <div className="flex items-center gap-2">
             <span className="font-mono text-xs font-bold uppercase tracking-wider text-zinc-400">
               Karya Circle:
@@ -173,8 +151,6 @@ export default async function ProductDetailPage({
               <ArrowUpRight className="h-4 w-4" />
             </Link>
           </div>
-
-          {/* Price Section (No "Rp 0" Bug) */}
           <div className="rounded-2xl border border-zinc-200 bg-zinc-50/90 p-5">
             {isZeroPrice ? (
               <div className="space-y-1.5">
@@ -201,8 +177,6 @@ export default async function ProductDetailPage({
               </div>
             )}
           </div>
-
-          {/* Primary Action Buttons (Wishlist, Map, External Link) */}
           <div className="flex flex-wrap items-center gap-3 pt-2">
             <WishlistHeartButton
               productId={product.id}
@@ -215,7 +189,7 @@ export default async function ProductDetailPage({
             {booth ? (
               <Link
                 href={`/maps/${booth.floorMapId}?circleId=${product.circleId}`}
-                className="inline-flex min-h-[48px] items-center justify-center gap-2 rounded-full bg-[#5398DA] px-6 py-3 font-mono text-xs sm:text-sm font-black uppercase tracking-wider text-[#111215] transition hover:bg-[#4383c2] shadow-xs active:scale-95"
+                className="inline-flex min-h-[48px] items-center justify-center gap-2 rounded-xl bg-[#5398DA] px-6 py-3 font-mono text-xs sm:text-sm font-black uppercase tracking-wider text-[#111215] transition hover:bg-[#4383c2] shadow-xs active:scale-[0.98]"
               >
                 <MapPin className="h-4 w-4" />
                 <span>Lihat di Peta Hall</span>
@@ -227,15 +201,13 @@ export default async function ProductDetailPage({
                 href={product.productLink}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="inline-flex min-h-[48px] items-center justify-center gap-2 rounded-full border-2 border-zinc-300 bg-white px-5 py-3 font-mono text-xs sm:text-sm font-bold uppercase tracking-wider text-[#111215] transition hover:border-[#111215] hover:bg-zinc-50 active:scale-95"
+                className="inline-flex min-h-[48px] items-center justify-center gap-2 rounded-xl border-2 border-zinc-300 bg-white px-5 py-3 font-mono text-xs sm:text-sm font-bold uppercase tracking-wider text-[#111215] transition hover:border-[#111215] hover:bg-zinc-50 active:scale-[0.98]"
               >
                 <span>Buka Web Circle</span>
                 <ExternalLink className="h-4 w-4" />
               </a>
             ) : null}
           </div>
-
-          {/* Slip Pengambilan PO with Copy Button */}
           {product.poPickupNotes ? (
             <div className="pt-2">
               <PoPickupSlip
@@ -244,8 +216,6 @@ export default async function ProductDetailPage({
               />
             </div>
           ) : null}
-
-          {/* Circle Notes / Deskripsi Karya */}
           {product.notes ? (
             <div className="rounded-2xl border border-zinc-200 bg-white p-5 space-y-2">
               <p className="font-mono text-xs font-bold uppercase tracking-widest text-zinc-400">
@@ -258,10 +228,7 @@ export default async function ProductDetailPage({
           ) : null}
         </div>
       </section>
-
-      {/* Two-Column Info Cards: Booth Location & Circle Profile */}
       <section className="grid gap-6 md:grid-cols-2 pt-6">
-        {/* Card 1: Booth Location Information */}
         <div className="rounded-2xl border border-zinc-200 bg-white p-6 space-y-4">
           <div className="flex items-center justify-between border-b border-zinc-100 pb-3">
             <h2 className="font-[var(--font-display)] text-2xl font-bold uppercase text-[#111215]">
@@ -300,8 +267,6 @@ export default async function ProductDetailPage({
             </p>
           )}
         </div>
-
-        {/* Card 2: Circle Profile & Socials */}
         <div className="rounded-2xl border border-zinc-200 bg-white p-6 space-y-4">
           <div className="flex items-center justify-between border-b border-zinc-100 pb-3">
             <h2 className="font-[var(--font-display)] text-2xl font-bold uppercase text-[#111215]">
@@ -350,8 +315,6 @@ export default async function ProductDetailPage({
           </div>
         </div>
       </section>
-
-      {/* Discovery: Other Works from the Same Circle */}
       {otherProducts.length > 0 ? (
         <section className="space-y-6 pt-6 border-t border-zinc-200">
           <div className="flex items-center justify-between">
@@ -368,7 +331,7 @@ export default async function ProductDetailPage({
               href={`/products?circle=${product.circleId}`}
               className="inline-flex items-center gap-1 font-mono text-xs font-bold uppercase text-[#111215] hover:text-[#F84632] transition-colors"
             >
-              <span>Semua Karya</span>
+              <span>Lihat Semua Karya</span>
               <ArrowUpRight className="h-3.5 w-3.5" />
             </Link>
           </div>

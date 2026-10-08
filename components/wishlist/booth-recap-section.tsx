@@ -67,20 +67,14 @@ export function BoothRecapSection({
                     : "border-line bg-card/90"
               )}
             >
-              {/* Booth Group Header */}
               <div className="flex flex-wrap items-center justify-between gap-3 border-b border-line/70 bg-white/70 px-4 py-3 sm:px-6 sm:py-4">
                 <div className="flex flex-wrap items-center gap-2.5">
-                  {/* Hall Badge */}
                   <span className="rounded-md bg-[#5398DA] px-2.5 py-1 font-mono text-xs font-black uppercase text-white shadow-xs">
                     {group.hall || "Hall ICE"}
                   </span>
-
-                  {/* Booth Code Badge */}
                   <span className="rounded-md bg-[#111215] px-2.5 py-1 font-mono text-xs font-black tracking-wider text-[#D6F834] shadow-xs">
                     Booth {group.boothCode || "-"}
                   </span>
-
-                  {/* Circle Name */}
                   <Link
                     href={`/circles/${group.circleId}`}
                     className="font-bold text-ink-900 hover:text-brand-700 hover:underline text-base sm:text-lg flex items-center gap-1.5"
@@ -90,7 +84,7 @@ export function BoothRecapSection({
                   </Link>
 
                   {group.hasRush && !isAllDone && (
-                    <Badge className="bg-rose-500 text-white font-bold animate-pulse text-[10px] px-2 py-0.5">
+                    <Badge className="bg-rose-500 text-white font-bold text-[10px] px-2 py-0.5">
                       <Zap className="mr-0.5 h-3 w-3 fill-white" />
                       RUSH 10:00
                     </Badge>
@@ -98,7 +92,6 @@ export function BoothRecapSection({
                 </div>
 
                 <div className="flex items-center gap-3">
-                  {/* Progress Counter */}
                   <span
                     className={cn(
                       "font-mono text-xs font-bold px-2.5 py-1 rounded-full",
@@ -109,12 +102,10 @@ export function BoothRecapSection({
                   >
                     {isAllDone ? "✓ Booth Selesai" : `${purchasedCount}/${totalCount} Karya`}
                   </span>
-
-                  {/* Link ke Denah Peta */}
                   {group.floorMapId ? (
                     <Link
                       href={`/maps/${group.floorMapId}?booth=${encodeURIComponent(group.boothCode)}`}
-                      className="inline-flex items-center gap-1 rounded-lg border border-line bg-white px-2.5 py-1 font-mono text-xs font-bold text-ink-700 hover:bg-brand-50 hover:text-brand-700 hover:border-brand-500 transition-colors"
+                      className="inline-flex min-h-[40px] sm:min-h-0 items-center gap-1 rounded-lg border border-line bg-white px-3 py-1.5 font-mono text-xs font-bold text-ink-700 hover:bg-brand-50 hover:text-brand-700 hover:border-brand-500 transition-colors"
                       title="Lihat posisi booth di denah peta ICE BSD"
                     >
                       <MapPin className="h-3.5 w-3.5 text-brand-600" />
@@ -123,8 +114,6 @@ export function BoothRecapSection({
                   ) : null}
                 </div>
               </div>
-
-              {/* Items List Inside This Booth */}
               <div className="divide-y divide-line/60 p-2 sm:p-4">
                 {group.items.map((item) => {
                   const isBought = purchasedIds.has(item.id);
@@ -139,7 +128,6 @@ export function BoothRecapSection({
                           : "hover:bg-brand-50/30"
                       )}
                     >
-                      {/* Left: Thumbnail & Details */}
                       <div className="flex items-start gap-3.5 min-w-0 flex-1">
                         <div className="relative h-16 w-16 shrink-0 overflow-hidden rounded-xl border border-line sm:h-20 sm:w-20">
                           <ProductImage
@@ -169,7 +157,7 @@ export function BoothRecapSection({
                               </Badge>
                             ) : null}
                             <Badge className="bg-zinc-100 text-zinc-700 text-[9px] px-1.5 py-0.2">
-                              {item.purchaseType === "PO" ? "📦 Pre-Order" : "💵 On-The-Spot"}
+                              {item.purchaseType === "PO" ? "Pre-Order" : "On-The-Spot"}
                             </Badge>
                           </div>
 
@@ -200,17 +188,14 @@ export function BoothRecapSection({
                           </div>
                         </div>
                       </div>
-
-                      {/* Right: Interactive Checklist Tap & Remove Button */}
                       <div className="flex items-center gap-2 self-end sm:self-center shrink-0">
-                        {/* Tap to Toggle Checklist */}
                         <button
                           type="button"
                           onClick={() => onTogglePurchased(item.id)}
                           data-testid={`checklist-toggle-${item.id}`}
-                          aria-label={isBought ? "Batalkan tanda beli" : "Tandai sudah dibeli"}
+                          aria-label={isBought ? `Batalkan tanda beli: ${item.name}` : `Tandai sudah dibeli: ${item.name}`}
                           className={cn(
-                            "inline-flex min-h-[44px] items-center justify-center gap-2 rounded-xl px-4 py-2 font-mono text-xs font-black uppercase transition-all duration-150 active:scale-95 shadow-xs select-none",
+                            "inline-flex min-h-[44px] items-center justify-center gap-2 rounded-xl px-4 py-2 font-mono text-xs font-black uppercase transition-all duration-150 active:scale-[0.98] shadow-xs select-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500",
                             isBought
                               ? "bg-emerald-600 text-white hover:bg-emerald-700 ring-2 ring-emerald-500/30"
                               : "border-2 border-[#F84632] bg-white text-[#F84632] hover:bg-[#F84632] hover:text-white"
@@ -228,14 +213,12 @@ export function BoothRecapSection({
                             </>
                           )}
                         </button>
-
-                        {/* Remove from wishlist */}
                         <button
                           type="button"
                           onClick={() => onRemoveItem(item.id)}
-                          aria-label="Hapus dari Wishlist"
-                          title="Hapus karya dari Wishlist"
-                          className="inline-flex min-h-[44px] min-w-[44px] items-center justify-center rounded-xl border border-line bg-white text-zinc-400 hover:border-rose-300 hover:bg-rose-50 hover:text-rose-600 transition-colors"
+                          aria-label={`Hapus ${item.name} dari Wishlist`}
+                          title={`Hapus ${item.name} dari Wishlist`}
+                          className="inline-flex min-h-[44px] min-w-[44px] items-center justify-center rounded-xl border border-line bg-white text-zinc-600 hover:border-rose-300 hover:bg-rose-50 hover:text-rose-600 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-rose-500"
                         >
                           <Trash2 className="h-4 w-4" />
                         </button>

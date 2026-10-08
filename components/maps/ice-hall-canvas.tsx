@@ -22,9 +22,7 @@ export function IceHallCanvas({ hall, className }: IceHallCanvasProps) {
   return <Hall8VectorPlan className={className} />;
 }
 
-// =============================================================================
-// DENAH HALL 8: ARTIST ALLEY & POP-CULTURE (BLOK AA-AG & A-M)
-// =============================================================================
+// Denah Hall 8: Artist Alley & Pop-Culture (Blok AA-AG & A-M)
 function Hall8VectorPlan({ className }: { className?: string }) {
   const islandAisles = [
     { label: "AA", x: 8 },
@@ -59,7 +57,6 @@ function Hall8VectorPlan({ className }: { className?: string }) {
       xmlns="http://www.w3.org/2000/svg"
     >
       <defs>
-        {/* Pola grid lantai hall */}
         <pattern id="hall8Grid" width="40" height="40" patternUnits="userSpaceOnUse">
           <path d="M 40 0 L 0 0 0 40" fill="none" stroke="#252A36" strokeWidth="0.8" opacity="0.6" />
         </pattern>
@@ -76,8 +73,6 @@ function Hall8VectorPlan({ className }: { className?: string }) {
           <stop offset="100%" stopColor="#5398DA" stopOpacity="0.0" />
         </linearGradient>
       </defs>
-
-      {/* Latar Belakang Lantai Hall */}
       <rect width="1400" height="900" fill="url(#hall8WallGrad)" />
       <rect width="1400" height="900" fill="url(#hall8Grid)" />
 
@@ -112,8 +107,6 @@ function Hall8VectorPlan({ className }: { className?: string }) {
           </g>
         ))
       )}
-
-      {/* Header Denah & Identitas Venue */}
       <g transform="translate(60, 68)">
         <text
           x="0"
@@ -202,20 +195,15 @@ function Hall8VectorPlan({ className }: { className?: string }) {
         MAIN CROSSWAY AISLE
       </text>
 
-      {/* ===================================================================== */}
-      {/* MEJA DERETAN ISLAND (BLOK AA s.d. AG) */}
-      {/* ===================================================================== */}
+      {/* Meja deretan Island (Blok AA - AG) */}
       {islandAisles.map((aisle) => {
         const xPos = (aisle.x / 100) * 1400;
         return (
           <g key={`island-${aisle.label}`}>
-            {/* Header Lorong Atas */}
             <rect x={xPos - 18} y="148" width="36" height="20" fill="#242B38" stroke="#3F495D" strokeWidth="1" rx="4" />
             <text x={xPos} y="162" fill="#D6F834" fontFamily="var(--font-mono), monospace" fontSize="11" fontWeight="bold" textAnchor="middle">
               {aisle.label}
             </text>
-
-            {/* Balok Meja Fisik Lorong */}
             <rect
               x={xPos - 12}
               y="180"
@@ -226,7 +214,6 @@ function Hall8VectorPlan({ className }: { className?: string }) {
               strokeWidth="1"
               rx="6"
             />
-            {/* Garis pemisah petak meja */}
             {Array.from({ length: 18 }).map((_, i) => (
               <line
                 key={`line-${aisle.label}-${i}`}
@@ -238,8 +225,6 @@ function Hall8VectorPlan({ className }: { className?: string }) {
                 strokeWidth="1"
               />
             ))}
-
-            {/* Header Lorong Bawah */}
             <rect x={xPos - 18} y="756" width="36" height="20" fill="#242B38" stroke="#3F495D" strokeWidth="1" rx="4" />
             <text x={xPos} y="770" fill="#D6F834" fontFamily="var(--font-mono), monospace" fontSize="11" fontWeight="bold" textAnchor="middle">
               {aisle.label}
@@ -247,24 +232,17 @@ function Hall8VectorPlan({ className }: { className?: string }) {
           </g>
         );
       })}
-
-      {/* Pembatas Area Island dan Main Aisles */}
       <line x1="495" y1="140" x2="495" y2="780" stroke="#373D4D" strokeWidth="1.5" strokeDasharray="4 4" />
 
-      {/* ===================================================================== */}
-      {/* MEJA DERETAN ARTIST ALLEY UTAMA (BLOK A s.d. M) */}
-      {/* ===================================================================== */}
+      {/* Meja deretan Artist Alley utama (Blok A - M) */}
       {mainAisles.map((aisle) => {
         const xPos = (aisle.x / 100) * 1400;
         return (
           <g key={`main-${aisle.label}`}>
-            {/* Header Lorong Atas */}
             <rect x={xPos - 16} y="148" width="32" height="20" fill="#1F2533" stroke="#384357" strokeWidth="1" rx="4" />
             <text x={xPos} y="162" fill="#FFFFFF" fontFamily="var(--font-mono), monospace" fontSize="12" fontWeight="bold" textAnchor="middle">
               {aisle.label}
             </text>
-
-            {/* Balok Meja Fisik Lorong */}
             <rect
               x={xPos - 11}
               y="180"
@@ -275,9 +253,7 @@ function Hall8VectorPlan({ className }: { className?: string }) {
               strokeWidth="1"
               rx="5"
             />
-            {/* Garis pembagi meja kiri/kanan */}
             <line x1={xPos} y1="180" x2={xPos} y2="750" stroke="#252D3C" strokeWidth="1" strokeDasharray="3 3" />
-            {/* Baris sekat meja */}
             {Array.from({ length: 18 }).map((_, i) => (
               <line
                 key={`line-m-${aisle.label}-${i}`}
@@ -289,8 +265,6 @@ function Hall8VectorPlan({ className }: { className?: string }) {
                 strokeWidth="1"
               />
             ))}
-
-            {/* Header Lorong Bawah */}
             <rect x={xPos - 16} y="756" width="32" height="20" fill="#1F2533" stroke="#384357" strokeWidth="1" rx="4" />
             <text x={xPos} y="770" fill="#FFFFFF" fontFamily="var(--font-mono), monospace" fontSize="12" fontWeight="bold" textAnchor="middle">
               {aisle.label}
@@ -302,9 +276,7 @@ function Hall8VectorPlan({ className }: { className?: string }) {
   );
 }
 
-// =============================================================================
-// DENAH HALL 9: CREATORS, CORPORATE & STAGE (BLOK N-S, Z & TC)
-// =============================================================================
+// Denah Hall 9: Creators, Corporate & Stage (Blok N-S, Z & TC)
 function Hall9VectorPlan({ className }: { className?: string }) {
   const creatorAisles = [
     { label: "N", x: 14 },
@@ -335,12 +307,8 @@ function Hall9VectorPlan({ className }: { className?: string }) {
           <stop offset="100%" stopColor="#D6F834" stopOpacity="0.02" />
         </linearGradient>
       </defs>
-
-      {/* Latar Belakang Lantai Hall 9 */}
       <rect width="1400" height="900" fill="url(#hall9WallGrad)" />
       <rect width="1400" height="900" fill="url(#hall9Grid)" />
-
-      {/* Perimeter Dinding Luar */}
       <rect
         x="30"
         y="30"
@@ -361,8 +329,6 @@ function Hall9VectorPlan({ className }: { className?: string }) {
         strokeWidth="1.5"
         rx="12"
       />
-
-      {/* Header Denah Hall 9 */}
       <g transform="translate(60, 68)">
         <text
           x="0"
@@ -418,20 +384,15 @@ function Hall9VectorPlan({ className }: { className?: string }) {
         </text>
       </g>
 
-      {/* ===================================================================== */}
-      {/* LORONG CREATORS (BLOK N s.d. S & Z) */}
-      {/* ===================================================================== */}
+      {/* Lorong Creators (Blok N - S & Z) */}
       {creatorAisles.map((aisle) => {
         const xPos = (aisle.x / 100) * 1400;
         return (
           <g key={`creator-${aisle.label}`}>
-            {/* Header Lorong Atas */}
             <rect x={xPos - 18} y="165" width="36" height="22" fill="#1F2533" stroke="#384357" strokeWidth="1" rx="4" />
             <text x={xPos} y="180" fill="#FFFFFF" fontFamily="var(--font-mono), monospace" fontSize="12" fontWeight="bold" textAnchor="middle">
               {aisle.label}
             </text>
-
-            {/* Balok Meja Fisik Lorong */}
             <rect
               x={xPos - 12}
               y="198"
@@ -442,7 +403,6 @@ function Hall9VectorPlan({ className }: { className?: string }) {
               strokeWidth="1"
               rx="6"
             />
-            {/* Sekat meja */}
             {Array.from({ length: 18 }).map((_, i) => (
               <line
                 key={`line-c-${aisle.label}-${i}`}
@@ -454,8 +414,6 @@ function Hall9VectorPlan({ className }: { className?: string }) {
                 strokeWidth="1"
               />
             ))}
-
-            {/* Header Lorong Bawah */}
             <rect x={xPos - 18} y="756" width="36" height="22" fill="#1F2533" stroke="#384357" strokeWidth="1" rx="4" />
             <text x={xPos} y="771" fill="#FFFFFF" fontFamily="var(--font-mono), monospace" fontSize="12" fontWeight="bold" textAnchor="middle">
               {aisle.label}
@@ -464,9 +422,7 @@ function Hall9VectorPlan({ className }: { className?: string }) {
         );
       })}
 
-      {/* ===================================================================== */}
-      {/* AREA KORPORAT & SPONSOR UTAMA (TC BOOTHS - KANAN) */}
-      {/* ===================================================================== */}
+      {/* Area Korporat & Sponsor (TC Booths) */}
       <g transform="translate(940, 165)">
         <rect width="400" height="590" fill="#151821" stroke="#373D4D" strokeWidth="1.5" rx="12" strokeDasharray="6 6" />
         <text x="200" y="32" fill="#FF4838" fontFamily="var(--font-display), sans-serif" fontSize="18" fontWeight="bold" textAnchor="middle" letterSpacing="1">
@@ -475,8 +431,6 @@ function Hall9VectorPlan({ className }: { className?: string }) {
         <text x="200" y="50" fill="#8A93A6" fontFamily="var(--font-sans), sans-serif" fontSize="10" textAnchor="middle">
           Official Gaming, VTuber Agencies, Publisher & Merchandise Partners
         </text>
-
-        {/* Kotak-kotak Booth TC Korporat Besar */}
         {[
           { code: "TC-01", x: 20, y: 70, w: 75, h: 65 },
           { code: "TC-02", x: 110, y: 70, w: 75, h: 65 },

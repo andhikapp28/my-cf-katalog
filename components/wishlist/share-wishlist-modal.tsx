@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Check, Copy, Share2, Sparkles, X } from "lucide-react";
 import { toast } from "sonner";
 import { formatCurrency } from "@/lib/format";
@@ -19,8 +19,8 @@ export function generateWishlistSummaryText({
   purchasedIds: Set<string>;
 }): string {
   const lines: string[] = [];
-
-  lines.push("📋 MY COMIPOCKET — WISHLIST & HUNTING CHECKLIST");
+ 
+  lines.push("📋 MY COMIPOCKET - WISHLIST & HUNTING CHECKLIST");
   lines.push(`Event: ${eventName || "Comic Frontier (Comifuro) ICE BSD"}`);
   lines.push("─".repeat(42));
   lines.push(`🎯 Target Belanja: ${summary.totalItems} Karya (${summary.totalQuantity} pcs) · ${formatCurrency(summary.totalPrice)}`);
@@ -66,6 +66,17 @@ export function ShareWishlistModal({
   const [isOpen, setIsOpen] = useState(false);
   const [copied, setCopied] = useState(false);
 
+  useEffect(() => {
+    if (!isOpen) return;
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === "Escape") {
+        setIsOpen(false);
+      }
+    };
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, [isOpen]);
+
   const textToShare = generateWishlistSummaryText({
     eventName,
     boothGroups,
@@ -77,7 +88,7 @@ export function ShareWishlistModal({
     if (typeof navigator !== "undefined" && typeof navigator.share === "function") {
       try {
         await navigator.share({
-          title: `Wishlist ${eventName || "Comifuro"} — ComiPocket`,
+          title: `Wishlist ${eventName || "Comifuro"} - ComiPocket`,
           text: textToShare
         });
         toast.success("Berhasil dibagikan!");
@@ -112,24 +123,31 @@ export function ShareWishlistModal({
       <button
         type="button"
         onClick={handleShare}
-        className="inline-flex items-center gap-2 rounded-xl bg-ink-900 px-4 py-2.5 font-mono text-xs font-bold uppercase text-white shadow-soft hover:bg-brand-600 transition-all active:scale-95"
+        aria-label="Bagikan ringkasan wishlist"
+        className="inline-flex min-h-[44px] items-center gap-2 rounded-xl bg-ink-900 px-4 py-2.5 font-mono text-xs font-bold uppercase text-white shadow-soft hover:bg-brand-600 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500 transition-all active:scale-[0.98]"
       >
-        <Share2 className="h-4 w-4" />
+        <Share2 className="h-4 w-4" aria-hidden="true" />
         <span>Share Wishlist</span>
       </button>
-
-      {/* Modal Dialog */}
       {isOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-xs animate-in fade-in duration-150">
-          <div className="relative w-full max-w-lg rounded-3xl border border-line bg-card p-6 shadow-2xl space-y-4 max-h-[90vh] flex flex-col">
-            {/* Header */}
+        <div
+          role="dialog"
+          aria-modal="true"
+          aria-labelledby="share-wishlist-title"
+          onClick={() => setIsOpen(false)}
+          className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-xs animate-in fade-in duration-150"
+        >
+          <div
+            onClick={(e) => e.stopPropagation()}
+            className="relative w-full max-w-lg rounded-3xl border border-line bg-card p-6 shadow-2xl space-y-4 max-h-[90vh] flex flex-col"
+          >
             <div className="flex items-center justify-between border-b border-line pb-3">
               <div className="flex items-center gap-2">
                 <span className="flex h-8 w-8 items-center justify-center rounded-lg bg-brand-500 text-white">
-                  <Sparkles className="h-4 w-4" />
+                  <Sparkles className="h-4 w-4" aria-hidden="true" />
                 </span>
                 <div>
-                  <h3 className="font-[var(--font-display)] text-2xl font-bold tracking-tight text-ink-900">
+                  <h3 id="share-wishlist-title" className="font-[var(--font-display)] text-2xl font-bold tracking-tight text-ink-900">
                     Share Hunting Wishlist
                   </h3>
                   <p className="font-mono text-[11px] text-ink-500">
@@ -140,32 +158,29 @@ export function ShareWishlistModal({
               <button
                 type="button"
                 onClick={() => setIsOpen(false)}
-                className="rounded-full p-1.5 text-zinc-400 hover:bg-zinc-100 hover:text-zinc-700"
+                aria-label="Tutup dialog share"
+                className="flex min-h-[44px] min-w-[44px] items-center justify-center rounded-full p-1.5 text-zinc-600 hover:bg-zinc-100 hover:text-zinc-900 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500"
               >
-                <X className="h-5 w-5" />
+                <X className="h-5 w-5" aria-hidden="true" />
               </button>
             </div>
-
-            {/* Textarea Preview */}
             <div className="flex-1 overflow-auto rounded-2xl border border-line bg-zinc-50/80 p-3.5">
               <pre className="font-mono text-xs text-ink-900 whitespace-pre-wrap leading-relaxed select-all">
                 {textToShare}
               </pre>
             </div>
-
-            {/* Actions */}
             <div className="flex items-center justify-end gap-2.5 pt-2 border-t border-line">
               <button
                 type="button"
                 onClick={() => setIsOpen(false)}
-                className="rounded-xl border border-line px-4 py-2 font-mono text-xs font-bold text-zinc-600 hover:bg-zinc-100"
+                className="inline-flex min-h-[44px] items-center rounded-xl border border-line px-4 py-2 font-mono text-xs font-bold text-zinc-700 hover:bg-zinc-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500"
               >
                 Tutup
               </button>
               <button
                 type="button"
                 onClick={handleCopy}
-                className="inline-flex items-center gap-2 rounded-xl bg-brand-500 px-5 py-2 font-mono text-xs font-bold text-white shadow-xs hover:bg-brand-600 active:scale-95"
+                className="inline-flex min-h-[44px] items-center gap-2 rounded-xl bg-brand-600 px-5 py-2 font-mono text-xs font-bold text-white shadow-xs hover:bg-brand-700 active:scale-[0.98] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500"
               >
                 {copied ? <Check className="h-4 w-4" /> : <Copy className="h-4 w-4" />}
                 <span>{copied ? "Berhasil Disalin!" : "Salin Teks Ringkasan"}</span>

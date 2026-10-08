@@ -8,10 +8,10 @@ export default function Error({ reset }: { error: Error; reset: () => void }) {
         <h1 className="font-[var(--font-display)] text-3xl font-semibold">Halaman gagal dimuat.</h1>
         <button
           type="button"
-          onClick={reset}
-          className="mx-auto inline-flex rounded-full bg-brand-500 px-5 py-3 text-sm font-medium text-white"
+          onClick={() => reset()}
+          className="mx-auto inline-flex rounded-full bg-brand-600 px-5 py-3 text-sm font-medium text-white hover:bg-brand-700 transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500 focus-visible:ring-offset-2"
         >
-          Coba lagi
+          Coba Lagi
         </button>
       </div>
     </div>

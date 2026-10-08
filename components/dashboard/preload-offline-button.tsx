@@ -74,7 +74,7 @@ export function PreloadOfflineButton({
       disabled={loading}
       variant="secondary"
       className={cn(
-        "gap-2 rounded-full border border-brand-200/80 bg-white/90 text-xs font-semibold text-brand-700 shadow-sm transition hover:bg-brand-50",
+        "gap-2 rounded-xl border border-brand-200/80 bg-white/90 text-xs font-semibold text-brand-700 shadow-xs transition hover:bg-brand-50 active:scale-[0.98]",
         className
       )}
     >

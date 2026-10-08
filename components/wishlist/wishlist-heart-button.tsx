@@ -88,19 +88,25 @@ export function WishlistHeartButton({
     lg: "h-5 w-5"
   };
 
+  const label = productName
+    ? `${active ? "Hapus dari wishlist" : "Tambah ke wishlist"}: ${productName}`
+    : (active ? "Hapus dari wishlist" : "Tambah ke wishlist");
+
   return (
     <button
       type="button"
       onClick={handleClick}
-      aria-label={active ? "Hapus dari wishlist" : "Tambah ke wishlist"}
-      title={active ? "Hapus dari wishlist" : "Tambah ke wishlist"}
+      aria-label={label}
+      title={label}
       className={cn(
-        "inline-flex items-center justify-center rounded-full transition-all duration-150 active:scale-95 focus:outline-hidden",
+        "inline-flex items-center justify-center rounded-full transition-all duration-150 active:scale-[0.98] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#F84632] focus-visible:ring-offset-2 touch-manipulation",
+        // Extended hit target for mobile thumbs (R-03: at least 44x44px touch area)
+        "relative after:absolute after:-inset-2.5 after:content-[''] after:z-10",
         active
           ? "bg-[#F84632] text-white hover:bg-[#d93826] shadow-sm"
           : "bg-white/90 text-zinc-600 hover:text-[#F84632] hover:bg-white border border-line shadow-xs",
-        size === "sm" ? "h-7 w-7 text-xs" : size === "lg" ? "h-10 px-4 text-sm" : "h-8.5 w-8.5 text-xs",
-        showLabel && "w-auto px-3 gap-1.5 font-mono font-bold uppercase",
+        size === "sm" ? "h-7 w-7 text-xs" : size === "lg" ? "h-11 px-4 text-sm min-h-[44px]" : "h-9 w-9 text-xs",
+        showLabel && "w-auto min-h-[44px] px-3.5 gap-1.5 font-mono font-bold uppercase",
         className
       )}
     >

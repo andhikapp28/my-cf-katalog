@@ -268,7 +268,6 @@ export function CircleCatalogModal({
   return (
     <AnimatePresence>
       <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 md:p-6 overflow-hidden">
-        {/* Backdrop Blur Gelap Pekat (100% Mengisolasi Halaman Latar Belakang) */}
         <motion.div
           key="circle-modal-backdrop"
           initial={{ opacity: 0 }}
@@ -282,8 +281,6 @@ export function CircleCatalogModal({
           className="fixed inset-0 bg-[#07090E]/85 backdrop-blur-md"
           aria-hidden="true"
         />
-
-        {/* Modal Pop-up Card (100% Solid Opaque White - Bebas Tembus Pandang) */}
         <motion.div
           key={`circle-modal-content-${circle.id}`}
           role="dialog"
@@ -309,16 +306,12 @@ export function CircleCatalogModal({
           className="relative z-10 flex w-full max-w-4xl max-h-[92vh] flex-col rounded-3xl border border-zinc-200 bg-[#FFFFFF] shadow-2xl overflow-hidden"
           style={{ backgroundColor: "#FFFFFF" }}
         >
-          {/* =================================================================== */}
-          {/* MODAL HEADER (TANALOKA EDITORIAL STYLE - 100% SOLID WHITE)          */}
-          {/* =================================================================== */}
           <div
             className="border-b border-zinc-200 bg-[#FFFFFF] px-5 sm:px-7 py-5"
             style={{ backgroundColor: "#FFFFFF" }}
           >
             <div className="flex items-start justify-between gap-4">
               <div className="flex items-start gap-4 min-w-0 flex-1">
-                {/* Circle Cut Thumbnail dengan Zoom Trigger */}
                 <button
                   type="button"
                   onClick={() => {
@@ -359,10 +352,7 @@ export function CircleCatalogModal({
                     {getInitials(circle.name)}
                   </div>
                 </button>
-
-                {/* Identitas Circle & Badges */}
                 <div className="space-y-2 min-w-0 flex-1">
-                  {/* Badges Row: Booth Code Besar + Day Badge + Rating */}
                   <div className="flex flex-wrap items-center gap-2">
                     <span
                       title={`Kode Booth: ${boothCode}`}
@@ -389,8 +379,6 @@ export function CircleCatalogModal({
                       {ratingBadge.label}
                     </span>
                   </div>
-
-                  {/* Nama Circle: Bebas Neue Display Font */}
                   <h2
                     id="circle-catalog-modal-title"
                     className="font-[var(--font-display)] text-3xl sm:text-4xl lg:text-5xl font-black tracking-tight text-[#111215] leading-none pt-0.5"
@@ -399,25 +387,22 @@ export function CircleCatalogModal({
                   </h2>
                 </div>
               </div>
-
-              {/* Tombol Tutup Header */}
               <div className="shrink-0 flex items-center gap-2">
                 <button
                   type="button"
                   onClick={onClose}
-                  className="rounded-xl bg-[#111215] px-4 py-2 font-mono text-xs font-black uppercase tracking-wider text-white transition hover:bg-[#F84632] active:scale-95 shadow-xs select-none"
+                  aria-label="Tutup katalog circle"
+                  className="min-h-[44px] inline-flex items-center justify-center rounded-xl bg-[#111215] px-4 py-2 font-mono text-xs font-black uppercase tracking-wider text-white transition hover:bg-[#F84632] active:scale-[0.98] shadow-xs select-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#111215]"
                 >
                   TUTUP
                 </button>
               </div>
             </div>
-
-            {/* Sub-Header Actions: Peta Meja & Social Pills */}
             <div className="mt-4 flex flex-wrap items-center gap-2 pt-3 border-t border-zinc-100">
               {effectiveFloorMapId ? (
                 <Link
                   href={`/maps/${effectiveFloorMapId}?circleId=${circle.id}`}
-                  className="inline-flex items-center rounded-xl bg-[#5398DA] px-4 py-1.5 font-mono text-xs font-black uppercase tracking-wider text-[#111215] transition hover:bg-[#4083c2] active:scale-95 shadow-2xs select-none"
+                  className="inline-flex min-h-[44px] items-center rounded-xl bg-[#5398DA] px-4 py-2 font-mono text-xs font-black uppercase tracking-wider text-[#111215] transition hover:bg-[#4083c2] active:scale-[0.98] shadow-2xs select-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#111215]"
                 >
                   PETA MEJA
                 </Link>
@@ -426,7 +411,8 @@ export function CircleCatalogModal({
               <button
                 type="button"
                 onClick={handleCopyCircleLink}
-                className="inline-flex items-center rounded-full border border-zinc-300 bg-white px-3.5 py-1.5 font-mono text-xs font-bold uppercase tracking-wider text-[#111215] hover:border-[#111215] hover:bg-[#111215] hover:text-white transition active:scale-95 shadow-2xs select-none"
+                aria-label="Salin tautan profil circle"
+                className="inline-flex min-h-[44px] items-center rounded-full border border-zinc-300 bg-white px-4 py-2 font-mono text-xs font-bold uppercase tracking-wider text-[#111215] hover:border-[#111215] hover:bg-[#111215] hover:text-white transition active:scale-[0.98] shadow-2xs select-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#111215]"
               >
                 {copiedCircleLink ? "TERSALIN!" : "SALIN TAUTAN"}
               </button>
@@ -437,22 +423,17 @@ export function CircleCatalogModal({
                   href={link.url}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="inline-flex items-center rounded-full border border-zinc-200 bg-white px-3.5 py-1.5 font-mono text-xs font-bold uppercase tracking-wider text-[#111215] hover:border-[#111215] hover:bg-[#111215] hover:text-white transition active:scale-95 shadow-2xs select-none"
+                  className="inline-flex min-h-[44px] items-center rounded-full border border-zinc-200 bg-white px-4 py-2 font-mono text-xs font-bold uppercase tracking-wider text-[#111215] hover:border-[#111215] hover:bg-[#111215] hover:text-white transition active:scale-[0.98] shadow-2xs select-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#111215]"
                 >
                   {link.label}
                 </a>
               ))}
             </div>
           </div>
-
-          {/* =================================================================== */}
-          {/* MODAL BODY (SCROLLABLE & 100% SOLID WHITE BACKGROUND)             */}
-          {/* =================================================================== */}
           <div
             className="flex-1 overflow-y-auto p-5 sm:p-7 space-y-7 bg-[#FFFFFF]"
             style={{ backgroundColor: "#FFFFFF" }}
           >
-            {/* Bio & Metadata Section (Bersih dari Raw Database Dump) */}
             <section className="space-y-3 rounded-2xl bg-zinc-50 p-5 border border-zinc-200">
               <div className="flex flex-wrap items-center gap-x-6 gap-y-2 font-mono text-xs text-zinc-500 border-b border-zinc-200 pb-3">
                 {fandom ? (
@@ -466,14 +447,10 @@ export function CircleCatalogModal({
                   </span>
                 ) : null}
               </div>
-
-              {/* Teks Deskripsi Alami (Bebas dari URL Mentah Supabase) */}
               <p className="font-sans text-sm sm:text-base leading-relaxed text-zinc-700 whitespace-pre-line">
                 {cleanBioText}
               </p>
             </section>
-
-            {/* Daftar Karya & Merchandise Circle (Opsi 1: Clean Art Gallery Grid dengan Floating Badge Nomor) */}
             <section className="space-y-4">
               <div className="flex flex-wrap items-center justify-between gap-2 border-b border-zinc-200 pb-3">
                 <h3 className="font-[var(--font-display)] text-2xl sm:text-3xl font-black tracking-tight text-[#111215] uppercase">
@@ -489,8 +466,6 @@ export function CircleCatalogModal({
                   {products.map((product, pIdx) => {
                     const numberLabel = `#${String(pIdx + 1).padStart(2, "0")}`;
                     const formattedImg = formatCircleImageUrl(product.imageUrl);
-
-                    // Cari index di galleryItems untuk membuka Lightbox
                     const targetGalleryIdx = galleryItems.findIndex(
                       (item) => item.src === formattedImg
                     );
@@ -507,7 +482,6 @@ export function CircleCatalogModal({
                           }
                         }}
                       >
-                        {/* Foto Karya dengan Floating Badges & Trigger Lightbox */}
                         <div
                           role="button"
                           tabIndex={0}
@@ -522,15 +496,11 @@ export function CircleCatalogModal({
                             fallbackLabel="No preview"
                             loading="eager"
                           />
-
-                          {/* Floating Badge Nomor di Sudut Kiri Atas Foto (Opsi 1) */}
                           <div className="absolute top-2.5 left-2.5 z-10 pointer-events-none">
                             <span className="inline-flex items-center rounded-lg bg-black/80 px-2.5 py-1 font-mono text-xs font-black tracking-wider text-white backdrop-blur-md border border-white/20 shadow-md">
                               {numberLabel}
                             </span>
                           </div>
-
-                          {/* Tombol Wishlist di Sudut Kanan Atas Foto */}
                           <div
                             onClick={(e) => e.stopPropagation()}
                             className="absolute top-2.5 right-2.5 z-10"
@@ -542,8 +512,6 @@ export function CircleCatalogModal({
                               className="bg-white/95 text-zinc-800 shadow-md border border-zinc-200 hover:text-rose-600 rounded-full p-2"
                             />
                           </div>
-
-                          {/* Floating Price Badge jika ada harga riil > 0 */}
                           {product.price > 0 ? (
                             <div className="absolute bottom-2.5 left-2.5 z-10 pointer-events-none">
                               <span className="inline-flex items-center rounded-lg bg-[#D6F834] px-2.5 py-1 font-mono text-xs font-black tracking-tight text-[#111215] shadow-md border border-black/10">
@@ -551,16 +519,12 @@ export function CircleCatalogModal({
                               </span>
                             </div>
                           ) : null}
-
-                          {/* Indikator Hover Zoom */}
                           <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/70 via-black/30 to-transparent p-3 text-center opacity-0 transition-opacity duration-200 group-hover:opacity-100 pointer-events-none">
                             <span className="font-mono text-[11px] font-black text-white uppercase tracking-wider drop-shadow-sm">
                               Klik untuk Zoom
                             </span>
                           </div>
                         </div>
-
-                        {/* Slip PO jika ada catatan khusus */}
                         {product.poPickupNotes ? (
                           <div
                             className="p-3 bg-white border-t border-zinc-100"
@@ -577,7 +541,7 @@ export function CircleCatalogModal({
                                     e.stopPropagation();
                                     handleCopyPo(product.id, product.poPickupNotes!);
                                   }}
-                                  className="rounded-md bg-[#111215] px-2 py-0.5 font-mono text-[10px] font-black uppercase tracking-wider text-white hover:bg-[#F84632] transition active:scale-95 select-none"
+                                  className="min-h-[36px] sm:min-h-0 inline-flex items-center rounded-md bg-[#111215] px-3 py-1 font-mono text-[10px] font-black uppercase tracking-wider text-white hover:bg-[#F84632] transition active:scale-[0.98] select-none"
                                 >
                                   {copiedPoId === product.id ? "TERSALIN!" : "SALIN"}
                                 </button>
@@ -604,10 +568,6 @@ export function CircleCatalogModal({
               )}
             </section>
           </div>
-
-          {/* =================================================================== */}
-          {/* MODAL FOOTER (100% SOLID WHITE)                                    */}
-          {/* =================================================================== */}
           <div
             className="border-t border-zinc-200 bg-[#FFFFFF] px-5 sm:px-7 py-4 flex flex-col sm:flex-row items-center justify-between gap-3"
             style={{ backgroundColor: "#FFFFFF" }}
@@ -620,7 +580,7 @@ export function CircleCatalogModal({
               {effectiveFloorMapId ? (
                 <Link
                   href={`/maps/${effectiveFloorMapId}?circleId=${circle.id}`}
-                  className="inline-flex items-center rounded-xl bg-[#5398DA] px-4 py-2 font-mono text-xs font-black uppercase tracking-wider text-[#111215] hover:bg-[#4083c2] transition active:scale-95 select-none"
+                  className="inline-flex min-h-[44px] items-center justify-center rounded-xl bg-[#5398DA] px-4 py-2 font-mono text-xs font-black uppercase tracking-wider text-[#111215] hover:bg-[#4083c2] transition active:scale-[0.98] select-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#111215]"
                 >
                   PETA MEJA
                 </Link>
@@ -629,7 +589,8 @@ export function CircleCatalogModal({
               <button
                 type="button"
                 onClick={onClose}
-                className="inline-flex items-center rounded-xl bg-[#111215] px-5 py-2 font-mono text-xs font-bold uppercase tracking-wider text-white hover:bg-[#F84632] transition active:scale-95 shadow-xs select-none"
+                aria-label="Tutup katalog circle"
+                className="inline-flex min-h-[44px] items-center justify-center rounded-xl bg-[#111215] px-5 py-2 font-mono text-xs font-bold uppercase tracking-wider text-white hover:bg-[#F84632] transition active:scale-[0.98] shadow-xs select-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#111215]"
               >
                 TUTUP
               </button>
@@ -637,13 +598,12 @@ export function CircleCatalogModal({
           </div>
         </motion.div>
       </div>
-
-      {/* =================================================================== */}
-      {/* INTERACTIVE FULL-RESOLUTION LIGHTBOX (IMAGE ZOOM VIEWER)           */}
-      {/* =================================================================== */}
       {lightboxIndex !== null && galleryItems[lightboxIndex] && (
         <motion.div
           key="full-resolution-lightbox"
+          role="dialog"
+          aria-modal="true"
+          aria-label="Preview foto resolusi penuh"
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
@@ -651,7 +611,6 @@ export function CircleCatalogModal({
           onClick={() => setLightboxIndex(null)}
           className="fixed inset-0 z-[70] flex flex-col items-center justify-between bg-black/95 p-4 sm:p-6 backdrop-blur-md select-none"
         >
-          {/* Lightbox Top Bar */}
           <div
             onClick={(e) => e.stopPropagation()}
             className="flex w-full max-w-5xl items-center justify-between gap-4 text-white pb-3 border-b border-white/20"
@@ -672,14 +631,13 @@ export function CircleCatalogModal({
               <button
                 type="button"
                 onClick={() => setLightboxIndex(null)}
-                className="rounded-xl bg-white/15 px-3.5 py-1.5 font-mono text-xs font-bold uppercase text-white hover:bg-[#F84632] transition"
+                aria-label="Tutup preview lightbox"
+                className="min-h-[44px] inline-flex items-center justify-center rounded-xl bg-white/15 px-4 py-2 font-mono text-xs font-bold uppercase text-white hover:bg-[#F84632] transition active:scale-[0.98] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white"
               >
                 TUTUP
               </button>
             </div>
           </div>
-
-          {/* Lightbox Main Image Canvas */}
           <div
             onClick={(e) => e.stopPropagation()}
             className="relative flex flex-1 items-center justify-center p-2 sm:p-4 w-full max-w-5xl max-h-[82vh]"
@@ -691,8 +649,6 @@ export function CircleCatalogModal({
               referrerPolicy="no-referrer"
               className="max-h-[80vh] max-w-full object-contain rounded-xl shadow-2xl drop-shadow-2xl"
             />
-
-            {/* Prev / Next Navigation Buttons (Bila gambar > 1) */}
             {galleryItems.length > 1 && (
               <>
                 <button
@@ -704,7 +660,8 @@ export function CircleCatalogModal({
                         : null
                     )
                   }
-                  className="absolute left-2 sm:left-4 top-1/2 -translate-y-1/2 rounded-full bg-black/60 p-3 font-mono text-sm font-bold text-white backdrop-blur-md hover:bg-black/90 transition active:scale-95 border border-white/20"
+                  aria-label="Gambar Sebelumnya"
+                  className="absolute left-2 sm:left-4 top-1/2 -translate-y-1/2 min-h-[48px] min-w-[48px] flex items-center justify-center rounded-full bg-black/60 p-3 font-mono text-sm font-bold text-white backdrop-blur-md hover:bg-black/90 transition active:scale-[0.98] border border-white/20 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#D6F834]"
                   title="Gambar Sebelumnya"
                 >
                   PREV
@@ -716,7 +673,8 @@ export function CircleCatalogModal({
                       curr !== null ? (curr + 1) % galleryItems.length : null
                     )
                   }
-                  className="absolute right-2 sm:right-4 top-1/2 -translate-y-1/2 rounded-full bg-black/60 p-3 font-mono text-sm font-bold text-white backdrop-blur-md hover:bg-black/90 transition active:scale-95 border border-white/20"
+                  aria-label="Gambar Selanjutnya"
+                  className="absolute right-2 sm:right-4 top-1/2 -translate-y-1/2 min-h-[48px] min-w-[48px] flex items-center justify-center rounded-full bg-black/60 p-3 font-mono text-sm font-bold text-white backdrop-blur-md hover:bg-black/90 transition active:scale-[0.98] border border-white/20 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#D6F834]"
                   title="Gambar Selanjutnya"
                 >
                   NEXT
@@ -724,8 +682,6 @@ export function CircleCatalogModal({
               </>
             )}
           </div>
-
-          {/* Lightbox Bottom Instructions */}
           <div
             onClick={(e) => e.stopPropagation()}
             className="text-center font-mono text-[11px] text-white/50 pt-2"

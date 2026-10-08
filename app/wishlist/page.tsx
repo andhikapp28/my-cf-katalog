@@ -18,7 +18,6 @@ export default async function WishlistPage() {
     getActiveEvent().catch(() => null)
   ]);
 
-  // Map circleId & eventId to booth information
   const boothMap = new Map<
     string,
     { boothCode: string; hall: string | null; floorMapId: string | null }
@@ -33,7 +32,6 @@ export default async function WishlistPage() {
     });
   }
 
-  // Format products for wishlist client
   const formattedProducts: WishlistProduct[] = products.map((item) => {
     const boothInfo = boothMap.get(`${item.eventId}:${item.circleId}`);
 

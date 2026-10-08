@@ -26,9 +26,6 @@ export default async function MapDetailPage({
 
   return (
     <div className="container-shell space-y-6 py-6 sm:py-8">
-      {/* =================================================================== */}
-      {/* HEADER: TANALOKA EDITORIAL TITLE                                    */}
-      {/* =================================================================== */}
       <section className="panel p-6 sm:p-8">
         <div className="flex flex-col md:flex-row md:items-end md:justify-between gap-4">
           <div className="space-y-2">
@@ -60,10 +57,6 @@ export default async function MapDetailPage({
           </div>
         </div>
       </section>
-
-      {/* =================================================================== */}
-      {/* INTERACTIVE FLOOR MAP VIEWER COMPONENT                              */}
-      {/* =================================================================== */}
       <FloorMapViewer
         name={currentMap.name}
         hall={currentMap.hall}
@@ -75,10 +68,6 @@ export default async function MapDetailPage({
         currentHallId={currentMap.id}
         halls={allFloorMaps.map((m) => ({ id: m.id, name: m.name, hall: m.hall }))}
       />
-
-      {/* =================================================================== */}
-      {/* PANDUAN PENGGUNAAN & VENUE TIPS                                      */}
-      {/* =================================================================== */}
       <section className="grid gap-4 sm:grid-cols-3">
         <div className="panel p-5 space-y-2">
           <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-[#5398DA]/15 text-[#5398DA]">
@@ -113,6 +102,4 @@ export default async function MapDetailPage({
     </div>
   );
 }
-
-
 

@@ -30,7 +30,6 @@ export function CashReadinessCalculator({
 
   return (
     <section className={`panel overflow-hidden border border-brand-500/30 bg-gradient-to-br from-card via-[#FFF9F3] to-[#FFF4E8] p-5 shadow-soft md:p-7 ${className || ""}`}>
-      {/* Header */}
       <div className="flex flex-col justify-between gap-3 sm:flex-row sm:items-center border-b border-brand-500/15 pb-5">
         <div className="space-y-1">
           <div className="flex items-center gap-2">
@@ -56,17 +55,14 @@ export function CashReadinessCalculator({
               Cash Dompet Cukup!
             </span>
           ) : (
-            <span className="inline-flex items-center gap-1.5 rounded-full bg-[#F84632] px-3.5 py-1.5 font-mono text-xs font-bold text-white shadow-xs animate-pulse">
+            <span className="inline-flex items-center gap-1.5 rounded-full bg-[#F84632] px-3.5 py-1.5 font-mono text-xs font-bold text-white shadow-xs">
               <AlertTriangle className="h-4 w-4" />
               Perlu Tarik ATM ICE BSD
             </span>
           )}
         </div>
       </div>
-
-      {/* 4 Financial Metric Cards */}
       <div className="mt-6 grid grid-cols-2 gap-3 sm:gap-4 lg:grid-cols-4">
-        {/* Total Estimasi Belanja */}
         <div className="rounded-2xl border border-line bg-white/90 p-4 shadow-xs">
           <div className="flex items-center justify-between text-ink-500">
             <span className="font-mono text-[11px] font-bold uppercase tracking-wider">
@@ -81,8 +77,6 @@ export function CashReadinessCalculator({
             {summary.totalItems} karya ({summary.totalQuantity} pcs)
           </p>
         </div>
-
-        {/* Sudah Dibelanjakan */}
         <div className="rounded-2xl border border-line bg-white/90 p-4 shadow-xs">
           <div className="flex items-center justify-between text-ink-500">
             <span className="font-mono text-[11px] font-bold uppercase tracking-wider text-emerald-700">
@@ -97,8 +91,6 @@ export function CashReadinessCalculator({
             Tersimpan di checklist offline
           </p>
         </div>
-
-        {/* Sisa Target Belanja */}
         <div className="rounded-2xl border border-line bg-white/90 p-4 shadow-xs">
           <div className="flex items-center justify-between text-ink-500">
             <span className="font-mono text-[11px] font-bold uppercase tracking-wider">
@@ -113,8 +105,6 @@ export function CashReadinessCalculator({
             {summary.preOrderTotal > 0 ? `Termasuk PO: ${formatCurrency(summary.preOrderTotal)}` : "Semua item aktif"}
           </p>
         </div>
-
-        {/* Kebutuhan Cash On-the-spot di Venue */}
         <div className="rounded-2xl border-2 border-brand-500 bg-brand-50/70 p-4 shadow-xs">
           <div className="flex items-center justify-between text-brand-700">
             <span className="font-mono text-[11px] font-black uppercase tracking-wider">
@@ -130,11 +120,8 @@ export function CashReadinessCalculator({
           </p>
         </div>
       </div>
-
-      {/* Interactive Cash Simulator */}
       <div className="mt-6 rounded-2xl border border-brand-500/25 bg-white p-5 shadow-xs">
         <div className="grid gap-6 md:grid-cols-12 md:items-center">
-          {/* Input Cash in Hand */}
           <div className="space-y-3 md:col-span-6">
             <div className="flex items-center justify-between">
               <label htmlFor="cashInHandInput" className="font-mono text-xs font-bold uppercase tracking-wider text-ink-700 flex items-center gap-1.5">
@@ -145,7 +132,8 @@ export function CashReadinessCalculator({
                 <button
                   type="button"
                   onClick={() => setCashInHand(0)}
-                  className="font-mono text-[11px] text-brand-600 hover:underline"
+                  aria-label="Reset nominal uang tunai di dompet"
+                  className="font-mono text-[11px] text-brand-600 hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500 rounded-sm"
                 >
                   Reset
                 </button>
@@ -163,11 +151,10 @@ export function CashReadinessCalculator({
                 value={cashInHand ? cashInHand.toLocaleString("id-ID") : ""}
                 onChange={handleCashChange}
                 placeholder="0"
-                className="w-full rounded-xl border border-line bg-card/60 pl-11 pr-4 py-2.5 font-mono text-base font-bold text-ink-900 placeholder:text-zinc-400 focus:border-brand-500 focus:bg-white focus:outline-hidden focus:ring-2 focus:ring-brand-500/20"
+                aria-label="Nominal uang tunai di dompet (Rupiah)"
+                className="w-full rounded-xl border border-line bg-card/60 pl-11 pr-4 py-2.5 font-mono text-base font-bold text-ink-900 placeholder:text-zinc-500 focus:border-brand-600 focus:bg-white focus:outline-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500"
               />
             </div>
-
-            {/* Quick Increment Buttons */}
             <div className="flex flex-wrap items-center gap-1.5 pt-1">
               <span className="font-mono text-[10px] text-zinc-500 mr-1">Tambah cepat:</span>
               {[50000, 100000, 200000, 500000].map((val) => (
@@ -175,15 +162,14 @@ export function CashReadinessCalculator({
                   key={val}
                   type="button"
                   onClick={() => handleQuickAdd(val)}
-                  className="rounded-lg border border-line bg-zinc-50 px-2 py-1 font-mono text-[11px] font-semibold text-zinc-700 hover:bg-brand-50 hover:border-brand-500/40 hover:text-brand-700 transition-colors"
+                  aria-label={`Tambah uang tunai Rp ${val.toLocaleString("id-ID")}`}
+                  className="inline-flex min-h-[40px] items-center rounded-lg border border-line bg-zinc-50 px-3 py-2 font-mono text-xs font-semibold text-zinc-700 hover:bg-brand-50 hover:border-brand-500/40 hover:text-brand-700 transition-colors active:scale-[0.98] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500"
                 >
                   +{val / 1000}k
                 </button>
               ))}
             </div>
           </div>
-
-          {/* Result Recommendation */}
           <div className="rounded-xl border border-dashed border-brand-500/40 bg-[#FFFBF7] p-4 md:col-span-6">
             <p className="font-mono text-[11px] font-bold uppercase tracking-widest text-brand-700">
               Hasil Kesiapan ATM ICE BSD:
@@ -220,7 +206,7 @@ export function CashReadinessCalculator({
                 </div>
 
                 <p className="text-[11px] leading-relaxed text-zinc-600">
-                  ⚡ <strong>Tips Hari-H:</strong> Tarik uang tunai di luar venue ICE BSD (Stasiun Rawa Buntu / Cisauk) untuk menghindari antrean panjang & kehabisan saldo mesin ATM.
+                  <strong>Tips Hari-H:</strong> Tarik uang tunai di luar venue ICE BSD (Stasiun Rawa Buntu / Cisauk) untuk menghindari antrean panjang & kehabisan saldo mesin ATM.
                 </p>
               </div>
             ) : (
@@ -236,13 +222,13 @@ export function CashReadinessCalculator({
           </div>
         </div>
       </div>
-
-      {/* Accordion / Drawer Tips ATM ICE BSD */}
       <div className="mt-4">
         <button
           type="button"
           onClick={() => setShowAtmTips(!showAtmTips)}
-          className="flex w-full items-center justify-between rounded-xl border border-brand-500/20 bg-white/60 px-4 py-2.5 text-left text-xs font-mono font-bold text-brand-700 hover:bg-white transition-colors"
+          aria-expanded={showAtmTips}
+          aria-controls="ice-atm-tips-content"
+          className="flex min-h-[44px] w-full items-center justify-between rounded-xl border border-brand-500/20 bg-white/60 px-4 py-3 text-left text-xs font-mono font-bold text-brand-700 hover:bg-white transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500"
         >
           <span className="flex items-center gap-2">
             <Info className="h-4 w-4 text-brand-600" />
@@ -252,13 +238,18 @@ export function CashReadinessCalculator({
         </button>
 
         {showAtmTips && (
-          <div className="mt-2 rounded-xl border border-line bg-white p-4 text-xs leading-relaxed text-zinc-700 space-y-2.5 animate-in fade-in duration-150">
+          <div
+            id="ice-atm-tips-content"
+            role="region"
+            aria-label="Panduan Darurat Uang Tunai ICE BSD"
+            className="mt-2 rounded-xl border border-line bg-white p-4 text-xs leading-relaxed text-zinc-700 space-y-2.5 animate-in fade-in duration-150"
+          >
             <div className="flex items-start gap-2 text-amber-900 bg-amber-50/80 p-2.5 rounded-lg border border-amber-200">
               <ShieldAlert className="h-4 w-4 shrink-0 text-amber-700 mt-0.5" />
               <div>
                 <p className="font-bold text-amber-800">Peringatan Cellular Congestion (Blank Spot ICE BSD):</p>
                 <p className="mt-0.5 text-[11px] text-amber-900">
-                  Dengan 40.000+ pengunjung berkumpul di Hall 8–10, BTS seluler mengalami overload parah. Transaksi QRIS sering terpotong di saldo pembeli tetapi tidak terkonfirmasi di HP seller. Membawa uang pas tunai adalah metode transaksi paling cepat & anti-kecewa.
+                  Dengan 40.000+ pengunjung berkumpul di Hall 8-10, BTS seluler mengalami overload parah. Transaksi QRIS sering terpotong di saldo pembeli tetapi tidak terkonfirmasi di HP seller. Membawa uang pas tunai adalah metode transaksi paling cepat & anti-kecewa.
                 </p>
               </div>
             </div>
@@ -273,7 +264,7 @@ export function CashReadinessCalculator({
               <div className="rounded-lg bg-zinc-50 p-2.5 border border-line">
                 <p className="font-bold text-ink-900">2. ICE BSD Mezzanine</p>
                 <p className="mt-1 text-zinc-600">
-                  Terletak di selasar lobby Hall 3A & Nusantara Hall. Bersiap antrean 30–60 menit saat jam makan siang.
+                  Terletak di selasar lobby Hall 3A & Nusantara Hall. Bersiap antrean 30-60 menit saat jam makan siang.
                 </p>
               </div>
               <div className="rounded-lg bg-zinc-50 p-2.5 border border-line">

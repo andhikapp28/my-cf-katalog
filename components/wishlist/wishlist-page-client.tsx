@@ -68,8 +68,6 @@ export function WishlistPageClient({
     [mounted, rawWishlistIds]
   );
   const purchasedIdSet = useMemo(() => new Set(mounted ? rawPurchasedIds : []), [mounted, rawPurchasedIds]);
-
-  // Product map for quick lookup
   const productMap = useMemo(() => {
     const map = new Map<string, WishlistProduct>();
     for (const p of initialProducts) {
@@ -77,8 +75,6 @@ export function WishlistPageClient({
     }
     return map;
   }, [initialProducts]);
-
-  // Active items in wishlist
   const wishlistItems = useMemo(() => {
     const items: WishlistProduct[] = [];
     for (const id of wishlistIds) {
@@ -89,21 +85,15 @@ export function WishlistPageClient({
     }
     return items;
   }, [wishlistIds, productMap]);
-
-  // Items enriched with current purchased flag for calculation
   const itemsForCalc = useMemo(() => {
     return wishlistItems.map((item) => ({
       ...item,
       isPurchased: purchasedIdSet.has(item.id)
     }));
   }, [wishlistItems, purchasedIdSet]);
-
-  // Overall financial & item summary
   const summary = useMemo(() => {
     return calculateWishlistSummary(itemsForCalc);
   }, [itemsForCalc]);
-
-  // Tab counts
   const tabCounts = useMemo(() => {
     return {
       ALL: wishlistItems.length,
@@ -116,12 +106,8 @@ export function WishlistPageClient({
       RUSH: wishlistItems.filter((item) => item.isRush).length
     };
   }, [wishlistItems]);
-
-  // Filter items by tab and search
   const filteredItems = useMemo(() => {
     let result = wishlistItems;
-
-    // Filter by tab
     if (activeTab === "DAY_1") {
       result = result.filter(
         (item) => !item.targetDay || item.targetDay === "ALL_DAYS" || item.targetDay === "DAY_1"
@@ -133,8 +119,6 @@ export function WishlistPageClient({
     } else if (activeTab === "RUSH") {
       result = result.filter((item) => item.isRush);
     }
-
-    // Filter by search query
     if (searchQuery.trim()) {
       const q = searchQuery.toLowerCase().trim();
       result = result.filter(
@@ -187,14 +171,10 @@ export function WishlistPageClient({
       });
       group.allPurchased = group.items.every((it) => purchasedIdSet.has(it.id));
     }
-
-    // Sort booth groups by Hall and booth code
     groups.sort((a, b) => compareBoothOrder(a, b));
 
     return groups;
   }, [filteredItems, purchasedIdSet]);
-
-  // Handlers
   const handleTogglePurchased = (productId: string) => {
     const isNowBought = togglePurchasedProduct(productId);
     const item = productMap.get(productId);
@@ -232,7 +212,6 @@ export function WishlistPageClient({
   };
 
   const handleLoadDemo = () => {
-    // Ambil 4-6 produk contoh dari initialProducts
     if (initialProducts.length === 0) {
       toast.error("Tidak ada data produk katalog.");
       return;
@@ -243,15 +222,12 @@ export function WishlistPageClient({
       description: "Silakan coba mode checklist, filter, dan kalkulator ATM."
     });
   };
-
-  // Progress metrics
   const totalCount = wishlistItems.length;
   const purchasedCount = wishlistItems.filter((it) => purchasedIdSet.has(it.id)).length;
   const progressPercent = totalCount > 0 ? Math.round((purchasedCount / totalCount) * 100) : 0;
 
   return (
     <div className="container-shell space-y-8 py-8 md:py-10">
-      {/* Top Breadcrumb & Header */}
       <div className="flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
         <div className="space-y-2">
           <div className="flex flex-wrap items-center gap-2">
@@ -272,8 +248,6 @@ export function WishlistPageClient({
             Daftar karya incaran personal kamu untuk {activeEventName}. Disimpan langsung di browser kamu, siap dibuka offline di venue tanpa bergantung pada sinyal ponsel.
           </p>
         </div>
-
-        {/* Action Buttons: Share & Clear */}
         {wishlistItems.length > 0 && (
           <div className="flex flex-wrap items-center gap-2.5 shrink-0">
             <ShareWishlistModal
@@ -287,7 +261,7 @@ export function WishlistPageClient({
               type="button"
               onClick={handleResetChecklist}
               disabled={purchasedIdSet.size === 0}
-              className="inline-flex items-center gap-1.5 rounded-xl border border-line bg-white px-3.5 py-2.5 font-mono text-xs font-bold text-zinc-700 hover:bg-zinc-50 disabled:opacity-40 transition-colors"
+              className="inline-flex min-h-[44px] items-center gap-1.5 rounded-xl border border-line bg-white px-3.5 py-2.5 font-mono text-xs font-bold text-zinc-700 hover:bg-zinc-50 disabled:opacity-40 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500"
               title="Reset semua centang belanja kembali ke belum dibeli"
             >
               <RotateCcw className="h-3.5 w-3.5" />
@@ -297,7 +271,7 @@ export function WishlistPageClient({
             <button
               type="button"
               onClick={handleClearWishlist}
-              className="inline-flex items-center gap-1.5 rounded-xl border border-rose-200 bg-white px-3 py-2.5 font-mono text-xs font-bold text-rose-600 hover:bg-rose-50 transition-colors"
+              className="inline-flex min-h-[44px] items-center gap-1.5 rounded-xl border border-rose-200 bg-white px-3 py-2.5 font-mono text-xs font-bold text-rose-600 hover:bg-rose-50 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-rose-500"
               title="Hapus semua item dari Wishlist"
             >
               <Trash2 className="h-3.5 w-3.5" />
@@ -306,8 +280,6 @@ export function WishlistPageClient({
           </div>
         )}
       </div>
-
-      {/* Progress Bar Hari-H (Jika ada item di wishlist) */}
       {wishlistItems.length > 0 && (
         <div className="panel p-4 sm:p-5 border-line/80 bg-white shadow-xs">
           <div className="flex flex-wrap items-center justify-between gap-2 text-xs sm:text-sm">
@@ -332,24 +304,20 @@ export function WishlistPageClient({
           </div>
         </div>
       )}
-
-      {/* Kalkulator Kesiapan Tunai ATM ICE BSD */}
       {wishlistItems.length > 0 && (
         <CashReadinessCalculator summary={summary} />
       )}
-
-      {/* Controls & Booth List Section */}
       {wishlistItems.length > 0 ? (
         <div className="space-y-6">
-          {/* Tab Filters & Search Bar */}
           <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between border-b border-line pb-4">
-            {/* Filter Tabs */}
-            <div className="flex flex-wrap items-center gap-1.5">
+            <div role="tablist" aria-label="Filter hari wishlist" className="flex flex-wrap items-center gap-1.5 overflow-x-auto pb-1">
               <button
                 type="button"
+                role="tab"
+                aria-selected={activeTab === "ALL"}
                 onClick={() => setActiveTab("ALL")}
                 className={cn(
-                  "inline-flex items-center gap-1.5 rounded-xl px-3.5 py-2 font-mono text-xs font-bold transition-all",
+                  "inline-flex min-h-[40px] sm:min-h-[44px] items-center gap-1.5 rounded-xl px-3.5 py-2 font-mono text-xs font-bold transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500",
                   activeTab === "ALL"
                     ? "bg-[#111215] text-white shadow-xs"
                     : "bg-white text-zinc-600 border border-line hover:bg-zinc-50"
@@ -366,9 +334,11 @@ export function WishlistPageClient({
 
               <button
                 type="button"
+                role="tab"
+                aria-selected={activeTab === "DAY_1"}
                 onClick={() => setActiveTab("DAY_1")}
                 className={cn(
-                  "inline-flex items-center gap-1.5 rounded-xl px-3.5 py-2 font-mono text-xs font-bold transition-all",
+                  "inline-flex min-h-[40px] sm:min-h-[44px] items-center gap-1.5 rounded-xl px-3.5 py-2 font-mono text-xs font-bold transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500",
                   activeTab === "DAY_1"
                     ? "bg-amber-500 text-white shadow-xs"
                     : "bg-white text-zinc-600 border border-line hover:bg-zinc-50"
@@ -386,9 +356,11 @@ export function WishlistPageClient({
 
               <button
                 type="button"
+                role="tab"
+                aria-selected={activeTab === "DAY_2"}
                 onClick={() => setActiveTab("DAY_2")}
                 className={cn(
-                  "inline-flex items-center gap-1.5 rounded-xl px-3.5 py-2 font-mono text-xs font-bold transition-all",
+                  "inline-flex min-h-[40px] sm:min-h-[44px] items-center gap-1.5 rounded-xl px-3.5 py-2 font-mono text-xs font-bold transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500",
                   activeTab === "DAY_2"
                     ? "bg-sky-600 text-white shadow-xs"
                     : "bg-white text-zinc-600 border border-line hover:bg-zinc-50"
@@ -406,9 +378,11 @@ export function WishlistPageClient({
 
               <button
                 type="button"
+                role="tab"
+                aria-selected={activeTab === "RUSH"}
                 onClick={() => setActiveTab("RUSH")}
                 className={cn(
-                  "inline-flex items-center gap-1.5 rounded-xl px-3.5 py-2 font-mono text-xs font-bold transition-all",
+                  "inline-flex min-h-[40px] sm:min-h-[44px] items-center gap-1.5 rounded-xl px-3.5 py-2 font-mono text-xs font-bold transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500",
                   activeTab === "RUSH"
                     ? "bg-[#F84632] text-white shadow-xs"
                     : "bg-white text-zinc-600 border border-line hover:bg-zinc-50"
@@ -424,21 +398,18 @@ export function WishlistPageClient({
                 </span>
               </button>
             </div>
-
-            {/* Quick Search inside Wishlist */}
             <div className="relative sm:w-64">
-              <Search className="absolute inset-y-0 left-3 my-auto h-4 w-4 text-zinc-400" />
+              <Search className="absolute inset-y-0 left-3 my-auto h-4 w-4 text-zinc-500" />
               <input
                 type="text"
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 placeholder="Cari di wishlist..."
-                className="w-full rounded-xl border border-line bg-white pl-9 pr-3 py-1.5 text-xs font-medium text-ink-900 placeholder:text-zinc-400 focus:border-brand-500 focus:outline-hidden"
+                aria-label="Cari di wishlist"
+                className="w-full rounded-xl border border-line bg-white pl-9 pr-3 py-1.5 text-xs font-medium text-ink-900 placeholder:text-zinc-500 focus:border-brand-600 focus:outline-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500"
               />
             </div>
           </div>
-
-          {/* Booth Recap List */}
           <BoothRecapSection
             boothGroups={boothGroups}
             purchasedIds={purchasedIdSet}
@@ -447,7 +418,6 @@ export function WishlistPageClient({
           />
         </div>
       ) : (
-        /* Empty State */
         <div className="panel p-10 sm:p-16 text-center space-y-6 max-w-2xl mx-auto border-dashed border-2">
           <div className="inline-flex h-20 w-20 items-center justify-center rounded-3xl bg-brand-50 text-brand-600 shadow-soft">
             <Heart className="h-10 w-10 stroke-[1.5]" />
@@ -458,24 +428,24 @@ export function WishlistPageClient({
               Wishlist Kamu Masih Kosong
             </h2>
             <p className="text-sm text-ink-500 leading-relaxed max-w-md mx-auto">
-              Belum ada karya yang kamu tandai. Kamu bisa menjelajahi katalog karya kreator dan menekan tombol <strong className="text-brand-600">♥ Wishlist</strong> untuk menyimpan target belanja.
+              Belum ada karya yang kamu tandai. Pilih karya incaran dari katalog kreator lalu tekan tombol <strong className="text-brand-600">♥ Wishlist</strong> untuk menyimpan target belanja.
             </p>
           </div>
 
           <div className="flex flex-wrap items-center justify-center gap-3 pt-2">
             <Link
               href="/products"
-              className="inline-flex items-center gap-2 rounded-2xl bg-brand-500 px-6 py-3 font-mono text-xs font-bold uppercase text-white shadow-soft hover:bg-brand-600 transition-all active:scale-95"
+              className="inline-flex min-h-[44px] items-center gap-2 rounded-2xl bg-brand-500 px-6 py-3 font-mono text-xs font-bold uppercase text-white shadow-soft hover:bg-brand-600 transition-all active:scale-[0.98]"
             >
               <ShoppingBag className="h-4 w-4" />
-              <span>Jelajahi Katalog Karya</span>
+              <span>Buka Katalog Karya</span>
             </Link>
 
             {initialProducts.length > 0 && (
               <button
                 type="button"
                 onClick={handleLoadDemo}
-                className="inline-flex items-center gap-2 rounded-2xl border border-line bg-white px-5 py-3 font-mono text-xs font-bold uppercase text-zinc-700 hover:bg-zinc-50 transition-all active:scale-95"
+                className="inline-flex min-h-[44px] items-center gap-2 rounded-2xl border border-line bg-white px-5 py-3 font-mono text-xs font-bold uppercase text-zinc-700 hover:bg-zinc-50 transition-all active:scale-[0.98]"
               >
                 <Sparkles className="h-4 w-4 text-brand-600" />
                 <span>Coba Muat Contoh (Demo)</span>
@@ -484,7 +454,7 @@ export function WishlistPageClient({
           </div>
 
           <div className="pt-6 border-t border-line text-xs text-zinc-500 space-y-1">
-            <p className="font-semibold text-zinc-700">🔒 Tanpa Login & Bebas Tracking</p>
+            <p className="font-semibold text-zinc-700">Tanpa Login & Bebas Tracking</p>
             <p>Data wishlist tersimpan aman secara offline di browser lokal kamu dan tidak dikirimkan ke server kami.</p>
           </div>
         </div>

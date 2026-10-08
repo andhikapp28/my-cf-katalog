@@ -128,18 +128,22 @@ export function CompactCircleCard({
     null;
   const circleCutUrl = formatCircleImageUrl(rawCircleCutUrl);
 
-  const fandom = circle.fandom || parsedMeta.fandom;
+  const rawFandom = circle.fandom || parsedMeta.fandom;
+  const fandom =
+    rawFandom?.replace(/\s*\(\s*-\s*\)/g, "").replace(/\s*-\s*$/, "").trim() ||
+    null;
   const categories =
     circle.categories && circle.categories.length > 0
       ? circle.categories
       : parsedMeta.categories;
 
-  const tagsText = [
-    fandom,
-    categories.length > 0 ? categories.slice(0, 2).join(", ") : null
-  ]
-    .filter(Boolean)
-    .join(" - ") || "Katalog Comifuro";
+  const tagsText =
+    [
+      fandom,
+      categories.length > 0 ? categories.slice(0, 2).join(", ") : null
+    ]
+      .filter(Boolean)
+      .join(" · ") || "Katalog Comifuro";
 
   const productCount = circle.productCount ?? circle.products?.length ?? 0;
   const rating = circle.rating || parsedMeta.rating;
@@ -163,11 +167,10 @@ export function CompactCircleCard({
       onKeyDown={handleKeyDown}
       aria-label={`Circle ${circle.name}, Booth ${boothCode}`}
       className={cn(
-        "group relative flex items-center gap-3 sm:gap-3.5 overflow-hidden rounded-2xl border border-zinc-200 bg-white p-3 sm:p-3.5 text-left transition-all duration-200 hover:border-zinc-400 hover:shadow-lg hover:shadow-zinc-950/5 cursor-pointer active:scale-[0.99] focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-[#111215] select-none",
+        "group relative flex items-center gap-3 sm:gap-3.5 overflow-hidden rounded-2xl border border-zinc-200 bg-white p-3 sm:p-3.5 text-left transition-all duration-200 hover:border-zinc-400 hover:shadow-lg hover:shadow-zinc-950/5 cursor-pointer active:scale-[0.99] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#111215] select-none",
         className
       )}
     >
-      {/* Circle Cut Thumbnail (Square Compact 72x72px sm: 80x80px) */}
       <div className="relative h-[72px] w-[72px] sm:h-20 sm:w-20 shrink-0 overflow-hidden rounded-xl border border-zinc-200 bg-zinc-100">
         {circleCutUrl ? (
           // eslint-disable-next-line @next/next/no-img-element
@@ -194,10 +197,7 @@ export function CompactCircleCard({
           {getInitials(circle.name)}
         </div>
       </div>
-
-      {/* Content Details */}
       <div className="flex min-w-0 flex-1 flex-col justify-between self-stretch py-0.5 gap-1.5">
-        {/* Top Meta: Booth Badge + Day Badge + Optional Mature Rating */}
         <div className="flex items-center gap-1.5 flex-wrap">
           <span
             title={`Lokasi Booth: ${boothCode}`}
@@ -216,13 +216,11 @@ export function CompactCircleCard({
           </span>
 
           {rating === "M" && (
-            <span className="rounded-full bg-[#F84632]/10 px-1.5 py-0.5 font-mono text-[10px] font-black text-[#F84632] border border-[#F84632]/30 uppercase shrink-0">
+            <span className="rounded-full bg-red-50 px-1.5 py-0.5 font-mono text-[10px] font-black text-red-700 border border-red-300 uppercase shrink-0">
               18+
             </span>
           )}
         </div>
-
-        {/* Center: Circle Name & Fandom/Category */}
         <div className="min-w-0 space-y-0.5">
           <h3 className="font-sans font-bold text-sm sm:text-base text-ink-900 group-hover:text-[#F84632] transition-colors line-clamp-1 leading-snug">
             {circle.name}
@@ -231,19 +229,15 @@ export function CompactCircleCard({
             {tagsText}
           </p>
         </div>
-
-        {/* Bottom Bar: Karya Count & Clean Typography Link LIHAT KARYA */}
         <div className="flex items-center justify-between gap-2 pt-0.5">
           <span className="font-mono text-xs font-bold text-zinc-500">
-            {productCount} Karya
+            {productCount > 0 ? `${productCount} Karya` : "Info Booth"}
           </span>
           <span className="font-mono text-xs font-black uppercase tracking-wider text-[#111215] group-hover:text-[#F84632] transition-colors">
-            LIHAT KARYA
+            {productCount > 0 ? "LIHAT KARYA" : "DETAIL CIRCLE"}
           </span>
         </div>
       </div>
-
-      {/* Top-Right Corner: Wishlist Heart Button */}
       <div
         className="shrink-0 self-start"
         onClick={(e) => e.stopPropagation()}

@@ -2,14 +2,13 @@ import Link from "next/link";
 import { ArrowLeft, Layers, ShieldCheck, Smartphone, WifiOff, Zap } from "lucide-react";
 
 export const metadata = {
-  title: "Documentation — ComiPocket Guide",
+  title: "Documentation: ComiPocket Guide",
   description: "Dokumentasi dan panduan resmi penggunaan ComiPocket untuk berburu karya di Comic Frontier ICE BSD."
 };
 
 export default function DocsPage() {
   return (
     <div className="min-h-screen bg-[#FAF9F6] text-[#111215]">
-      {/* Header Banner on Sky Blue */}
       <section className="bg-[#5398DA] text-white pt-12 pb-16 px-4 sm:px-6 lg:px-8 relative overflow-hidden">
         <div className="absolute inset-0 bg-[linear-gradient(to_right,rgba(255,255,255,0.06)_1px,transparent_1px),linear-gradient(to_bottom,rgba(255,255,255,0.06)_1px,transparent_1px)] bg-[size:4rem_4rem] pointer-events-none" />
         
@@ -35,12 +34,8 @@ export default function DocsPage() {
           </div>
         </div>
       </section>
-
-      {/* Docs Body Content */}
       <section className="py-12 sm:py-16 px-4 sm:px-6 lg:px-8">
         <div className="container-shell max-w-4xl mx-auto space-y-12">
-          
-          {/* Chapter 1: Mengapa ComiPocket Dibuat? */}
           <article className="space-y-4 rounded-3xl border border-zinc-200 bg-white p-6 sm:p-8 shadow-xs">
             <div className="flex items-center gap-2 text-xs font-mono font-bold text-[#F84632] uppercase tracking-wider">
               <Zap className="h-4 w-4" />
@@ -56,8 +51,6 @@ export default function DocsPage() {
               ComiPocket dirancang dengan filosofi **Offline-First**. Semua data katalog, gambar denah, dan catatan belanja disimpan langsung ke dalam memori peramban (*Cache Storage & LocalStorage*) ponsel kamu, sehingga tetap dapat diakses dengan lancar meskipun perangkat berada dalam mode pesawat (*Airplane Mode*).
             </p>
           </article>
-
-          {/* Chapter 2: Cara Menggunakan Fitur Offline */}
           <article className="space-y-4 rounded-3xl border border-zinc-200 bg-white p-6 sm:p-8 shadow-xs">
             <div className="flex items-center gap-2 text-xs font-mono font-bold text-[#1E56C8] uppercase tracking-wider">
               <WifiOff className="h-4 w-4" />
@@ -78,8 +71,6 @@ export default function DocsPage() {
               </li>
             </ol>
           </article>
-
-          {/* Chapter 3: Wishlist & Kalkulator ATM */}
           <article className="space-y-4 rounded-3xl border border-zinc-200 bg-white p-6 sm:p-8 shadow-xs">
             <div className="flex items-center gap-2 text-xs font-mono font-bold text-[#F84632] uppercase tracking-wider">
               <Smartphone className="h-4 w-4" />
@@ -106,8 +97,6 @@ export default function DocsPage() {
               </div>
             </div>
           </article>
-
-          {/* Chapter 4: Denah Multi-Hall */}
           <article className="space-y-4 rounded-3xl border border-zinc-200 bg-white p-6 sm:p-8 shadow-xs">
             <div className="flex items-center gap-2 text-xs font-mono font-bold text-[#1E56C8] uppercase tracking-wider">
               <Layers className="h-4 w-4" />
@@ -120,8 +109,6 @@ export default function DocsPage() {
               Format kode booth Comic Frontier umumnya terdiri dari kode lorong dan nomor meja (misalnya <code>A-15a</code> atau <code>TC-12</code>). Gunakan fitur navigasi denah interaktif pada menu <strong>Floor Maps</strong> untuk melihat titik lokasi gerai serta menggunakan tombol <em>Next Booth</em> untuk menyusuri rute belanja secara teratur.
             </p>
           </article>
-
-          {/* Chapter 5: Keamanan & Privasi */}
           <article className="space-y-4 rounded-3xl border border-zinc-200 bg-white p-6 sm:p-8 shadow-xs">
             <div className="flex items-center gap-2 text-xs font-mono font-bold text-zinc-600 uppercase tracking-wider">
               <ShieldCheck className="h-4 w-4" />

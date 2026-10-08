@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useSyncExternalStore, useState } from "react";
+import React, { useEffect, useSyncExternalStore, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import {
@@ -56,6 +56,20 @@ export function CircleDetailSheet({
     getWishlistServerSnapshot
   );
 
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === "Escape") {
+        if (selectedImage !== null) {
+          setSelectedImage(null);
+        } else {
+          onClose();
+        }
+      }
+    };
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, [selectedImage, onClose]);
+
   if (!marker) return null;
 
   const productIds = marker.products.map((p) => p.id);
@@ -108,13 +122,13 @@ export function CircleDetailSheet({
 
   return (
     <>
-      {/* =================================================================== */}
-      {/* DESKTOP POP-UP / FLOATING CARD (KANAN ATAS PETA)                   */}
-      {/* =================================================================== */}
       <div className="hidden lg:block">
         <AnimatePresence>
           <motion.aside
             key={`desktop-${marker.id}`}
+            role="dialog"
+            aria-modal="true"
+            aria-label={`Detail Circle ${marker.circleName}`}
             initial={shouldReduceMotion ? { opacity: 1 } : { opacity: 0, x: 50, scale: 0.96 }}
             animate={{ opacity: 1, x: 0, scale: 1 }}
             exit={shouldReduceMotion ? { opacity: 0 } : { opacity: 0, x: 50, scale: 0.96 }}
@@ -144,12 +158,7 @@ export function CircleDetailSheet({
           </motion.aside>
         </AnimatePresence>
       </div>
-
-      {/* =================================================================== */}
-      {/* MOBILE DRAWER / SLIDE-UP SHEET DARI BAWAH                          */}
-      {/* =================================================================== */}
       <div className="lg:hidden">
-        {/* Backdrop gelap semi-transparan */}
         <div
           onClick={onClose}
           className="fixed inset-0 z-40 bg-black/60 backdrop-blur-sm transition-opacity"
@@ -158,18 +167,20 @@ export function CircleDetailSheet({
 
         <motion.div
           key={`mobile-${marker.id}`}
+          role="dialog"
+          aria-modal="true"
+          aria-label={`Detail Circle ${marker.circleName}`}
           initial={shouldReduceMotion ? { opacity: 1 } : { y: "100%" }}
           animate={{ y: 0 }}
           exit={shouldReduceMotion ? { opacity: 0 } : { y: "100%" }}
           transition={{ type: "spring", stiffness: 300, damping: 30 }}
           className={cn(
-            "fixed inset-x-0 bottom-0 z-50 max-h-[85vh] overflow-y-auto rounded-t-[32px]",
+            "fixed inset-x-0 bottom-0 z-50 max-h-[85vh] overflow-y-auto rounded-t-[32px] pb-[max(1.5rem,env(safe-area-inset-bottom))]",
             "border-t border-white/15 bg-[#141720] text-white shadow-2xl backdrop-blur-2xl",
             "scrollbar-thin scrollbar-thumb-white/20",
             className
           )}
         >
-          {/* Drag Handle Indicator */}
           <div className="sticky top-0 z-10 flex justify-center bg-[#141720]/95 py-2.5 backdrop-blur-md">
             <div className="h-1.5 w-12 rounded-full bg-white/25" />
           </div>
@@ -188,10 +199,6 @@ export function CircleDetailSheet({
           />
         </motion.div>
       </div>
-
-      {/* =================================================================== */}
-      {/* LIGHTBOX MODAL PREVIEW GAMBAR SAMPEL KARYA                         */}
-      {/* =================================================================== */}
       <AnimatePresence>
         {selectedImage ? (
           <motion.div
@@ -202,6 +209,9 @@ export function CircleDetailSheet({
             className="fixed inset-0 z-50 flex items-center justify-center bg-black/85 p-4 backdrop-blur-md"
           >
             <motion.div
+              role="dialog"
+              aria-modal="true"
+              aria-label={`Preview karya ${marker.circleName}`}
               initial={{ scale: 0.9, opacity: 0 }}
               animate={{ scale: 1, opacity: 1 }}
               exit={{ scale: 0.9, opacity: 0 }}
@@ -212,7 +222,7 @@ export function CircleDetailSheet({
                 type="button"
                 onClick={() => setSelectedImage(null)}
                 aria-label="Tutup preview"
-                className="absolute right-3 top-3 z-10 flex h-10 w-10 items-center justify-center rounded-full bg-black/70 text-white backdrop-blur hover:bg-black"
+                className="absolute right-3 top-3 z-10 flex min-h-[44px] min-w-[44px] items-center justify-center rounded-full bg-black/70 text-white backdrop-blur hover:bg-black active:scale-[0.98] transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white"
               >
                 <X className="h-5 w-5" />
               </button>
@@ -232,10 +242,6 @@ export function CircleDetailSheet({
     </>
   );
 }
-
-// =============================================================================
-// SUB-KOMPONEN KONTEN SHEET (DIGUNAKAN BERSAMA OLEH DESKTOP & MOBILE)
-// =============================================================================
 function SheetContent({
   marker,
   dayStyle,
@@ -261,12 +267,8 @@ function SheetContent({
 }) {
   return (
     <div className="p-5 sm:p-6 space-y-5">
-      {/* ----------------------------------------------------------------- */}
-      {/* HEADER: BADGE BOOTH CODE + DAY + RATING + CLOSE BUTTON            */}
-      {/* ----------------------------------------------------------------- */}
       <div className="flex items-start justify-between gap-3">
         <div className="flex flex-wrap items-center gap-2">
-          {/* Badge Nomor Meja Booth (Tebal ala TANALOKA) */}
           <span
             className={cn(
               "inline-flex items-center rounded-xl px-3.5 py-1.5",
@@ -276,8 +278,6 @@ function SheetContent({
           >
             {marker.boothCode}
           </span>
-
-          {/* Badge Jadwal Hari */}
           <span
             className={cn(
               "inline-flex items-center gap-1.5 rounded-lg px-2.5 py-1 text-xs font-bold border",
@@ -289,8 +289,6 @@ function SheetContent({
             <span className="h-1.5 w-1.5 rounded-full" style={{ backgroundColor: dayStyle.dot }} />
             {dayStyle.label}
           </span>
-
-          {/* Badge Rating Konten */}
           {marker.rating ? (
             <span
               className={cn(
@@ -305,30 +303,22 @@ function SheetContent({
               {marker.rating === "M" ? "18+ Mature" : marker.rating === "PG" ? "PG" : "GA General"}
             </span>
           ) : null}
-
-          {/* Badge Rush Item */}
           {marker.hasRush ? (
-            <span className="inline-flex items-center gap-1 rounded-lg bg-[#FF4838] px-2.5 py-1 text-xs font-extrabold text-white animate-pulse">
+            <span className="inline-flex items-center gap-1 rounded-lg bg-[#FF4838] px-2.5 py-1 text-xs font-extrabold text-white">
               <Zap className="h-3 w-3 fill-white" />
               WAR PAGI
             </span>
           ) : null}
         </div>
-
-        {/* Tombol Tutup (X) */}
         <button
           type="button"
           onClick={onClose}
           aria-label="Tutup detail circle"
-          className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full border border-white/15 bg-white/5 text-white/70 transition hover:bg-white/15 hover:text-white"
+          className="flex min-h-[44px] min-w-[44px] shrink-0 items-center justify-center rounded-full border border-white/15 bg-white/5 text-white/70 transition hover:bg-white/15 hover:text-white active:scale-[0.98] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#D6F834]"
         >
           <X className="h-4 w-4" />
         </button>
       </div>
-
-      {/* ----------------------------------------------------------------- */}
-      {/* JUDUL CIRCLE & FANDOM                                            */}
-      {/* ----------------------------------------------------------------- */}
       <div>
         <h2 className="font-[var(--font-display)] text-3xl sm:text-4xl font-extrabold uppercase tracking-tight text-white leading-tight">
           {marker.circleName}
@@ -350,16 +340,12 @@ function SheetContent({
           </p>
         ) : null}
       </div>
-
-      {/* ----------------------------------------------------------------- */}
-      {/* TOMBOL AKSI UTAMA: WISHLIST (TANALOKA CORAL RED) + SHARE         */}
-      {/* ----------------------------------------------------------------- */}
       <div className="grid grid-cols-[1fr_auto] gap-2.5">
         <button
           type="button"
           onClick={onToggleWishlist}
           className={cn(
-            "flex items-center justify-center gap-2 rounded-2xl py-3 px-4 text-sm font-extrabold transition active:scale-[0.98]",
+            "flex items-center justify-center gap-2 rounded-2xl py-3 px-4 text-sm font-extrabold transition active:scale-[0.98] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#D6F834]",
             isWishlisted
               ? "bg-[#FF4838] text-white shadow-lg shadow-[#FF4838]/30 hover:bg-[#e03a2b]"
               : "bg-white text-[#111215] hover:bg-[#f0f0f0] border border-white/20"
@@ -375,23 +361,21 @@ function SheetContent({
           type="button"
           onClick={onShare}
           aria-label="Bagikan koordinat booth"
-          className="flex h-12 w-12 items-center justify-center rounded-2xl border border-white/15 bg-white/5 text-white/80 transition hover:bg-white/15 hover:text-white active:scale-95"
+          className="flex min-h-[48px] min-w-[48px] items-center justify-center rounded-2xl border border-white/15 bg-white/5 text-white/80 transition hover:bg-white/15 hover:text-white active:scale-[0.98] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#D6F834]"
         >
           {copied ? <Check className="h-5 w-5 text-[#D6F834]" /> : <Share2 className="h-5 w-5" />}
         </button>
       </div>
-
-      {/* ----------------------------------------------------------------- */}
-      {/* CIRCLE CUT IMAGE                                                 */}
-      {/* ----------------------------------------------------------------- */}
       {marker.circleCutUrl ? (
         <div className="space-y-2">
           <p className="text-xs uppercase tracking-wider font-semibold text-white/50">
             Circle Cut
           </p>
-          <div
+          <button
+            type="button"
             onClick={() => onSelectImage(marker.circleCutUrl!)}
-            className="group relative aspect-[4/3] w-full overflow-hidden rounded-2xl border border-white/15 bg-[#1B1F2A] cursor-pointer"
+            aria-label="Perbesar foto circle cut"
+            className="group relative aspect-[4/3] w-full overflow-hidden rounded-2xl border border-white/15 bg-[#1B1F2A] cursor-pointer text-left focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#D6F834]"
           >
             <Image
               src={marker.circleCutUrl}
@@ -405,13 +389,9 @@ function SheetContent({
                 Klik untuk perbesar
               </span>
             </div>
-          </div>
+          </button>
         </div>
       ) : null}
-
-      {/* ----------------------------------------------------------------- */}
-      {/* DESKRIPSI & KATEGORI PRODUK                                      */}
-      {/* ----------------------------------------------------------------- */}
       {marker.description ? (
         <div className="space-y-1.5">
           <p className="text-xs uppercase tracking-wider font-semibold text-white/50">
@@ -440,10 +420,6 @@ function SheetContent({
           </div>
         </div>
       ) : null}
-
-      {/* ----------------------------------------------------------------- */}
-      {/* TAUTAN MEDIA SOSIAL                                              */}
-      {/* ----------------------------------------------------------------- */}
       {marker.socialLinks.length > 0 ? (
         <div className="space-y-2">
           <p className="text-xs uppercase tracking-wider font-semibold text-white/50">
@@ -456,7 +432,7 @@ function SheetContent({
                 href={soc.url}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="inline-flex items-center gap-1.5 rounded-xl border border-white/15 bg-white/5 px-3 py-2 text-xs font-semibold text-white/90 transition hover:border-[#5398DA] hover:bg-[#5398DA]/10 hover:text-[#5398DA]"
+                className="inline-flex min-h-[44px] items-center gap-1.5 rounded-xl border border-white/15 bg-white/5 px-3.5 py-2.5 text-xs font-semibold text-white/90 transition hover:border-[#5398DA] hover:bg-[#5398DA]/10 hover:text-[#5398DA] active:scale-[0.98]"
               >
                 <span>{soc.label}</span>
                 <ExternalLink className="h-3 w-3 text-white/50" />
@@ -465,10 +441,6 @@ function SheetContent({
           </div>
         </div>
       ) : null}
-
-      {/* ----------------------------------------------------------------- */}
-      {/* GALERI SAMPEL KARYA (sampleworks_images)                         */}
-      {/* ----------------------------------------------------------------- */}
       {allGalleryImages.length > 0 ? (
         <div className="space-y-2.5">
           <div className="flex items-center justify-between">
@@ -484,7 +456,8 @@ function SheetContent({
                 key={`${imgUrl}-${idx}`}
                 type="button"
                 onClick={() => onSelectImage(imgUrl)}
-                className="group relative aspect-square overflow-hidden rounded-xl border border-white/15 bg-[#1B1F2A] transition-transform hover:scale-105 active:scale-95"
+                aria-label={`Lihat karya sampel ${idx + 1}`}
+                className="group relative aspect-square overflow-hidden rounded-xl border border-white/15 bg-[#1B1F2A] transition-transform hover:scale-105 active:scale-[0.98] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#D6F834]"
               >
                 <Image
                   src={imgUrl}
@@ -504,17 +477,13 @@ function SheetContent({
             <button
               type="button"
               onClick={() => onSelectImage(allGalleryImages[6])}
-              className="w-full text-center py-2 text-xs font-semibold text-[#5398DA] hover:underline"
+              className="w-full text-center py-2 text-xs font-semibold text-[#5398DA] hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#5398DA]"
             >
               Lihat {allGalleryImages.length - 6} gambar lainnya...
             </button>
           ) : null}
         </div>
       ) : null}
-
-      {/* ----------------------------------------------------------------- */}
-      {/* TARGET PRODUK DARI CIRCLE INI (BILA ADA DI DATABASE)              */}
-      {/* ----------------------------------------------------------------- */}
       {marker.products.length > 0 ? (
         <div className="space-y-2.5">
           <p className="text-xs uppercase tracking-wider font-semibold text-white/50">
@@ -525,7 +494,7 @@ function SheetContent({
               <Link
                 key={prod.id}
                 href={`/products/${prod.id}`}
-                className="flex items-center justify-between rounded-xl border border-white/10 bg-white/5 p-3 text-xs sm:text-sm text-white/90 transition hover:border-[#D6F834] hover:bg-white/10"
+                className="flex items-center justify-between rounded-xl border border-white/10 bg-white/5 p-3 text-xs sm:text-sm text-white/90 transition hover:border-[#D6F834] hover:bg-white/10 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#D6F834]"
               >
                 <div className="space-y-0.5">
                   <p className="font-semibold">{prod.name}</p>
@@ -545,20 +514,16 @@ function SheetContent({
           </div>
         </div>
       ) : null}
-
-      {/* ----------------------------------------------------------------- */}
-      {/* TAUTAN PROFIL LENGKAP                                            */}
-      {/* ----------------------------------------------------------------- */}
       <div className="pt-2 border-t border-white/10 flex flex-wrap gap-2">
         <Link
           href={`/circles/${marker.circleId}`}
-          className="flex-1 text-center rounded-xl border border-white/15 bg-white/5 py-2.5 px-3 text-xs font-bold text-white transition hover:bg-white/15"
+          className="flex-1 min-h-[44px] flex items-center justify-center text-center rounded-xl border border-white/15 bg-white/5 py-2.5 px-3 text-xs font-bold text-white transition hover:bg-white/15 active:scale-[0.98] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#D6F834]"
         >
           Lihat Profil Circle
         </Link>
         <Link
           href={`/products?circleId=${marker.circleId}`}
-          className="flex-1 text-center rounded-xl border border-white/15 bg-white/5 py-2.5 px-3 text-xs font-bold text-white transition hover:bg-white/15"
+          className="flex-1 min-h-[44px] flex items-center justify-center text-center rounded-xl border border-white/15 bg-white/5 py-2.5 px-3 text-xs font-bold text-white transition hover:bg-white/15 active:scale-[0.98] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#D6F834]"
         >
           Semua Produk ({marker.products.length})
         </Link>
