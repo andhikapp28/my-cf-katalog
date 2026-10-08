@@ -23,7 +23,7 @@
  *   "/circles", "/circles/:id", "/maps", "/maps/:id", "/wishlist", "/docs".
  */
 
-const CACHE_VERSION = "v4";
+const CACHE_VERSION = "v8";
 const STATIC_CACHE = `comipocket-static-${CACHE_VERSION}`;
 const PAGES_CACHE = `comipocket-pages-${CACHE_VERSION}`;
 const IMAGE_CACHE = `comipocket-images-${CACHE_VERSION}`;

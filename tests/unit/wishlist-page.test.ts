@@ -108,7 +108,7 @@ describe("Wishlist Page & Helpers - Unit Tests", () => {
         purchasedIds: new Set<string>()
       });
 
-      expect(text).toContain("MY COMIPOCKET — WISHLIST & HUNTING CHECKLIST");
+      expect(text).toContain("MY COMIPOCKET - WISHLIST & HUNTING CHECKLIST");
       expect(text).toContain("Comic Frontier 19");
       expect(text).toContain("[Hall 8 · Booth A-15a] Circle Alpha");
       expect(text).toContain("Artbook Illust Vol 1");

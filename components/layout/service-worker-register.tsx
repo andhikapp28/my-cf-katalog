@@ -17,7 +17,7 @@ export function ServiceWorkerRegister() {
 
     navigator.serviceWorker.register("/sw.js").catch(() => {
       // Diam-diam gagal: PWA/offline cache adalah enhancement, bukan
-      // requirement — kegagalan registrasi tidak boleh mengganggu pemakaian
+      // requirement: kegagalan registrasi tidak boleh mengganggu pemakaian
       // normal aplikasi saat online.
     });
   }, []);

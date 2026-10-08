@@ -23,35 +23,41 @@ export function Pagination({
   const pages = getVisiblePages(page, totalPages);
 
   return (
-    <div className="flex flex-col gap-3 rounded-[26px] border border-line bg-white/85 px-4 py-4 sm:flex-row sm:items-center sm:justify-between">
-      <p className="text-sm text-ink-500">
+    <nav
+      aria-label="Navigasi Halaman"
+      className="flex flex-col gap-3 rounded-2xl border border-line bg-white/85 px-4 py-4 sm:flex-row sm:items-center sm:justify-between"
+    >
+      <p className="text-sm text-ink-700">
         Showing <span className="font-semibold text-ink-900">{start}-{end}</span> of{" "}
         <span className="font-semibold text-ink-900">{totalItems}</span>
       </p>
       <div className="flex flex-wrap items-center gap-2">
         <PaginationLink
+          aria-label="Halaman Sebelumnya"
           href={
             page > 1
               ? buildPathWithQuery(pathname, { ...query, page: String(page - 1) })
               : undefined
           }
         >
-          <ChevronLeft className="h-4 w-4" />
+          <ChevronLeft className="h-4 w-4" aria-hidden="true" />
           Previous
         </PaginationLink>
         {pages.map((value, index) =>
           value === "ellipsis" ? (
-            <span key={`ellipsis-${index}`} className="px-2 text-sm text-ink-400">
+            <span key={`ellipsis-${index}`} className="px-2 text-sm text-ink-700 select-none">
               ...
             </span>
           ) : (
             <Link
               key={value}
               href={buildPathWithQuery(pathname, { ...query, page: String(value) })}
+              aria-label={`Halaman ${value}`}
+              aria-current={value === page ? "page" : undefined}
               className={cn(
-                "flex h-9 min-w-9 items-center justify-center rounded-full border px-3 text-sm transition",
+                "flex min-h-[44px] min-w-[44px] sm:h-9 sm:min-w-9 items-center justify-center rounded-xl border px-3 text-sm font-mono transition touch-manipulation focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500 active:scale-[0.98]",
                 value === page
-                  ? "border-brand-500 bg-brand-500 text-white"
+                  ? "border-brand-600 bg-brand-600 text-white font-bold"
                   : "border-line bg-white/90 text-ink-700 hover:border-brand-300 hover:bg-brand-50"
               )}
             >
@@ -60,6 +66,7 @@ export function Pagination({
           )
         )}
         <PaginationLink
+          aria-label="Halaman Selanjutnya"
           href={
             page < totalPages
               ? buildPathWithQuery(pathname, { ...query, page: String(page + 1) })
@@ -67,20 +74,32 @@ export function Pagination({
           }
         >
           Next
-          <ChevronRight className="h-4 w-4" />
+          <ChevronRight className="h-4 w-4" aria-hidden="true" />
         </PaginationLink>
       </div>
-    </div>
+    </nav>
   );
 }
 
-function PaginationLink({ href, children }: { href?: string; children: ReactNode }) {
+function PaginationLink({
+  href,
+  children,
+  "aria-label": ariaLabel
+}: {
+  href?: string;
+  children: ReactNode;
+  "aria-label"?: string;
+}) {
   const className =
-    "inline-flex h-9 items-center gap-1 rounded-full border px-3 text-sm transition";
+    "inline-flex min-h-[44px] sm:h-9 items-center gap-1.5 rounded-xl border px-3.5 sm:px-3 text-sm font-mono transition touch-manipulation focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500";
 
   if (!href) {
     return (
-      <span className={cn(className, "cursor-not-allowed border-line bg-stone-100 text-ink-400")}>
+      <span
+        aria-disabled="true"
+        aria-label={ariaLabel}
+        className={cn(className, "cursor-not-allowed border-line bg-stone-100 text-zinc-500 select-none")}
+      >
         {children}
       </span>
     );
@@ -89,9 +108,10 @@ function PaginationLink({ href, children }: { href?: string; children: ReactNode
   return (
     <Link
       href={href}
+      aria-label={ariaLabel}
       className={cn(
         className,
-        "border-line bg-white/90 text-ink-700 hover:border-brand-300 hover:bg-brand-50"
+        "border-line bg-white/90 text-ink-700 hover:border-brand-300 hover:bg-brand-50 active:scale-[0.98]"
       )}
     >
       {children}

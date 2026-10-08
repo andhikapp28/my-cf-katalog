@@ -29,7 +29,7 @@ const mono = JetBrains_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "ComiPocket — Comifuro Event Companion & Catalog",
+  title: "ComiPocket · Comifuro Event Companion & Catalog",
   description: "Community catalog, floor map route, wishlist, and cash-prepared spending tracker for Comic Frontier (Comifuro).",
   manifest: "/manifest.json",
   appleWebApp: {
@@ -48,7 +48,7 @@ export const metadata: Metadata = {
 };
 
 // `themeColor` (dan viewport lainnya) wajib lewat export `viewport` terpisah
-// di Next 15 App Router — menaruhnya di `metadata` sudah deprecated/diabaikan.
+// di Next 15 App Router: menaruhnya di `metadata` sudah deprecated/diabaikan.
 export const viewport: Viewport = {
   width: "device-width",
   initialScale: 1,
@@ -59,9 +59,17 @@ export default function RootLayout({ children }: Readonly<{ children: ReactNode 
   return (
     <html lang="id" className={`${sans.variable} ${display.variable} ${mono.variable}`}>
       <body className="font-[var(--font-sans)]">
-        <div className="flex min-h-screen flex-col">
+        <a
+          href="#main-content"
+          className="sr-only focus:not-sr-only focus:fixed focus:top-4 focus:left-4 focus:z-50 focus:rounded-xl focus:bg-[#111215] focus:px-4 focus:py-2.5 focus:font-mono focus:text-xs focus:font-bold focus:uppercase focus:text-white focus:outline-none focus:ring-2 focus:ring-[#D6F834] focus:shadow-2xl"
+        >
+          Menuju ke konten utama
+        </a>
+        <div className="flex min-h-screen flex-col overflow-x-hidden">
           <SiteHeader />
-          <main className="flex-1">{children}</main>
+          <main id="main-content" tabIndex={-1} className="flex-1 focus:outline-none">
+            {children}
+          </main>
           <SiteFooter />
         </div>
         <Toaster richColors position="top-right" />
