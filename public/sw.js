@@ -1,29 +1,16 @@
 /**
  * Service worker hand-rolled (tanpa Workbox/next-pwa) untuk ComiPocket.
  *
- * next-pwa TIDAK dipakai: proyek ini pakai Next 15 App Router, dan next-pwa
- * (dibangun di atas workbox-webpack-plugin) punya riwayat kompatibilitas yang
- * kurang baik dengan App Router (banyak isu terbuka soal precache manifest
- * yang tidak sinkron dengan RSC streaming/route groups App Router, dan
- * proyeknya sendiri jarang di-update). Kebutuhan caching di sini juga cukup
- * sederhana (cache-first utk asset statis, stale-while-revalidate utk
- * beberapa halaman publik + gambar) sehingga implementasi manual ~100 baris
- * ini lebih mudah dipahami/dirawat daripada menambah dependency besar.
- *
  * Strategi:
- * - Cache-first untuk asset statis Next (`/_next/static/*`, termasuk JS/CSS/
- *   font — semua sudah content-hashed di nama file sehingga aman di-cache
- *   permanen, tidak akan pernah "basi").
- * - Stale-while-revalidate untuk gambar (produk/floor map/banner event) —
- *   baik yang same-origin maupun cross-origin (banner/produk dari URL bebas
- *   yang diketik user), supaya visual tetap muncul walau sinyal jelek saat
- *   event, tapi tetap ter-refresh di background saat online.
- * - Stale-while-revalidate untuk halaman PUBLIK yang relevan dipakai offline
- *   saat event: "/", "/events", "/events/:slug",
- *   "/circles", "/wishlist", "/docs".
+ * - Cache-first untuk asset statis Next (`/_next/static/*`, JS/CSS/font)
+ *   dengan proteksi hanya menyimpan status 200 yang valid.
+ * - Stale-while-revalidate untuk gambar (produk/floor map/banner event).
+ * - Network-first untuk halaman HTML publik ("/", "/events", "/circles", "/wishlist"):
+ *   Saat ONLINE: selalu menarik HTML mutakhir yang sinkron dengan chunk hashes server.
+ *   Saat OFFLINE (di venue hall ICE BSD tanpa sinyal): otomatis menyajikan halaman dari cache.
  */
 
-const CACHE_VERSION = "v9";
+const CACHE_VERSION = "v10";
 const STATIC_CACHE = `comipocket-static-${CACHE_VERSION}`;
 const PAGES_CACHE = `comipocket-pages-${CACHE_VERSION}`;
 const IMAGE_CACHE = `comipocket-images-${CACHE_VERSION}`;
@@ -45,7 +32,13 @@ self.addEventListener("activate", (event) => {
   event.waitUntil(
     caches
       .keys()
-      .then((keys) => Promise.all(keys.filter((key) => !KNOWN_CACHES.includes(key)).map((key) => caches.delete(key))))
+      .then((keys) =>
+        Promise.all(
+          keys
+            .filter((key) => !KNOWN_CACHES.includes(key))
+            .map((key) => caches.delete(key))
+        )
+      )
       .then(() => self.clients.claim())
   );
 });
@@ -59,9 +52,40 @@ async function cacheFirst(request, cacheName) {
 
   const response = await fetch(request);
   if (response && response.status === 200) {
+    // Hindari menyimpan respons fallback teks/404 ke dalam static chunk cache
+    const contentType = response.headers.get("content-type") || "";
+    if (
+      request.url.endsWith(".js") &&
+      !contentType.includes("javascript") &&
+      !contentType.includes("octet-stream")
+    ) {
+      return response;
+    }
+    if (request.url.endsWith(".css") && !contentType.includes("css")) {
+      return response;
+    }
     cache.put(request, response.clone()).catch(() => {});
   }
   return response;
+}
+
+async function networkFirst(request, cacheName) {
+  try {
+    const networkResponse = await fetch(request);
+    if (networkResponse && networkResponse.status === 200) {
+      const cache = await caches.open(cacheName);
+      cache.put(request, networkResponse.clone()).catch(() => {});
+    }
+    return networkResponse;
+  } catch {
+    // Jaringan gagal (offline / sinyal blackout di dalam hall) -> gunakan cache
+    const cache = await caches.open(cacheName);
+    const cachedResponse = await cache.match(request);
+    if (cachedResponse) {
+      return cachedResponse;
+    }
+    return Response.error();
+  }
 }
 
 async function staleWhileRevalidate(request, cacheName) {
@@ -71,9 +95,6 @@ async function staleWhileRevalidate(request, cacheName) {
 
     const networkFetch = fetch(request)
       .then((response) => {
-        // Response `opaque` (cross-origin tanpa CORS, umum untuk banner/produk
-        // image dari domain bebas) tidak bisa dicek `.ok`, tapi tetap aman
-        // disimpan — browser sendiri yang membatasi ukuran/isi cache lintas asal.
         if (response && (response.ok || response.type === "opaque")) {
           cache.put(request, response.clone()).catch(() => {});
         }
@@ -82,7 +103,6 @@ async function staleWhileRevalidate(request, cacheName) {
       .catch(() => undefined);
 
     if (cached) {
-      // Refresh di background, tapi langsung balas dari cache supaya instan.
       return cached;
     }
 
@@ -107,17 +127,20 @@ self.addEventListener("fetch", (event) => {
   const url = new URL(request.url);
   const isSameOrigin = url.origin === self.location.origin;
 
+  // 1. Static Next.js Chunks (JS/CSS)
   if (isSameOrigin && url.pathname.startsWith("/_next/static/")) {
     event.respondWith(cacheFirst(request, STATIC_CACHE));
     return;
   }
 
+  // 2. Images (stale-while-revalidate for fast rendering)
   if (request.destination === "image") {
     event.respondWith(staleWhileRevalidate(request, IMAGE_CACHE));
     return;
   }
 
+  // 3. HTML Pages (Network-First with Offline Cache Fallback)
   if (isSameOrigin && PUBLIC_PAGE_PATTERNS.some((pattern) => pattern.test(url.pathname))) {
-    event.respondWith(staleWhileRevalidate(request, PAGES_CACHE));
+    event.respondWith(networkFirst(request, PAGES_CACHE));
   }
 });
