@@ -3,8 +3,7 @@
 import React from "react";
 import Link from "next/link";
 import {
-  Map,
-  Banknote,
+  Store,
   CheckSquare,
   ArrowUpRight,
   WifiOff,
@@ -33,75 +32,75 @@ export interface SurvivalToolkitItem {
 export const SURVIVAL_TOOLKIT_ITEMS: SurvivalToolkitItem[] = [
   {
     id: "interactive-map",
-    title: "Peta Denah Interaktif Hall",
-    tag: "HALL COORDINATES & MAP",
-    badge: "100% OFFLINE READY",
-    icon: Map,
+    title: "Pencarian Booth & Meja Circle",
+    tag: "BOOTH COORDINATES",
+    badge: "1.400+ CIRCLE",
+    icon: Store,
     description:
-      "Akses denah tata letak Hall 8 & Hall 9 ICE BSD secara interaktif dengan sistem pencarian koordinat instan, pan/zoom presisi, dan pelacakan booth offline tanpa bergantung pada kuota internet.",
+      "Telusuri 1.400+ circle kreator independen, nomor meja booth (misal A-15a, TC-12), dan jadwal hari kehadiran (Day 1 / Day 2) dengan cepat dan akurat.",
     highlights: [
       "Pencarian koordinat booth presisi (A-15a, TC-12) hingga nomor meja",
-      "Navigasi kanvas pan & zoom responsif dengan kontrol gestur lancar",
-      "Offline booth tracking untuk melacak posisi circle incaran saat di venue"
+      "Filter kehadiran jadwal stan: Day 1 (Sabtu) vs Day 2 (Minggu)",
+      "Urutan nomor meja natural untuk susun rute jalan di venue"
     ],
     mockData: {
-      label: "HALL COORDINATES & STATUS",
+      label: "KOORDINAT MEJA CIRCLE",
       items: [
-        { label: "Booth A-15a", value: "Hall 8 · Creator Alley", active: true },
-        { label: "Booth TC-12", value: "Hall 9 · Artist Alley", active: true },
-        { label: "Mode Denah", value: "Offline Vector Cached", active: false }
+        { label: "Booth A-15a", value: "Creator Alley · Day 1", active: true },
+        { label: "Booth TC-12", value: "Artist Alley · Day 2", active: true },
+        { label: "Status Data", value: "1.477 Circle Terverifikasi", active: false }
       ]
     },
-    linkHref: "/maps",
-    linkText: "Buka Peta Denah Hall"
+    linkHref: "/circles",
+    linkText: "Buka Direktori Circle"
   },
   {
     id: "cash-calculator",
-    title: "Kalkulator Tunai ATM",
-    tag: "ANTI-BLACKOUT QRIS",
-    badge: "CASH READINESS",
-    icon: Banknote,
+    title: "Circle Tersimpan (Bookmark)",
+    tag: "BOOKMARK STAN",
+    badge: "INSTANT SAVE",
+    icon: CheckSquare,
     description:
-      "Solusi taktis anti-blackout QRIS. Rekomendasi penarikan pecahan tunai Rp 50.000 dan Rp 100.000 sebelum masuk hall gate saat lonjakan ribuan pengunjung melumpuhkan sinyal seluler dan gateway bank.",
+      "Tandai circle incaranmu dengan satu klik tanpa perlu repot login akun. Semua bookmark tersimpan aman di perambanmu dan siap dibuka saat hari-H.",
     highlights: [
-      "Anti-Blackout QRIS: Antisipasi lumpuhnya jaringan perbankan di dalam hall",
-      "Rekomendasi pecahan pas Rp 50.000 / Rp 100.000 sebelum antre gate",
-      "Perhitungan estimasi tunai otomatis dari total akumulasi wishlist aktif"
+      "Simpan stan circle incaran langsung dari direktori",
+      "100% Client Storage: Bebas repot login dan anti ter-logout",
+      "Urutkan circle tersimpan berdasarkan nomor lorong meja"
     ],
     mockData: {
-      label: "ALOKASI PENARIKAN ATM VENUE",
+      label: "CIRCLE TERSIMPAN",
       items: [
-        { label: "Pecahan Rp 50.000", value: "Recom. 10 Lbr (Cepat & Pas)", active: true },
-        { label: "Pecahan Rp 100.000", value: "Recom. 5 Lbr (Artbook/PO)", active: false },
-        { label: "Safety Cash Buffer", value: "+20% Dana Darurat On-Site", active: true }
+        { label: "Koleksi Bookmark", value: "Tersimpan di Browser", active: true },
+        { label: "Mode Akses", value: "Siap Dibuka Tanpa Sinyal", active: false },
+        { label: "Navigasi", value: "Berdasarkan Nomor Meja", active: true }
       ]
     },
     linkHref: "/wishlist",
-    linkText: "Hitung Kebutuhan Tunai"
+    linkText: "Lihat Circle Tersimpan"
   },
   {
     id: "offline-wishlist",
-    title: "Wishlist & Checklist 100% Offline",
-    tag: "CLIENT STORAGE · NO LOGIN",
-    badge: "LOCAL-FIRST PWA",
-    icon: CheckSquare,
+    title: "Akses 100% Offline PWA",
+    tag: "OFFLINE FIRST",
+    badge: "ANTI BLANK-SPOT",
+    icon: WifiOff,
     description:
-      "Manajemen belanja personal dengan pemisahan prioritas Rush Pagi vs Pre-Order PO. Semua data tersimpan aman di penyimpanan lokal peramban kamu tanpa perlu login akun atau koneksi server.",
+      "Dirancang offline-first untuk mengatasi kendala blank spot dan cellular jam di dalam hall ICE BSD. Direktori circle dan bookmark tetap responsif tanpa koneksi.",
     highlights: [
-      "Prioritas Rush Pagi vs Pre-Order PO untuk membedakan target krusial",
-      "100% Client Storage Browser: Tersimpan di IndexedDB tanpa risiko logout",
-      "Ceklis item terbeli langsung di tempat saat menyusuri lorong booth"
+      "Service worker caching untuk direktori circle dan metadata",
+      "Zero latency browsing di tengah kerumunan hall yang padat",
+      "Data ringan dan ramah baterai ponsel selama berburu karya"
     ],
     mockData: {
-      label: "CHECKLIST STATUS PREVIEW",
+      label: "STATUS KESIAPAN OFFLINE",
       items: [
-        { label: "RUSH PAGI", value: "Target Sold-Out Pukul 09:30", active: true },
-        { label: "PRE-ORDER PO", value: "Slip Pengambilan Terverifikasi", active: false },
-        { label: "CLIENT SYNC", value: "Tersimpan di Storage Browser", active: true }
+        { label: "Service Worker", value: "Active & Cached", active: true },
+        { label: "Penyimpanan", value: "Local Storage & IndexedDB", active: false },
+        { label: "Koneksi", value: "Bebas Kuota Internet", active: true }
       ]
     },
-    linkHref: "/wishlist",
-    linkText: "Kelola Wishlist & Checklist"
+    linkHref: "/circles",
+    linkText: "Jelajahi Offline PWA"
   }
 ];
 
@@ -122,49 +121,49 @@ export const HUNTING_FLOW_STEPS: HuntingFlowStep[] = [
     step: "01",
     stepNumber: "STEP 01",
     phaseBadge: "H-7 S/D H-1 · PERSIAPAN DI RUMAH",
-    title: "Riset & Susun Wishlist di Rumah",
+    title: "Riset & Tandai Circle di Rumah",
     description:
-      "Sisir karya dari 1.400+ circle kreator, pilih item incaran, dan tandai target dengan label Rush Pagi untuk rilisan cepat habis atau Pre-Order (PO) untuk pengambilan terencana.",
+      "Sisir 1.400+ circle kreator, telusuri karya dan fandom favorit, lalu tandai circle incaran ke daftar tersimpan sebelum berangkat ke venue.",
     highlights: [
       "Telusuri direktori 1.400+ circle kreator dan ribuan karya",
-      "Kelompokkan target: prioritas Rush Pagi vs jadwal ambil Pre-Order PO",
-      "Hitung estimasi total anggaran belanja otomatis tanpa perlu registrasi"
+      "Tandai booth incaran dengan tombol hati untuk bookmark",
+      "Filter berdasarkan fandom favorit dan jadwal hari kehadiran"
     ],
     icon: Search,
-    linkHref: "/products",
-    linkText: "Buka Katalog Circle"
+    linkHref: "/circles",
+    linkText: "Buka Direktori Circle"
   },
   {
     step: "02",
     stepNumber: "STEP 02",
     phaseBadge: "HARI-H 08:00 WIB · SEBELUM MASUK GATE",
-    title: "Tarik Tunai Pecahan Pas",
+    title: "Cek Jadwal & Rute Kunjungan",
     description:
-      "Hitung kebutuhan cash di kalkulator ATM venue sebelum antre gate. Amankan uang fisik pecahan Rp 50.000 / Rp 100.000 di deretan ATM venue ICE BSD demi mencegah transaksi gagal akibat QRIS blackout.",
+      "Buka daftar circle tersimpan untuk memilah stan yang buka di Day 1 (Sabtu) atau Day 2 (Minggu) agar rute jalanmu di venue efisien.",
     highlights: [
-      "Hitung alokasi cash pas di kalkulator ATM venue sebelum masuk antrean",
-      "Tarik uang tunai pecahan pas Rp 50.000 & Rp 100.000 di lobi / basement ICE BSD",
-      "Bebas panik kegagalan sinyal QRIS atau antrean lambat di meja booth"
+      "Pisahkan target kunjungan berdasarkan hari kehadiran booth",
+      "Urutkan daftar circle berdasarkan nomor meja lorong hall",
+      "Siap dibuka langsung tanpa perlu login akun atau koneksi server"
     ],
-    icon: Banknote,
+    icon: CheckSquare,
     linkHref: "/wishlist",
-    linkText: "Hitung Kebutuhan Tunai"
+    linkText: "Cek Circle Tersimpan"
   },
   {
     step: "03",
     stepNumber: "STEP 03",
     phaseBadge: "HARI-H 10:00+ WIB · DI DALAM LANTAI HALL",
-    title: "Navigasi Booth Tanpa Sinyal",
+    title: "Berburu Meja Stan Tanpa Sinyal",
     description:
-      "Akses denah hall & checklist offline langsung dari HP tanpa internet saat berada di dalam venue. Temukan posisi koordinat booth presisi seperti A-15a atau TC-12 dan centang rilisan yang sudah didapat.",
+      "Akses direktori circle & bookmark secara offline langsung dari ponsel di dalam venue. Temukan posisi nomor meja seperti A-15a atau TC-12 tanpa kendala jaringan.",
     highlights: [
-      "Akses denah interaktif Hall 8 & 9 ICE BSD secara 100% offline via PWA",
-      "Pencarian cepat koordinat booth: A-15a, TC-12, dan area artist alley",
-      "Centang checklist item terbeli secara offline langsung di layar ponsel"
+      "Akses direktori circle 100% offline via Service Worker PWA",
+      "Pencarian cepat nomor meja booth kreator di lorong hall",
+      "Semua data tersimpan aman di peramban tanpa terpengaruh sinyal drop"
     ],
     icon: WifiOff,
-    linkHref: "/maps",
-    linkText: "Buka Denah Offline"
+    linkHref: "/circles",
+    linkText: "Buka Direktori Offline"
   }
 ];
 

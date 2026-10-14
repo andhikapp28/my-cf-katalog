@@ -20,18 +20,24 @@ test.describe("Public dashboard", () => {
     // 1. Teks Judul & Hero Headline (Struktur palet TANALOKA)
     await expect(page.getByText("WHERE EVERY CREATOR GATHERS")).toBeVisible();
     await expect(page.locator("img[alt='ComiPocket Mascot']")).toBeVisible();
-    await expect(page.getByRole("link", { name: "JELAJAHI 1.400+ CIRCLE", exact: true })).toBeVisible();
-    await expect(page.getByRole("link", { name: "Peta Denah Hall", exact: true })).toBeVisible();
+    await expect(page.getByRole("link", { name: "JELAJAHI 1.959 CIRCLE", exact: true })).toBeVisible();
+    await expect(page.getByRole("link", { name: "Arsip Edisi Event", exact: true })).toBeVisible();
 
-    // 2. Metrik Cards (AISUM Pulse & Metrics)
-    await expect(page.getByText("COMIFURO 22 · DATA EVENT AKTIF")).toBeVisible();
+    // 2. Metrik Cards & Live Countdown (AISUM Pulse & Metrics)
+    await expect(page.getByText("COMIFURO 23 · DATA EVENT AKTIF")).toBeVisible();
     await expect(page.getByRole("heading", { level: 2, name: /CONVENTION MEETS ACTION/i })).toBeVisible();
+    await expect(page.getByRole("timer")).toBeVisible();
+    await expect(page.getByText("HITUNG MUNDUR HARI-H")).toBeVisible();
+    await expect(page.getByText("HARI", { exact: true })).toBeVisible();
+    await expect(page.getByText("JAM", { exact: true })).toBeVisible();
+    await expect(page.getByText("MENIT", { exact: true })).toBeVisible();
+    await expect(page.getByText("DETIK", { exact: true })).toBeVisible();
     await expect(page.getByText("CIRCLES", { exact: true })).toBeVisible();
-    await expect(page.getByText("Artist Alley & Creator Alley")).toBeVisible();
+    await expect(page.getByText("Artist Alley & Creator Alley terdaftar")).toBeVisible();
     await expect(page.getByText("SAMPEL KARYA", { exact: true })).toBeVisible();
-    await expect(page.getByText("Artbook, Merch, Standee & Zine")).toBeVisible();
+    await expect(page.getByText("Menunggu Rilis Katalog Resmi")).toBeVisible();
     await expect(page.getByText("HALL VENUE", { exact: true })).toBeVisible();
-    await expect(page.getByText("Hall 8 & Hall 9 ICE BSD", { exact: true })).toBeVisible();
+    await expect(page.getByText("Hall 5 - 10 ICE BSD City", { exact: true })).toBeVisible();
     await expect(page.getByText("OFFLINE READY", { exact: true })).toBeVisible();
     await expect(page.getByText("Service Worker & Local Storage")).toBeVisible();
 
@@ -101,11 +107,11 @@ test.describe("Public dashboard", () => {
     expect(consoleErrors, `Terjadi console.error di halaman: ${consoleErrors.join("; ")}`).toEqual([]);
   });
 
-  test("halaman produk publik bisa dibuka tanpa autentikasi dan menampilkan filter serta katalog", async ({ page }) => {
-    const response = await page.goto("/products");
+  test("direktori circle publik bisa dibuka tanpa autentikasi dan menampilkan filter serta katalog", async ({ page }) => {
+    const response = await page.goto("/circles");
     expect(response?.ok()).toBe(true);
 
-    // Heading katalog TANALOKA
+    // Heading direktori circle
     await expect(
       page.getByRole("heading", { level: 1, name: /DIREKTORI CIRCLE & KATALOG KARYA COMIFURO/i })
     ).toBeVisible();

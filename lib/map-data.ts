@@ -13,8 +13,15 @@ import {
 import {
   getBoothFloorCoordinates,
   parseCircleNotes,
-  type CircleMarker
+  detectBoothHall,
+  getBoothMasterCoordinates,
+  ICE_BSD_HALLS,
+  CF23_COMMUNITY_ZONES,
+  type CircleMarker,
+  type CommunityZone,
+  type HallDefinition
 } from "@/lib/floor-map";
+import { getEventDetailDataWithFallback } from "@/lib/event-details-data";
 import { isDoneProductStatus } from "@/lib/checklist";
 
 interface RawCatalogEntry {
@@ -231,5 +238,195 @@ export async function getInteractiveMapData(targetMapId?: string) {
     currentMap,
     allFloorMaps,
     markers
+  };
+}
+
+let cf22ArchiveMarkersCache: CircleMarker[] | null = null;
+
+export function loadCF22ArchiveMarkers(): CircleMarker[] {
+  if (cf22ArchiveMarkersCache) return cf22ArchiveMarkersCache;
+
+  const jsonPath = resolve(process.cwd(), "data", "comifuro22-full.json");
+  if (!existsSync(jsonPath)) {
+    cf22ArchiveMarkersCache = [];
+    return cf22ArchiveMarkersCache;
+  }
+
+  try {
+    const raw = JSON.parse(readFileSync(jsonPath, "utf-8"));
+    const items = Array.isArray(raw)
+      ? raw
+      : Array.isArray(raw?.circles)
+        ? raw.circles
+        : Array.isArray(raw?.data)
+          ? raw.data
+          : [];
+
+    const markers: CircleMarker[] = [];
+
+    for (const item of items) {
+      if (!item.circle_code?.trim()) continue;
+
+      const code = item.circle_code.trim();
+      const hall = detectBoothHall(code, "Hall 8");
+      const localCoords = getBoothFloorCoordinates(code, hall);
+      const masterCoords = getBoothMasterCoordinates(code, hall);
+
+      const day =
+        item.day === "Day 1"
+          ? "DAY_1"
+          : item.day === "Day 2"
+            ? "DAY_2"
+            : "ALL_DAYS";
+
+      const dayLabel =
+        day === "DAY_1"
+          ? "Day 1 (Sabtu)"
+          : day === "DAY_2"
+            ? "Day 2 (Minggu)"
+            : "Both Days (Sabtu & Minggu)";
+
+      const rating = item.rating?.toUpperCase().includes("M")
+        ? "M"
+        : item.rating?.toUpperCase().includes("PG")
+          ? "PG"
+          : "GA";
+
+      const fandom =
+        [item.fandom, item.other_fandom]
+          .filter((s) => s && s !== "-")
+          .join(" / ") || null;
+
+      const sampleWorks: string[] = [];
+      if (Array.isArray(item.sampleworks_images)) {
+        for (const img of item.sampleworks_images) {
+          if (typeof img === "string" && img.startsWith("http")) {
+            sampleWorks.push(img);
+          }
+        }
+      }
+
+      const socialLinks: Array<{ platform: string; url: string; label: string }> = [];
+      if (item.circle_twitter) {
+        socialLinks.push({
+          platform: "twitter",
+          url: item.circle_twitter,
+          label: "X (Twitter)"
+        });
+      }
+      if (item.circle_instagram) {
+        socialLinks.push({
+          platform: "instagram",
+          url: item.circle_instagram,
+          label: "Instagram"
+        });
+      }
+      if (item.circle_facebook) {
+        socialLinks.push({
+          platform: "facebook",
+          url: item.circle_facebook,
+          label: "Facebook"
+        });
+      }
+
+      const categories: string[] = [];
+      if (item.SellsArtbook) categories.push("Artbook");
+      if (item.SellsComic) categories.push("Comic");
+      if (item.SellsGoods) categories.push("Goods");
+      if (item.SellsNovel) categories.push("Novel");
+      if (item.SellsMusic) categories.push("Music");
+      if (item.SellsGame) categories.push("Game");
+
+      markers.push({
+        id: `cf22-booth-${item.id || item.user_id || code}`,
+        circleId: String(item.user_id || item.id || code),
+        circleName: item.name?.trim() || "Circle Kreator",
+        circleSlug: undefined,
+        boothCode: code,
+        hall,
+        day,
+        dayLabel,
+        rating,
+        fandom,
+        description: null,
+        circleCutUrl: item.circle_cut || null,
+        sampleWorks,
+        socialLinks,
+        categories,
+        posX: localCoords.x,
+        posY: localCoords.y,
+        masterX: masterCoords.x,
+        masterY: masterCoords.y,
+        isHighlighted: false,
+        isDone: false,
+        hasRush: false,
+        products: []
+      });
+    }
+
+    cf22ArchiveMarkersCache = markers;
+    return cf22ArchiveMarkersCache;
+  } catch (err) {
+    console.error("Gagal membaca arsip CF22:", err);
+    cf22ArchiveMarkersCache = [];
+    return cf22ArchiveMarkersCache;
+  }
+}
+
+export interface EventMapPageData {
+  slug: string;
+  event: {
+    id: string;
+    name: string;
+    slug: string;
+    venue: string;
+    datesText: string;
+    editionNumber: number;
+    hallsText: string;
+  };
+  isCf23: boolean;
+  isCf22: boolean;
+  statusText?: string;
+  halls: HallDefinition[];
+  communityZones: CommunityZone[];
+  archiveMarkers: CircleMarker[];
+}
+
+export async function getEventMapPageData(rawSlug: string): Promise<EventMapPageData> {
+  const normalizedSlug = rawSlug.toLowerCase().trim();
+  const isCf23 = normalizedSlug === "cf23" || normalizedSlug === "cf-23";
+  const isCf22 = normalizedSlug === "cf22" || normalizedSlug === "cf-22";
+
+  let eventRecord = null;
+  try {
+    eventRecord = await db.query.events.findFirst({
+      where: eq(events.slug, normalizedSlug)
+    });
+  } catch {
+    // Fallback bila database belum terkoneksi
+  }
+
+  const guide = getEventDetailDataWithFallback(rawSlug, eventRecord?.name, eventRecord?.venue);
+  const archiveMarkers = loadCF22ArchiveMarkers();
+
+  return {
+    slug: normalizedSlug,
+    event: {
+      id: eventRecord?.id || `event-${normalizedSlug}`,
+      name: eventRecord?.name || guide.editionName,
+      slug: normalizedSlug,
+      venue: eventRecord?.venue || guide.venueFull,
+      datesText: guide.datesText,
+      editionNumber: guide.editionNumber,
+      hallsText: guide.attendance.venueHalls
+    },
+    isCf23,
+    isCf22,
+    statusText: isCf23
+      ? "Denah Venue CF 23 (Hall 5-10) — Penempatan meja booth 1.959 circle sedang menunggu rilis resmi panitia"
+      : undefined,
+    halls: ICE_BSD_HALLS,
+    communityZones: CF23_COMMUNITY_ZONES,
+    archiveMarkers
   };
 }

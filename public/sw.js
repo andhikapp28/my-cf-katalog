@@ -19,11 +19,11 @@
  *   yang diketik user), supaya visual tetap muncul walau sinyal jelek saat
  *   event, tapi tetap ter-refresh di background saat online.
  * - Stale-while-revalidate untuk halaman PUBLIK yang relevan dipakai offline
- *   saat event: "/", "/events", "/events/:slug", "/products", "/products/:id",
- *   "/circles", "/circles/:id", "/maps", "/maps/:id", "/wishlist", "/docs".
+ *   saat event: "/", "/events", "/events/:slug",
+ *   "/circles", "/wishlist", "/docs".
  */
 
-const CACHE_VERSION = "v8";
+const CACHE_VERSION = "v9";
 const STATIC_CACHE = `comipocket-static-${CACHE_VERSION}`;
 const PAGES_CACHE = `comipocket-pages-${CACHE_VERSION}`;
 const IMAGE_CACHE = `comipocket-images-${CACHE_VERSION}`;
@@ -32,9 +32,7 @@ const KNOWN_CACHES = [STATIC_CACHE, PAGES_CACHE, IMAGE_CACHE];
 const PUBLIC_PAGE_PATTERNS = [
   /^\/$/,
   /^\/events(\/.*)?$/,
-  /^\/products(\/.*)?$/,
   /^\/circles(\/.*)?$/,
-  /^\/maps(\/.*)?$/,
   /^\/wishlist\/?$/,
   /^\/docs\/?$/
 ];

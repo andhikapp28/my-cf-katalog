@@ -27,35 +27,30 @@ describe("Companion Toolkit & Hunting Flow Module", () => {
     it("memiliki tepat 3 kartu toolkit dengan konten TANALOKA yang lengkap", () => {
       expect(SURVIVAL_TOOLKIT_ITEMS).toHaveLength(3);
 
-      const [mapCard, cashCard, wishlistCard] = SURVIVAL_TOOLKIT_ITEMS;
+      const [circleCard, bookmarkCard, offlineCard] = SURVIVAL_TOOLKIT_ITEMS;
 
-      // 1. Peta Denah Interaktif Hall
-      expect(mapCard.title).toBe("Peta Denah Interaktif Hall");
-      expect(mapCard.linkHref).toBe("/maps");
-      const mapContent = JSON.stringify(mapCard);
-      expect(mapContent).toContain("A-15a");
-      expect(mapContent).toContain("TC-12");
-      expect(mapContent.toLowerCase()).toContain("pan");
-      expect(mapContent.toLowerCase()).toContain("zoom");
-      expect(mapContent.toLowerCase()).toContain("offline");
+      // 1. Pencarian Booth & Meja Circle
+      expect(circleCard.title).toBe("Pencarian Booth & Meja Circle");
+      expect(circleCard.linkHref).toBe("/circles");
+      const circleContent = JSON.stringify(circleCard);
+      expect(circleContent).toContain("A-15a");
+      expect(circleContent).toContain("TC-12");
+      expect(circleContent).toContain("Day 1");
+      expect(circleContent).toContain("Day 2");
 
-      // 2. Kalkulator Tunai ATM
-      expect(cashCard.title).toBe("Kalkulator Tunai ATM");
-      expect(cashCard.tag).toContain("ANTI-BLACKOUT QRIS");
-      expect(cashCard.linkHref).toBe("/wishlist");
-      const cashContent = JSON.stringify(cashCard);
-      expect(cashContent).toContain("50.000");
-      expect(cashContent).toContain("100.000");
-      expect(cashContent).toContain("QRIS");
+      // 2. Circle Tersimpan (Bookmark)
+      expect(bookmarkCard.title).toBe("Circle Tersimpan (Bookmark)");
+      expect(bookmarkCard.linkHref).toBe("/wishlist");
+      const bookmarkContent = JSON.stringify(bookmarkCard);
+      expect(bookmarkContent).toContain("Client Storage");
+      expect(bookmarkContent).toContain("login");
 
-      // 3. Wishlist & Checklist 100% Offline
-      expect(wishlistCard.title).toBe("Wishlist & Checklist 100% Offline");
-      expect(wishlistCard.linkHref).toBe("/wishlist");
-      const wishlistContent = JSON.stringify(wishlistCard);
-      expect(wishlistContent).toContain("Rush Pagi");
-      expect(wishlistContent).toContain("Pre-Order");
-      expect(wishlistContent).toContain("Client Storage");
-      expect(wishlistContent).toContain("login");
+      // 3. Akses 100% Offline PWA
+      expect(offlineCard.title).toBe("Akses 100% Offline PWA");
+      expect(offlineCard.linkHref).toBe("/circles");
+      const offlineContent = JSON.stringify(offlineCard);
+      expect(offlineContent).toContain("offline-first");
+      expect(offlineContent).toContain("Service worker");
     });
   });
 
@@ -65,30 +60,26 @@ describe("Companion Toolkit & Hunting Flow Module", () => {
 
       const [step1, step2, step3] = HUNTING_FLOW_STEPS;
 
-      // Step 01: Riset & Susun Wishlist di Rumah
+      // Step 01: Riset & Tandai Circle di Rumah
       expect(step1.step).toBe("01");
-      expect(step1.title).toBe("Riset & Susun Wishlist di Rumah");
+      expect(step1.title).toBe("Riset & Tandai Circle di Rumah");
       const step1Content = JSON.stringify(step1);
       expect(step1Content).toContain("1.400+");
-      expect(step1Content).toContain("Rush Pagi");
-      expect(step1Content).toContain("Pre-Order");
+      expect(step1Content).toContain("bookmark");
 
-      // Step 02: Tarik Tunai Pecahan Pas
+      // Step 02: Cek Jadwal & Rute Kunjungan
       expect(step2.step).toBe("02");
-      expect(step2.title).toBe("Tarik Tunai Pecahan Pas");
+      expect(step2.title).toBe("Cek Jadwal & Rute Kunjungan");
       const step2Content = JSON.stringify(step2);
-      expect(step2Content).toContain("kalkulator ATM");
-      expect(step2Content).toContain("50.000");
-      expect(step2Content).toContain("100.000");
-      expect(step2Content).toContain("gate");
+      expect(step2Content).toContain("Day 1");
+      expect(step2Content).toContain("Day 2");
 
-      // Step 03: Navigasi Booth Tanpa Sinyal
+      // Step 03: Berburu Meja Stan Tanpa Sinyal
       expect(step3.step).toBe("03");
-      expect(step3.title).toBe("Navigasi Booth Tanpa Sinyal");
+      expect(step3.title).toBe("Berburu Meja Stan Tanpa Sinyal");
       const step3Content = JSON.stringify(step3);
-      expect(step3Content).toContain("denah");
-      expect(step3Content).toContain("checklist offline");
-      expect(step3Content).toContain("HP");
+      expect(step3Content).toContain("A-15a");
+      expect(step3Content).toContain("TC-12");
     });
   });
 
@@ -96,13 +87,12 @@ describe("Companion Toolkit & Hunting Flow Module", () => {
     it("CompanionToolkitSection merender judul dan 3 kartu fitur ke HTML", () => {
       const html = renderToString(React.createElement(CompanionToolkitSection));
       expect(html).toContain("EVENT DAY SURVIVAL &amp; COMPANION TOOLKIT");
-      expect(html).toContain("Peta Denah Interaktif Hall");
-      expect(html).toContain("Kalkulator Tunai ATM");
-      expect(html).toContain("Wishlist &amp; Checklist 100% Offline");
+      expect(html).toContain("Pencarian Booth &amp; Meja Circle");
+      expect(html).toContain("Circle Tersimpan (Bookmark)");
+      expect(html).toContain("Akses 100% Offline PWA");
       expect(html).toContain("A-15a");
       expect(html).toContain("TC-12");
-      expect(html).toContain("Anti-Blackout QRIS");
-      expect(html).toContain('href="/maps"');
+      expect(html).toContain('href="/circles"');
       expect(html).toContain('href="/wishlist"');
     });
 
@@ -110,11 +100,11 @@ describe("Companion Toolkit & Hunting Flow Module", () => {
       const html = renderToString(React.createElement(ConventionHuntingFlowSection));
       expect(html).toContain("3-STEP CONVENTION HUNTING FLOW");
       expect(html).toContain("01");
-      expect(html).toContain("Riset &amp; Susun Wishlist di Rumah");
+      expect(html).toContain("Riset &amp; Tandai Circle di Rumah");
       expect(html).toContain("02");
-      expect(html).toContain("Tarik Tunai Pecahan Pas");
+      expect(html).toContain("Cek Jadwal &amp; Rute Kunjungan");
       expect(html).toContain("03");
-      expect(html).toContain("Navigasi Booth Tanpa Sinyal");
+      expect(html).toContain("Berburu Meja Stan Tanpa Sinyal");
     });
 
     it("CompanionToolkit wrapper merender kedua seksi dan mendukung toggle visibilitas", () => {

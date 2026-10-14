@@ -5,47 +5,41 @@ import Link from "next/link";
 import {
   Calendar,
   Heart,
-  RotateCcw,
   Search,
-  ShoppingBag,
-  Sparkles,
-  Trash2,
-  WifiOff,
-  Zap
+  Store,
+  Trash2
 } from "lucide-react";
 import { toast } from "sonner";
 import {
-  calculateWishlistSummary,
-  clearPurchasedProducts,
   clearWishlist,
-  compareBoothOrder,
-  getPurchasedServerSnapshot,
-  getPurchasedSnapshot,
   getWishlistServerSnapshot,
   getWishlistSnapshot,
-  removeFromWishlist,
-  saveWishlistProductIds,
-  subscribePurchased,
-  subscribeWishlist,
-  togglePurchasedProduct
+  isCircleInWishlist,
+  subscribeWishlist
 } from "@/lib/wishlist";
+import { compareBoothCodes } from "@/lib/floor-map";
 import { cn } from "@/lib/utils";
-import { formatCurrency } from "@/lib/format";
-import { CashReadinessCalculator } from "./cash-readiness-calculator";
-import { BoothRecapSection } from "./booth-recap-section";
+import { EmptyState } from "@/components/ui/empty-state";
+import {
+  CompactCircleCard,
+  type CompactCircleItem
+} from "@/components/products/compact-circle-card";
+import { CircleCatalogModal } from "@/components/products/circle-catalog-modal";
 import { ShareWishlistModal } from "./share-wishlist-modal";
-import type { BoothGroup, WishlistProduct, WishlistTabFilter } from "./types";
+import type { CatalogCircle } from "@/db/queries";
 
 export function WishlistPageClient({
-  initialProducts = [],
-  activeEventName = "Comic Frontier (Comifuro)"
+  allCircles = [],
+  activeEventName = "Comic Frontier 22 (Comifuro 22)"
 }: {
-  initialProducts: WishlistProduct[];
+  allCircles: CatalogCircle[];
   activeEventName?: string;
 }) {
   const [mounted, setMounted] = useState(false);
-  const [activeTab, setActiveTab] = useState<WishlistTabFilter>("ALL");
+  const [activeDay, setActiveDay] = useState<"ALL" | "DAY_1" | "DAY_2">("ALL");
+  const [sortBy, setSortBy] = useState<"booth" | "name">("booth");
   const [searchQuery, setSearchQuery] = useState("");
+  const [selectedCircle, setSelectedCircle] = useState<CompactCircleItem | null>(null);
 
   useEffect(() => {
     setMounted(true);
@@ -57,408 +51,301 @@ export function WishlistPageClient({
     getWishlistServerSnapshot
   );
 
-  const rawPurchasedIds = useSyncExternalStore(
-    subscribePurchased,
-    getPurchasedSnapshot,
-    getPurchasedServerSnapshot
-  );
-
   const wishlistIds = useMemo(
     () => (mounted ? rawWishlistIds : []),
     [mounted, rawWishlistIds]
   );
-  const purchasedIdSet = useMemo(() => new Set(mounted ? rawPurchasedIds : []), [mounted, rawPurchasedIds]);
-  const productMap = useMemo(() => {
-    const map = new Map<string, WishlistProduct>();
-    for (const p of initialProducts) {
-      map.set(p.id, p);
-    }
-    return map;
-  }, [initialProducts]);
-  const wishlistItems = useMemo(() => {
-    const items: WishlistProduct[] = [];
-    for (const id of wishlistIds) {
-      const found = productMap.get(id);
-      if (found) {
-        items.push(found);
-      }
-    }
-    return items;
-  }, [wishlistIds, productMap]);
-  const itemsForCalc = useMemo(() => {
-    return wishlistItems.map((item) => ({
-      ...item,
-      isPurchased: purchasedIdSet.has(item.id)
-    }));
-  }, [wishlistItems, purchasedIdSet]);
-  const summary = useMemo(() => {
-    return calculateWishlistSummary(itemsForCalc);
-  }, [itemsForCalc]);
-  const tabCounts = useMemo(() => {
-    return {
-      ALL: wishlistItems.length,
-      DAY_1: wishlistItems.filter(
-        (item) => !item.targetDay || item.targetDay === "ALL_DAYS" || item.targetDay === "DAY_1"
-      ).length,
-      DAY_2: wishlistItems.filter(
-        (item) => !item.targetDay || item.targetDay === "ALL_DAYS" || item.targetDay === "DAY_2"
-      ).length,
-      RUSH: wishlistItems.filter((item) => item.isRush).length
-    };
-  }, [wishlistItems]);
-  const filteredItems = useMemo(() => {
-    let result = wishlistItems;
-    if (activeTab === "DAY_1") {
+
+  const savedCircles = useMemo(() => {
+    if (wishlistIds.length === 0) return [];
+
+    const idSet = new Set(wishlistIds);
+    return allCircles.filter((circle) => {
+      const productIds = circle.products?.map((p) => p.id) || [];
+      return isCircleInWishlist(circle.id, productIds, idSet);
+    });
+  }, [allCircles, wishlistIds]);
+
+  const filteredCircles = useMemo(() => {
+    let result = savedCircles;
+
+    if (activeDay === "DAY_1") {
       result = result.filter(
-        (item) => !item.targetDay || item.targetDay === "ALL_DAYS" || item.targetDay === "DAY_1"
+        (c) => !c.day || c.day === "ALL_DAYS" || c.day === "DAY_1"
       );
-    } else if (activeTab === "DAY_2") {
+    } else if (activeDay === "DAY_2") {
       result = result.filter(
-        (item) => !item.targetDay || item.targetDay === "ALL_DAYS" || item.targetDay === "DAY_2"
+        (c) => !c.day || c.day === "ALL_DAYS" || c.day === "DAY_2"
       );
-    } else if (activeTab === "RUSH") {
-      result = result.filter((item) => item.isRush);
     }
+
     if (searchQuery.trim()) {
       const q = searchQuery.toLowerCase().trim();
       result = result.filter(
-        (item) =>
-          item.name.toLowerCase().includes(q) ||
-          item.circleName.toLowerCase().includes(q) ||
-          (item.boothCode && item.boothCode.toLowerCase().includes(q))
+        (c) =>
+          c.name.toLowerCase().includes(q) ||
+          (c.boothCode && c.boothCode.toLowerCase().includes(q)) ||
+          (c.fandom && c.fandom.toLowerCase().includes(q))
       );
     }
 
-    return result;
-  }, [wishlistItems, activeTab, searchQuery]);
-
-  // Group by Booth & natural sort by Hall and boothCode
-  const boothGroups = useMemo<BoothGroup[]>(() => {
-    const groupMap = new Map<string, BoothGroup>();
-
-    for (const item of filteredItems) {
-      const boothKey = `${item.circleId}-${item.boothCode || "unassigned"}`;
-      let group = groupMap.get(boothKey);
-
-      if (!group) {
-        group = {
-          circleId: item.circleId,
-          circleName: item.circleName,
-          boothCode: item.boothCode || "-",
-          hall: item.hall || "Hall ICE",
-          floorMapId: item.floorMapId,
-          items: [],
-          allPurchased: false,
-          hasRush: false
-        };
-        groupMap.set(boothKey, group);
-      }
-
-      group.items.push(item);
-      if (item.isRush) {
-        group.hasRush = true;
-      }
-    }
-
-    // Sort items within each booth (Rush first, then high priority, then name)
-    const groups = Array.from(groupMap.values());
-    for (const group of groups) {
-      group.items.sort((a, b) => {
-        const aRush = a.isRush ? 1 : 0;
-        const bRush = b.isRush ? 1 : 0;
-        if (aRush !== bRush) return bRush - aRush;
+    return [...result].sort((a, b) => {
+      if (sortBy === "name") {
         return a.name.localeCompare(b.name);
-      });
-      group.allPurchased = group.items.every((it) => purchasedIdSet.has(it.id));
-    }
-    groups.sort((a, b) => compareBoothOrder(a, b));
-
-    return groups;
-  }, [filteredItems, purchasedIdSet]);
-  const handleTogglePurchased = (productId: string) => {
-    const isNowBought = togglePurchasedProduct(productId);
-    const item = productMap.get(productId);
-    if (isNowBought) {
-      toast.success(
-        item ? `✓ "${item.name}" ditandai sudah dibeli!` : "Ditandai sudah dibeli!",
-        { duration: 2000 }
-      );
-    } else {
-      toast.info("Status belanja dibatalkan");
-    }
-  };
-
-  const handleRemoveItem = (productId: string) => {
-    removeFromWishlist(productId);
-    const item = productMap.get(productId);
-    toast.info(item ? `"${item.name}" dihapus dari Wishlist` : "Karya dihapus dari Wishlist");
-  };
-
-  const handleResetChecklist = () => {
-    if (purchasedIdSet.size === 0) return;
-    if (window.confirm("Reset semua centang belanja hari-H? Status karya akan kembali menjadi belum dibeli.")) {
-      clearPurchasedProducts();
-      toast.success("Checklist belanja berhasil di-reset.");
-    }
-  };
-
-  const handleClearWishlist = () => {
-    if (wishlistItems.length === 0) return;
-    if (window.confirm("Kosongkan seluruh daftar Wishlist? Aksi ini akan menghapus semua target belanja yang disimpan di browser ini.")) {
-      clearWishlist();
-      clearPurchasedProducts();
-      toast.success("Wishlist telah dikosongkan.");
-    }
-  };
-
-  const handleLoadDemo = () => {
-    if (initialProducts.length === 0) {
-      toast.error("Tidak ada data produk katalog.");
-      return;
-    }
-    const sample = initialProducts.slice(0, 5).map((p) => p.id);
-    saveWishlistProductIds(sample);
-    toast.success("5 contoh karya berhasil dimuat ke Wishlist!", {
-      description: "Silakan coba mode checklist, filter, dan kalkulator ATM."
+      }
+      return compareBoothCodes(a.boothCode, b.boothCode);
     });
+  }, [savedCircles, activeDay, sortBy, searchQuery]);
+
+  const dayCounts = useMemo(() => {
+    return {
+      ALL: savedCircles.length,
+      DAY_1: savedCircles.filter(
+        (c) => !c.day || c.day === "ALL_DAYS" || c.day === "DAY_1"
+      ).length,
+      DAY_2: savedCircles.filter(
+        (c) => !c.day || c.day === "ALL_DAYS" || c.day === "DAY_2"
+      ).length
+    };
+  }, [savedCircles]);
+
+  const handleClearAll = () => {
+    if (savedCircles.length === 0) return;
+    if (
+      window.confirm(
+        "Hapus semua circle tersimpan? Daftar bookmark circle incaranmu di browser ini akan dikosongkan."
+      )
+    ) {
+      clearWishlist();
+      toast.success("Daftar circle tersimpan telah dikosongkan.");
+    }
   };
-  const totalCount = wishlistItems.length;
-  const purchasedCount = wishlistItems.filter((it) => purchasedIdSet.has(it.id)).length;
-  const progressPercent = totalCount > 0 ? Math.round((purchasedCount / totalCount) * 100) : 0;
 
   return (
-    <div className="container-shell space-y-8 py-8 md:py-10">
-      <div className="flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
-        <div className="space-y-2">
-          <div className="flex flex-wrap items-center gap-2">
-            <span className="inline-flex items-center gap-1.5 rounded-full bg-brand-500/10 px-3 py-1 font-mono text-[11px] font-bold uppercase tracking-wider text-brand-700">
-              <Sparkles className="h-3 w-3" />
-              100% Zero-Login · LocalStorage
-            </span>
-            <span className="inline-flex items-center gap-1 rounded-full bg-emerald-50 px-2.5 py-1 font-mono text-[11px] font-semibold text-emerald-800">
-              <WifiOff className="h-3 w-3" />
-              Offline-ready di ICE BSD
+    <div className="container-shell space-y-8 py-8 sm:py-10">
+      {/* 1. Header Section */}
+      <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between border-b border-black/10 pb-6 sm:pb-8">
+        <div className="space-y-3 max-w-3xl">
+          <div className="inline-flex items-center gap-2 rounded-full border border-[#F84632]/25 bg-[#F84632]/10 px-3 py-1 shadow-xs">
+            <span className="font-mono text-xs font-bold tracking-widest text-[#F84632] uppercase">
+              SAVED BOOKMARKS · ICE BSD
             </span>
           </div>
 
-          <h1 className="font-[var(--font-display)] text-4xl sm:text-5xl lg:text-6xl font-black tracking-tight text-ink-900 leading-none">
-            My Wishlist & Checklist
+          <h1 className="font-[var(--font-display)] text-4xl sm:text-5xl lg:text-6xl font-black uppercase tracking-tight text-[#111215] leading-[0.92]">
+            CIRCLE TERSIMPAN &amp; RUTE KUNJUNGAN<span className="text-[#F84632]">*</span>
           </h1>
-          <p className="max-w-2xl text-sm sm:text-base text-ink-500">
-            Daftar karya incaran personal kamu untuk {activeEventName}. Disimpan langsung di browser kamu, siap dibuka offline di venue tanpa bergantung pada sinyal ponsel.
+
+          <p className="max-w-2xl text-sm sm:text-base font-medium leading-relaxed text-[#111215]/80">
+            Daftar stan circle kreator dan nomor meja booth incaranmu untuk {activeEventName}. Disimpan langsung di browser dan siap diakses secara offline di dalam hall venue tanpa koneksi internet.
           </p>
         </div>
-        {wishlistItems.length > 0 && (
+
+        {savedCircles.length > 0 ? (
           <div className="flex flex-wrap items-center gap-2.5 shrink-0">
             <ShareWishlistModal
               eventName={activeEventName}
-              boothGroups={boothGroups}
-              summary={summary}
-              purchasedIds={purchasedIdSet}
+              circles={filteredCircles}
             />
 
             <button
               type="button"
-              onClick={handleResetChecklist}
-              disabled={purchasedIdSet.size === 0}
-              className="inline-flex min-h-[44px] items-center gap-1.5 rounded-xl border border-line bg-white px-3.5 py-2.5 font-mono text-xs font-bold text-zinc-700 hover:bg-zinc-50 disabled:opacity-40 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500"
-              title="Reset semua centang belanja kembali ke belum dibeli"
-            >
-              <RotateCcw className="h-3.5 w-3.5" />
-              <span className="hidden sm:inline">Reset Centang</span>
-            </button>
-
-            <button
-              type="button"
-              onClick={handleClearWishlist}
-              className="inline-flex min-h-[44px] items-center gap-1.5 rounded-xl border border-rose-200 bg-white px-3 py-2.5 font-mono text-xs font-bold text-rose-600 hover:bg-rose-50 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-rose-500"
-              title="Hapus semua item dari Wishlist"
+              onClick={handleClearAll}
+              className="inline-flex min-h-[44px] items-center gap-1.5 rounded-xl border border-zinc-200 bg-white px-3.5 py-2 font-mono text-xs font-bold text-rose-600 hover:bg-rose-50 transition active:scale-[0.98] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-rose-500 shadow-2xs"
+              title="Kosongkan seluruh circle tersimpan"
             >
               <Trash2 className="h-3.5 w-3.5" />
-              <span className="hidden sm:inline">Kosongkan</span>
+              <span className="hidden sm:inline">Hapus Semua</span>
             </button>
           </div>
-        )}
+        ) : null}
       </div>
-      {wishlistItems.length > 0 && (
-        <div className="panel p-4 sm:p-5 border-line/80 bg-white shadow-xs">
-          <div className="flex flex-wrap items-center justify-between gap-2 text-xs sm:text-sm">
-            <div className="flex items-center gap-2">
-              <span className="inline-flex h-6 w-6 items-center justify-center rounded-full bg-brand-500 text-white font-mono text-xs font-bold">
-                ✓
-              </span>
-              <span className="font-bold text-ink-900">
-                Progress Hunting Venue: {purchasedCount} dari {totalCount} karya terbeli
-              </span>
-            </div>
-            <div className="font-mono text-xs font-bold text-brand-700">
-              {progressPercent}% Selesai · Sisa {formatCurrency(summary.remainingTotal)}
-            </div>
-          </div>
 
-          <div className="mt-3 h-3 w-full overflow-hidden rounded-full bg-zinc-100 p-0.5">
-            <div
-              className="h-full rounded-full bg-gradient-to-r from-brand-500 via-[#F84632] to-emerald-500 transition-all duration-300"
-              style={{ width: `${progressPercent}%` }}
-            />
-          </div>
-        </div>
-      )}
-      {wishlistItems.length > 0 && (
-        <CashReadinessCalculator summary={summary} />
-      )}
-      {wishlistItems.length > 0 ? (
+      {savedCircles.length > 0 ? (
         <div className="space-y-6">
-          <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between border-b border-line pb-4">
-            <div role="tablist" aria-label="Filter hari wishlist" className="flex flex-wrap items-center gap-1.5 overflow-x-auto pb-1">
-              <button
-                type="button"
-                role="tab"
-                aria-selected={activeTab === "ALL"}
-                onClick={() => setActiveTab("ALL")}
-                className={cn(
-                  "inline-flex min-h-[40px] sm:min-h-[44px] items-center gap-1.5 rounded-xl px-3.5 py-2 font-mono text-xs font-bold transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500",
-                  activeTab === "ALL"
-                    ? "bg-[#111215] text-white shadow-xs"
-                    : "bg-white text-zinc-600 border border-line hover:bg-zinc-50"
-                )}
-              >
-                <span>Semua</span>
-                <span className={cn(
-                  "rounded-full px-1.5 py-0.2 text-[10px]",
-                  activeTab === "ALL" ? "bg-white/20 text-white" : "bg-zinc-100 text-zinc-700"
-                )}>
-                  {tabCounts.ALL}
+          {/* 2. Filter & Sort Toolbar */}
+          <div className="space-y-4 rounded-3xl border border-zinc-200 bg-white/90 p-4 shadow-sm sm:p-5">
+            <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
+              {/* Day Filter Chips */}
+              <div role="tablist" aria-label="Filter hari kehadiran" className="flex flex-wrap items-center gap-2">
+                <span className="font-mono text-xs font-bold uppercase tracking-wider text-zinc-500 mr-1">
+                  HARI:
                 </span>
-              </button>
+                <button
+                  type="button"
+                  role="tab"
+                  aria-selected={activeDay === "ALL"}
+                  onClick={() => setActiveDay("ALL")}
+                  className={cn(
+                    "inline-flex min-h-[40px] items-center gap-1.5 rounded-full px-3.5 py-1.5 font-mono text-xs font-bold uppercase tracking-wider transition border focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#111215]",
+                    activeDay === "ALL"
+                      ? "bg-[#111215] text-[#D6F834] border-[#111215] shadow-xs"
+                      : "bg-white text-zinc-600 border-zinc-200 hover:border-zinc-300 hover:bg-zinc-50"
+                  )}
+                >
+                  <span>Semua</span>
+                  <span className={cn(
+                    "rounded-full px-1.5 py-0.2 text-[10px]",
+                    activeDay === "ALL" ? "bg-white/20 text-white" : "bg-zinc-100 text-zinc-700"
+                  )}>
+                    {dayCounts.ALL}
+                  </span>
+                </button>
 
-              <button
-                type="button"
-                role="tab"
-                aria-selected={activeTab === "DAY_1"}
-                onClick={() => setActiveTab("DAY_1")}
-                className={cn(
-                  "inline-flex min-h-[40px] sm:min-h-[44px] items-center gap-1.5 rounded-xl px-3.5 py-2 font-mono text-xs font-bold transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500",
-                  activeTab === "DAY_1"
-                    ? "bg-amber-500 text-white shadow-xs"
-                    : "bg-white text-zinc-600 border border-line hover:bg-zinc-50"
-                )}
-              >
-                <Calendar className="h-3.5 w-3.5" />
-                <span>Day 1 (Sabtu)</span>
-                <span className={cn(
-                  "rounded-full px-1.5 py-0.2 text-[10px]",
-                  activeTab === "DAY_1" ? "bg-white/20 text-white" : "bg-zinc-100 text-zinc-700"
-                )}>
-                  {tabCounts.DAY_1}
-                </span>
-              </button>
+                <button
+                  type="button"
+                  role="tab"
+                  aria-selected={activeDay === "DAY_1"}
+                  onClick={() => setActiveDay("DAY_1")}
+                  className={cn(
+                    "inline-flex min-h-[40px] items-center gap-1.5 rounded-full px-3.5 py-1.5 font-mono text-xs font-bold uppercase tracking-wider transition border focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#111215]",
+                    activeDay === "DAY_1"
+                      ? "bg-[#5398DA] text-[#111215] font-black border-[#5398DA] shadow-xs"
+                      : "bg-white text-zinc-600 border-zinc-200 hover:border-[#5398DA]/50 hover:text-[#5398DA]"
+                  )}
+                >
+                  <Calendar className="h-3.5 w-3.5" />
+                  <span>Day 1 (Sabtu)</span>
+                  <span className={cn(
+                    "rounded-full px-1.5 py-0.2 text-[10px]",
+                    activeDay === "DAY_1" ? "bg-white/20 text-white" : "bg-zinc-100 text-zinc-700"
+                  )}>
+                    {dayCounts.DAY_1}
+                  </span>
+                </button>
 
-              <button
-                type="button"
-                role="tab"
-                aria-selected={activeTab === "DAY_2"}
-                onClick={() => setActiveTab("DAY_2")}
-                className={cn(
-                  "inline-flex min-h-[40px] sm:min-h-[44px] items-center gap-1.5 rounded-xl px-3.5 py-2 font-mono text-xs font-bold transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500",
-                  activeTab === "DAY_2"
-                    ? "bg-sky-600 text-white shadow-xs"
-                    : "bg-white text-zinc-600 border border-line hover:bg-zinc-50"
-                )}
-              >
-                <Calendar className="h-3.5 w-3.5" />
-                <span>Day 2 (Minggu)</span>
-                <span className={cn(
-                  "rounded-full px-1.5 py-0.2 text-[10px]",
-                  activeTab === "DAY_2" ? "bg-white/20 text-white" : "bg-zinc-100 text-zinc-700"
-                )}>
-                  {tabCounts.DAY_2}
-                </span>
-              </button>
+                <button
+                  type="button"
+                  role="tab"
+                  aria-selected={activeDay === "DAY_2"}
+                  onClick={() => setActiveDay("DAY_2")}
+                  className={cn(
+                    "inline-flex min-h-[40px] items-center gap-1.5 rounded-full px-3.5 py-1.5 font-mono text-xs font-bold uppercase tracking-wider transition border focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#111215]",
+                    activeDay === "DAY_2"
+                      ? "bg-[#D6F834] text-[#111215] border-[#D6F834] shadow-xs"
+                      : "bg-white text-zinc-600 border-zinc-200 hover:border-[#D6F834] hover:bg-[#D6F834]/10"
+                  )}
+                >
+                  <Calendar className="h-3.5 w-3.5" />
+                  <span>Day 2 (Minggu)</span>
+                  <span className={cn(
+                    "rounded-full px-1.5 py-0.2 text-[10px]",
+                    activeDay === "DAY_2" ? "bg-white/20 text-white" : "bg-zinc-100 text-zinc-700"
+                  )}>
+                    {dayCounts.DAY_2}
+                  </span>
+                </button>
+              </div>
 
-              <button
-                type="button"
-                role="tab"
-                aria-selected={activeTab === "RUSH"}
-                onClick={() => setActiveTab("RUSH")}
-                className={cn(
-                  "inline-flex min-h-[40px] sm:min-h-[44px] items-center gap-1.5 rounded-xl px-3.5 py-2 font-mono text-xs font-bold transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500",
-                  activeTab === "RUSH"
-                    ? "bg-[#F84632] text-white shadow-xs"
-                    : "bg-white text-zinc-600 border border-line hover:bg-zinc-50"
-                )}
-              >
-                <Zap className="h-3.5 w-3.5 fill-current" />
-                <span>⚡ Rush 10:00</span>
-                <span className={cn(
-                  "rounded-full px-1.5 py-0.2 text-[10px]",
-                  activeTab === "RUSH" ? "bg-white/20 text-white" : "bg-zinc-100 text-zinc-700"
-                )}>
-                  {tabCounts.RUSH}
-                </span>
-              </button>
+              {/* Search Inside Bookmarks */}
+              <div className="relative sm:w-72">
+                <Search className="absolute inset-y-0 left-3 my-auto h-3.5 w-3.5 text-zinc-400" />
+                <input
+                  type="text"
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  placeholder="Cari di circle tersimpan..."
+                  aria-label="Cari di circle tersimpan"
+                  className="w-full rounded-2xl border border-zinc-200 bg-zinc-50/70 py-2.5 pl-9 pr-3 text-xs text-zinc-900 placeholder:text-zinc-400 focus:border-[#111215] focus:bg-white focus:outline-none focus-visible:ring-2 focus-visible:ring-[#111215] transition"
+                />
+              </div>
             </div>
-            <div className="relative sm:w-64">
-              <Search className="absolute inset-y-0 left-3 my-auto h-4 w-4 text-zinc-500" />
-              <input
-                type="text"
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                placeholder="Cari di wishlist..."
-                aria-label="Cari di wishlist"
-                className="w-full rounded-xl border border-line bg-white pl-9 pr-3 py-1.5 text-xs font-medium text-ink-900 placeholder:text-zinc-500 focus:border-brand-600 focus:outline-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500"
-              />
+
+            {/* Sub-bar: Count & Sorting */}
+            <div className="flex flex-wrap items-center justify-between gap-3 pt-3 border-t border-zinc-100">
+              <span className="font-mono text-xs font-bold text-zinc-700">
+                Menampilkan <strong className="text-[#F84632] font-mono">{filteredCircles.length}</strong> Circle Incaran
+              </span>
+
+              <div className="inline-flex items-center rounded-2xl border border-zinc-200 bg-white p-1 shadow-2xs">
+                <span className="px-2 text-[11px] font-mono font-bold uppercase text-zinc-400">
+                  URUTKAN:
+                </span>
+                <button
+                  type="button"
+                  onClick={() => setSortBy("booth")}
+                  className={cn(
+                    "rounded-xl px-3 py-1 font-mono text-xs font-bold uppercase tracking-wider transition",
+                    sortBy === "booth"
+                      ? "bg-[#111215] text-[#D6F834]"
+                      : "text-zinc-600 hover:text-zinc-900"
+                  )}
+                >
+                  Rute Meja (Booth)
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setSortBy("name")}
+                  className={cn(
+                    "rounded-xl px-3 py-1 font-mono text-xs font-bold uppercase tracking-wider transition",
+                    sortBy === "name"
+                      ? "bg-[#111215] text-[#D6F834]"
+                      : "text-zinc-600 hover:text-zinc-900"
+                  )}
+                >
+                  Nama Circle
+                </button>
+              </div>
             </div>
           </div>
-          <BoothRecapSection
-            boothGroups={boothGroups}
-            purchasedIds={purchasedIdSet}
-            onTogglePurchased={handleTogglePurchased}
-            onRemoveItem={handleRemoveItem}
-          />
+
+          {/* 3. Bookmarked Circle Cards Grid */}
+          {filteredCircles.length > 0 ? (
+            <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+              {filteredCircles.map((circle) => (
+                <CompactCircleCard
+                  key={circle.id}
+                  circle={circle as unknown as CompactCircleItem}
+                  onSelectCircle={(c) => setSelectedCircle(c)}
+                />
+              ))}
+            </div>
+          ) : (
+            <EmptyState
+              title="Tidak ada circle yang cocok"
+              description="Tidak ada circle tersimpan yang sesuai dengan kata kunci pencarian atau filter hari yang dipilih."
+            />
+          )}
         </div>
       ) : (
-        <div className="panel p-10 sm:p-16 text-center space-y-6 max-w-2xl mx-auto border-dashed border-2">
-          <div className="inline-flex h-20 w-20 items-center justify-center rounded-3xl bg-brand-50 text-brand-600 shadow-soft">
+        /* 4. Empty State When Zero Circles Saved */
+        <div className="rounded-3xl border-2 border-dashed border-zinc-300 p-10 sm:p-16 text-center space-y-6 max-w-2xl mx-auto bg-white/70 shadow-xs">
+          <div className="inline-flex h-20 w-20 items-center justify-center rounded-3xl bg-[#F84632]/10 text-[#F84632] shadow-sm">
             <Heart className="h-10 w-10 stroke-[1.5]" />
           </div>
 
           <div className="space-y-2">
-            <h2 className="font-[var(--font-display)] text-3xl font-black text-ink-900 sm:text-4xl">
-              Wishlist Kamu Masih Kosong
+            <h2 className="font-[var(--font-display)] text-3xl font-black text-[#111215] sm:text-4xl uppercase tracking-tight">
+              Belum Ada Circle Tersimpan
             </h2>
-            <p className="text-sm text-ink-500 leading-relaxed max-w-md mx-auto">
-              Belum ada karya yang kamu tandai. Pilih karya incaran dari katalog kreator lalu tekan tombol <strong className="text-brand-600">♥ Wishlist</strong> untuk menyimpan target belanja.
+            <p className="text-sm text-zinc-600 leading-relaxed max-w-md mx-auto font-medium">
+              Tandai circle kreator incaranmu dengan menekan tombol hati pada kartu circle di direktori untuk menyusun rute hunting saat hari-H.
             </p>
           </div>
 
           <div className="flex flex-wrap items-center justify-center gap-3 pt-2">
             <Link
-              href="/products"
-              className="inline-flex min-h-[44px] items-center gap-2 rounded-2xl bg-brand-500 px-6 py-3 font-mono text-xs font-bold uppercase text-white shadow-soft hover:bg-brand-600 transition-all active:scale-[0.98]"
+              href="/circles"
+              className="inline-flex min-h-[44px] items-center gap-2 rounded-full bg-[#111215] px-6 py-3 font-mono text-xs font-bold uppercase text-[#D6F834] shadow-sm hover:bg-zinc-800 transition active:scale-[0.98]"
             >
-              <ShoppingBag className="h-4 w-4" />
-              <span>Buka Katalog Karya</span>
+              <Store className="h-4 w-4" />
+              <span>Jelajahi Direktori Circle</span>
             </Link>
-
-            {initialProducts.length > 0 && (
-              <button
-                type="button"
-                onClick={handleLoadDemo}
-                className="inline-flex min-h-[44px] items-center gap-2 rounded-2xl border border-line bg-white px-5 py-3 font-mono text-xs font-bold uppercase text-zinc-700 hover:bg-zinc-50 transition-all active:scale-[0.98]"
-              >
-                <Sparkles className="h-4 w-4 text-brand-600" />
-                <span>Coba Muat Contoh (Demo)</span>
-              </button>
-            )}
           </div>
 
-          <div className="pt-6 border-t border-line text-xs text-zinc-500 space-y-1">
-            <p className="font-semibold text-zinc-700">Tanpa Login & Bebas Tracking</p>
-            <p>Data wishlist tersimpan aman secara offline di browser lokal kamu dan tidak dikirimkan ke server kami.</p>
+          <div className="pt-6 border-t border-zinc-200 text-xs text-zinc-500 space-y-1 font-mono">
+            <p className="font-bold text-zinc-700">100% Client Storage · Bebas Login Akun</p>
+            <p>Daftar circle tersimpan otomatis di browser ponselmu dan siap dibuka offline di venue ICE BSD.</p>
           </div>
         </div>
       )}
+
+      {/* 5. Interactive Circle Catalog Modal */}
+      <CircleCatalogModal
+        circle={selectedCircle}
+        isOpen={Boolean(selectedCircle)}
+        onClose={() => setSelectedCircle(null)}
+      />
     </div>
   );
 }

@@ -36,12 +36,12 @@ export function SiteFooter() {
             <ul className="space-y-1 text-sm font-medium text-zinc-600">
               <li>
                 <Link href="/" className="inline-flex min-h-[36px] items-center hover:text-[#111215] transition-colors py-1">
-                  Dashboard & Pulse
+                  Dashboard
                 </Link>
               </li>
               <li>
-                <Link href="/products" className="inline-flex min-h-[36px] items-center hover:text-[#111215] transition-colors py-1">
-                  Katalog Karya
+                <Link href="/events" className="inline-flex min-h-[36px] items-center hover:text-[#111215] transition-colors py-1">
+                  Arsip Event
                 </Link>
               </li>
               <li>
@@ -50,13 +50,8 @@ export function SiteFooter() {
                 </Link>
               </li>
               <li>
-                <Link href="/maps" className="inline-flex min-h-[36px] items-center hover:text-[#111215] transition-colors py-1">
-                  Peta Denah ICE BSD
-                </Link>
-              </li>
-              <li>
                 <Link href="/wishlist" className="inline-flex min-h-[36px] items-center hover:text-[#111215] transition-colors py-1">
-                  Wishlist & Checklist
+                  Circle Tersimpan
                 </Link>
               </li>
             </ul>
@@ -64,14 +59,9 @@ export function SiteFooter() {
 
           <div className="lg:col-span-3 space-y-2.5">
             <p className="font-mono text-xs font-bold uppercase tracking-widest text-zinc-900">
-              Sistem & Komunitas
+              Sistem &amp; Komunitas
             </p>
             <ul className="space-y-1 text-sm font-medium text-zinc-600">
-              <li>
-                <Link href="/events" className="inline-flex min-h-[36px] items-center hover:text-[#111215] transition-colors py-1">
-                  Arsip Comic Frontier
-                </Link>
-              </li>
               <li>
                 <Link href="/docs" className="inline-flex min-h-[36px] items-center hover:text-[#111215] transition-colors py-1">
                   Dokumentasi Panduan

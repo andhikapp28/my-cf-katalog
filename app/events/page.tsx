@@ -117,10 +117,10 @@ export default async function EventsPage() {
               <ArrowUpRight className="h-3.5 w-3.5" />
             </Link>
             <Link
-              href="/products"
+              href="/circles"
               className="inline-flex items-center gap-1.5 rounded-full bg-[#D6F834] px-5 py-2.5 text-xs font-black font-mono text-[#111215] transition hover:bg-[#cbf128] shadow-sm uppercase"
             >
-              <span>BUKA KATALOG KARYA</span>
+              <span>BUKA DIREKTORI CIRCLE</span>
               <ArrowUpRight className="h-3.5 w-3.5" />
             </Link>
           </div>
@@ -185,7 +185,7 @@ export default async function EventsPage() {
             </h3>
           </div>
           <Link
-            href="/products"
+            href="/circles"
             className="inline-flex items-center gap-1.5 font-mono text-xs font-bold text-[#D6F834] transition hover:text-white"
           >
             <span>Buka Filter Lengkap</span>
@@ -207,7 +207,7 @@ export default async function EventsPage() {
           ].map((fandom) => (
             <Link
               key={fandom}
-              href={`/products?q=${encodeURIComponent(fandom)}`}
+              href={`/circles?q=${encodeURIComponent(fandom)}`}
               className="rounded-full border border-white/15 bg-white/5 px-4 py-2 text-white/90 transition hover:border-[#D6F834] hover:bg-[#D6F834] hover:text-[#111215] shadow-2xs"
             >
               {fandom}
@@ -240,7 +240,7 @@ function EventCard({
   const circleCountNumber = Number(event.circleCount || 0);
   const productCountNumber = Number(event.productCount || 0);
   const hasData = circleCountNumber > 0 || productCountNumber > 0;
-  const primaryHref = event.isActive ? "/products" : `/events/${event.slug}`;
+  const primaryHref = event.isActive ? "/circles" : `/events/${event.slug}`;
 
   return (
     <article className="group relative flex flex-col justify-between overflow-hidden rounded-2xl border border-zinc-200/90 bg-white transition duration-300 hover:border-[#111215] hover:shadow-xl hover:shadow-black/5 h-full">
@@ -325,7 +325,7 @@ function EventCard({
           {event.isActive ? (
             <div className="flex items-center gap-2">
               <Link
-                href="/products"
+                href="/circles"
                 className="inline-flex items-center gap-1.5 rounded-full bg-[#111215] px-4 py-2 text-xs font-bold font-mono text-white transition hover:bg-[#D6F834] hover:text-[#111215] shadow-xs"
               >
                 <span>CARI 1.400+ CIRCLE</span>

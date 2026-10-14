@@ -1,5 +1,5 @@
 import { db } from "./index";
-import { events, products } from "./schema";
+import { events, floorMaps, products } from "./schema";
 import { eq, sql } from "drizzle-orm";
 
 interface EventSeedData {
@@ -18,13 +18,13 @@ const comifuroMasterEvents: EventSeedData[] = [
   {
     slug: "cf23",
     name: "Comic Frontier 23 (Comifuro 23)",
-    description: "Edisi Halloween dengan 1.500+ circle dan community booth.",
-    venue: "ICE BSD City (Hall 6 - 10 & Hall 5)",
+    description: "Perhelatan akbar Comic Frontier 23 di ICE BSD City (Hall 5-10) bertema Halloween dengan 1.959 circle kreator terkurasi dan area Free Community Booths.",
+    venue: "ICE BSD City (Hall 5, 6, 7, 8, 9, 10)",
     bannerImageUrl: "/banner/cf23.jpg",
     startsAt: new Date("2026-10-31T09:00:00+07:00"),
     endsAt: new Date("2026-11-01T18:00:00+07:00"),
     budget: 2500000,
-    isActive: false
+    isActive: true
   },
   {
     slug: "cf22",
@@ -35,7 +35,7 @@ const comifuroMasterEvents: EventSeedData[] = [
     startsAt: new Date("2026-05-16T09:00:00+07:00"),
     endsAt: new Date("2026-05-17T18:00:00+07:00"),
     budget: 2500000,
-    isActive: true
+    isActive: false
   },
   {
     slug: "cf21",
@@ -148,6 +148,95 @@ async function main() {
     }
   }
 
+  // Pastikan 6 hall venue (Hall 5, 6, 7, 8, 9, 10 ICE BSD City) disinkronkan untuk CF 23
+  const cf23Event = await db.query.events.findFirst({
+    where: eq(events.slug, "cf23")
+  });
+
+  if (cf23Event) {
+    const cf23Halls = [
+      {
+        name: "Hall 5 - Free Community Booths & Local Dev",
+        hall: "Hall 5",
+        imageUrl: "https://images.unsplash.com/photo-1524758631624-e2822e304c36?auto=format&fit=crop&w=1200&q=80",
+        width: 1400,
+        height: 900
+      },
+      {
+        name: "Hall 6 - F&B, Rest Area & Cosplay Photo Zone",
+        hall: "Hall 6",
+        imageUrl: "https://images.unsplash.com/photo-1492684223066-81342ee5ff30?auto=format&fit=crop&w=1200&q=80",
+        width: 1400,
+        height: 900
+      },
+      {
+        name: "Hall 7 - Artist Alley & Creators (Blok A-G)",
+        hall: "Hall 7",
+        imageUrl: "https://images.unsplash.com/photo-1524758631624-e2822e304c36?auto=format&fit=crop&w=1200&q=80",
+        width: 1400,
+        height: 900
+      },
+      {
+        name: "Hall 8 - Artist Alley & Creators (Blok H-N)",
+        hall: "Hall 8",
+        imageUrl: "https://images.unsplash.com/photo-1524758631624-e2822e304c36?auto=format&fit=crop&w=1200&q=80",
+        width: 1400,
+        height: 900
+      },
+      {
+        name: "Hall 9 - Creators Alley & Corporate Booths (Blok O-U)",
+        hall: "Hall 9",
+        imageUrl: "https://images.unsplash.com/photo-1492684223066-81342ee5ff30?auto=format&fit=crop&w=1200&q=80",
+        width: 1400,
+        height: 900
+      },
+      {
+        name: "Hall 10 - Main Stage, Exhibition & Official Goods",
+        hall: "Hall 10",
+        imageUrl: "https://images.unsplash.com/photo-1514525253161-7a46d19cd819?auto=format&fit=crop&w=1200&q=80",
+        width: 1400,
+        height: 900
+      }
+    ];
+
+    const existingMaps = await db.query.floorMaps.findMany({
+      where: eq(floorMaps.eventId, cf23Event.id)
+    });
+
+    for (const h of cf23Halls) {
+      const found = existingMaps.find((m) => m.hall === h.hall);
+      if (found) {
+        await db
+          .update(floorMaps)
+          .set({
+            name: h.name,
+            imageUrl: h.imageUrl,
+            width: h.width,
+            height: h.height,
+            updatedAt: new Date()
+          })
+          .where(eq(floorMaps.id, found.id));
+      } else {
+        await db.insert(floorMaps).values({
+          eventId: cf23Event.id,
+          name: h.name,
+          hall: h.hall,
+          imageUrl: h.imageUrl,
+          width: h.width,
+          height: h.height
+        });
+      }
+    }
+    console.log(" -> Floor maps CF 23 (6 Hall Venue: Hall 5, 6, 7, 8, 9, 10 ICE BSD City) disinkronkan.");
+
+    const pCount = await db
+      .select({ c: sql`count(*)` })
+      .from(products)
+      .where(eq(products.eventId, cf23Event.id));
+
+    console.log(`Katalog CF 23 aktif: ${pCount[0]?.c || 0} karya terindeks (kapasitas terdaftar: 1.959 Circle).`);
+  }
+
   // Cek apakah data katalog CF 22 sudah terindeks
   const cf22Event = await db.query.events.findFirst({
     where: eq(events.slug, "cf22")
@@ -159,10 +248,7 @@ async function main() {
       .from(products)
       .where(eq(products.eventId, cf22Event.id));
 
-    console.log(`Katalog CF 22 aktif: ${pCount[0]?.c || 0} karya terindeks.`);
-    if (Number(pCount[0]?.c || 0) === 0) {
-      console.log("Tip: Jalankan 'npm run db:import' untuk mengimpor seluruh katalog resmi Comifuro 22.");
-    }
+    console.log(`Katalog CF 22 diarsipkan: ${pCount[0]?.c || 0} karya tersimpan.`);
   }
 
   console.log("Seed & sinkronisasi master event Comifuro selesai.");

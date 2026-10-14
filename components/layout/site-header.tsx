@@ -14,8 +14,7 @@ import {
 const navLinks = [
   { href: "/", label: "Dashboard" },
   { href: "/events", label: "Events" },
-  { href: "/products", label: "Katalog" },
-  { href: "/maps", label: "Peta Denah" },
+  { href: "/circles", label: "Circles" },
   { href: "/wishlist", label: "Wishlist", isWishlist: true },
   { href: "/docs", label: "Docs" }
 ];

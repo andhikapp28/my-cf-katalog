@@ -13,6 +13,7 @@ import {
 } from "lucide-react";
 import { EmptyState } from "@/components/ui/empty-state";
 import { PreloadOfflineButton } from "@/components/dashboard/preload-offline-button";
+import { CountdownTimer } from "@/components/landing/countdown-timer";
 import {
   FadeInView,
   HeroEntranceMotion,
@@ -43,24 +44,24 @@ const comifuroEditions: ComifuroEdition[] = [
     id: "cf23",
     editionBadge: "CF 23",
     title: "Comic Frontier 23",
-    status: "Coming Soon",
+    status: "Active Event",
     date: "31 Okt - 1 Nov 2026",
-    venue: "ICE BSD City (Hall 6 - 10 & Hall 5)",
+    venue: "ICE BSD City (Hall 5, 6, 7, 8, 9, 10)",
     bannerImage: "/banner/cf23.jpg",
     linkHref: "/events/cf23",
     linkText: "Detail Event",
-    description: "Edisi Halloween dengan 1.500+ circle dan community booth."
+    description: "Perhelatan akbar Comic Frontier 23 di ICE BSD City (Hall 5-10) bertema Halloween dengan 1.959 circle kreator terkurasi dan area Free Community Booths."
   },
   {
     id: "cf22",
     editionBadge: "CF 22",
     title: "Comic Frontier 22",
-    status: "Active Event",
+    status: "Past Event",
     date: "16 - 17 Mei 2026",
     venue: "ICE BSD City (Hall 6 - 10)",
     bannerImage: "/banner/cf22.jpg",
     linkHref: "/events/cf22",
-    linkText: "Buka Katalog",
+    linkText: "Lihat Arsip",
     description: "1.500+ circle kreator, Bushiroad EXPO, dan tiket KMT KAI."
   },
   {
@@ -127,10 +128,11 @@ export default async function HomePage() {
     );
   }
 
-  const { stats, featuredCircles, featuredProducts } = data;
+  const { featuredCircles, featuredProducts, stats } = data;
 
   return (
     <div className="relative min-h-screen selection:bg-[#D6F834] selection:text-[#111215]">
+      {/* SECTION 1: HERO */}
       <section className="relative z-10 overflow-hidden bg-[#5398DA] text-white pt-8 pb-20 sm:pb-28 lg:pb-36">
         <div className="pointer-events-none absolute inset-0">
           <div className="absolute inset-0 bg-[linear-gradient(to_right,rgba(255,255,255,0.06)_1px,transparent_1px),linear-gradient(to_bottom,rgba(255,255,255,0.06)_1px,transparent_1px)] bg-[size:4rem_4rem]" />
@@ -166,11 +168,12 @@ export default async function HomePage() {
               </HeroEntranceItem>
               <HeroEntranceItem>
                 <p className="text-xs sm:text-sm font-medium text-white/80 max-w-xs sm:ml-auto leading-relaxed">
-                  1.400+ circle kreator, denah booth, kalkulator cash ATM, dan checklist offline.
+                  1.959 circle kreator, denah booth, kalkulator cash ATM, dan checklist offline.
                 </p>
               </HeroEntranceItem>
             </HeroEntranceMotion>
           </div>
+
           <div className="relative w-full min-h-[380px] sm:min-h-[480px] md:min-h-[560px] lg:min-h-[640px] flex items-center justify-center pt-2 sm:pt-4">
             <div className="absolute inset-0 flex items-center justify-center pointer-events-none select-none z-0 overflow-hidden">
               <span className="font-[var(--font-display)] font-black text-[12.8vw] tracking-tight w-full text-center text-[#D6F834] uppercase leading-none select-none drop-shadow-sm whitespace-nowrap opacity-95">
@@ -189,22 +192,23 @@ export default async function HomePage() {
               />
             </div>
           </div>
+
           <HeroEntranceMotion className="relative z-20 flex flex-wrap items-center justify-center gap-3 pt-2 sm:pt-4">
             <HeroEntranceItem>
               <Link
-                href="/products"
+                href="/circles"
                 className="inline-flex items-center justify-center rounded-full bg-[#D6F834] px-8 py-3.5 text-sm font-extrabold text-[#111215] shadow-xl hover:bg-[#cbf128] transition active:scale-[0.98] uppercase tracking-wide focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#111215] focus-visible:ring-offset-2"
               >
-                JELAJAHI 1.400+ CIRCLE
+                JELAJAHI 1.959 CIRCLE
               </Link>
             </HeroEntranceItem>
 
             <HeroEntranceItem>
               <Link
-                href="/maps"
+                href="/events"
                 className="inline-flex items-center justify-center rounded-full border border-white/40 bg-white/15 backdrop-blur px-6 py-3.5 text-sm font-bold text-white transition hover:bg-white/25 active:scale-[0.98] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-offset-2"
               >
-                Peta Denah Hall
+                Arsip Edisi Event
               </Link>
             </HeroEntranceItem>
 
@@ -216,16 +220,19 @@ export default async function HomePage() {
             </HeroEntranceItem>
           </HeroEntranceMotion>
         </div>
+
         <div className="absolute inset-x-0 bottom-0 h-28 sm:h-36 bg-gradient-to-b from-transparent via-[#88c592]/50 to-[#D6F834] pointer-events-none" />
       </section>
+
+      {/* SECTION 2: EVENT PULSE & COUNTDOWN (COMIFURO 23 AKTIF) */}
       <section className="relative z-10 bg-[#D6F834] px-4 py-20 text-[#111215] sm:px-6 md:py-28 lg:px-8 border-t border-black/10">
-        <div className="container-shell max-w-7xl mx-auto space-y-12">
+        <div className="container-shell max-w-7xl mx-auto space-y-10 sm:space-y-12">
           <FadeInView>
             <div className="grid gap-6 lg:grid-cols-12 lg:items-end border-b border-black/15 pb-8">
               <div className="lg:col-span-7 space-y-3">
                 <div className="inline-flex items-center gap-2 text-xs font-mono font-bold tracking-widest text-[#111215] uppercase bg-black/10 px-3.5 py-1.5 rounded-full border border-black/10 shadow-xs">
                   <span className="inline-flex h-2 w-2 rounded-full bg-emerald-600" />
-                  <span>COMIFURO 22 · DATA EVENT AKTIF</span>
+                  <span>COMIFURO 23 · DATA EVENT AKTIF</span>
                 </div>
                 <h2 className="font-[var(--font-display)] text-3xl font-black tracking-tight sm:text-4xl md:text-5xl lg:text-6xl text-[#111215] uppercase leading-[0.92]">
                   CONVENTION MEETS ACTION<span className="text-[#F84632]">*</span>
@@ -233,11 +240,18 @@ export default async function HomePage() {
               </div>
               <div className="lg:col-span-5">
                 <p className="text-sm sm:text-base leading-relaxed text-[#111215]/85 font-medium">
-                  Direktori ribuan kreator independen dan booth aktif Comic Frontier 22. Disimpan langsung ke memori offline peramban agar tetap cepat diakses di tengah hall tanpa bergantung pada sinyal seluler.
+                  Direktori 1.959 kreator independen dan booth aktif Comic Frontier 23. Disimpan langsung ke memori offline peramban agar tetap cepat diakses di tengah hall tanpa bergantung pada sinyal seluler.
                 </p>
               </div>
             </div>
           </FadeInView>
+
+          {/* LIVE COUNTDOWN TIMER */}
+          <div className="relative z-20">
+            <CountdownTimer />
+          </div>
+
+          {/* 4 METRIC CARDS */}
           <div className="grid grid-cols-2 gap-4 sm:gap-6 lg:grid-cols-4">
             <MetricCardMotion
               delay={0.05}
@@ -247,7 +261,7 @@ export default async function HomePage() {
             >
               <div>
                 <div className="font-mono text-4xl sm:text-5xl lg:text-6xl font-black tracking-tight text-[#111215] group-hover:text-[#F84632] transition-colors">
-                  {stats.totalCircles ? stats.totalCircles.toLocaleString("id-ID") : "0"}
+                  {stats.totalCircles ? stats.totalCircles.toLocaleString("id-ID") : "1.959"}
                 </div>
               </div>
               <div className="pt-6 border-t border-black/10">
@@ -255,9 +269,10 @@ export default async function HomePage() {
                   <Users2 className="h-3.5 w-3.5 shrink-0" />
                   <span>CIRCLES</span>
                 </div>
-                <p className="mt-1 text-[11px] text-zinc-600 font-mono">Artist Alley & Creator Alley</p>
+                <p className="mt-1 text-[11px] text-zinc-600 font-mono">Artist Alley & Creator Alley terdaftar</p>
               </div>
             </MetricCardMotion>
+
             <MetricCardMotion
               delay={0.1}
               glowColor="rgba(0, 0, 0, 0.12)"
@@ -274,9 +289,10 @@ export default async function HomePage() {
                   <BookOpen className="h-3.5 w-3.5 shrink-0" />
                   <span>SAMPEL KARYA</span>
                 </div>
-                <p className="mt-1 text-[11px] text-zinc-600 font-mono">Artbook, Merch, Standee & Zine</p>
+                <p className="mt-1 text-[11px] text-zinc-600 font-mono">Menunggu Rilis Katalog Resmi</p>
               </div>
             </MetricCardMotion>
+
             <MetricCardMotion
               delay={0.15}
               glowColor="rgba(0, 0, 0, 0.12)"
@@ -285,7 +301,7 @@ export default async function HomePage() {
             >
               <div>
                 <div className="font-mono text-4xl sm:text-5xl lg:text-6xl font-black tracking-tight text-[#111215] group-hover:text-[#F84632] transition-colors">
-                  0{stats.totalHalls || 2}
+                  0{stats.totalHalls || 6}
                 </div>
               </div>
               <div className="pt-6 border-t border-black/10">
@@ -293,9 +309,10 @@ export default async function HomePage() {
                   <Layers className="h-3.5 w-3.5 shrink-0" />
                   <span>HALL VENUE</span>
                 </div>
-                <p className="mt-1 text-[11px] text-zinc-600 font-mono">Hall 8 & Hall 9 ICE BSD</p>
+                <p className="mt-1 text-[11px] text-zinc-600 font-mono">Hall 5 - 10 ICE BSD City</p>
               </div>
             </MetricCardMotion>
+
             <MetricCardMotion
               delay={0.2}
               glowColor="rgba(0, 0, 0, 0.12)"
@@ -317,8 +334,11 @@ export default async function HomePage() {
             </MetricCardMotion>
           </div>
         </div>
+
         <div className="absolute inset-x-0 bottom-0 h-20 sm:h-28 bg-gradient-to-b from-transparent via-[#ebfcb9]/60 to-[#FFFFFF] pointer-events-none" />
       </section>
+
+      {/* SECTION 3: COMIFURO EDITIONS ARSIP */}
       <section className="relative z-10 bg-[#FFFFFF] px-4 py-20 text-[#111215] sm:px-6 md:py-28 lg:px-8 border-t border-zinc-200">
         <div className="container-shell max-w-7xl mx-auto space-y-12">
           <FadeInView>
@@ -349,6 +369,7 @@ export default async function HomePage() {
               </div>
             </div>
           </FadeInView>
+
           <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
             {comifuroEditions.map((edition, idx) => (
               <FadeInView key={edition.id} delay={idx * 0.08} duration={0.45}>
@@ -413,6 +434,8 @@ export default async function HomePage() {
           </div>
         </div>
       </section>
+
+      {/* SECTION 4: COMPANION TOOLKIT */}
       <CompanionToolkit />
     </div>
   );

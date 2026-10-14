@@ -1,194 +1,187 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { Check, Copy, Share2, Sparkles, X } from "lucide-react";
+import { Check, Copy, Share2, X } from "lucide-react";
 import { toast } from "sonner";
-import { formatCurrency } from "@/lib/format";
-import type { BoothGroup } from "./types";
-import type { WishlistSummary } from "@/lib/wishlist";
+import type { CatalogCircle } from "@/db/queries";
 
-export function generateWishlistSummaryText({
+export function generateSavedCirclesShareText({
   eventName,
-  boothGroups,
-  summary,
-  purchasedIds
+  circles
 }: {
   eventName?: string;
-  boothGroups: BoothGroup[];
-  summary: WishlistSummary;
-  purchasedIds: Set<string>;
+  circles: CatalogCircle[];
 }): string {
   const lines: string[] = [];
- 
-  lines.push("📋 MY COMIPOCKET - WISHLIST & HUNTING CHECKLIST");
+
+  lines.push("DAFTAR CIRCLE INCARAN SAYA");
   lines.push(`Event: ${eventName || "Comic Frontier (Comifuro) ICE BSD"}`);
-  lines.push("─".repeat(42));
-  lines.push(`🎯 Target Belanja: ${summary.totalItems} Karya (${summary.totalQuantity} pcs) · ${formatCurrency(summary.totalPrice)}`);
-  lines.push(`💵 Kebutuhan Cash Fisik Venue: ${formatCurrency(summary.requiredCash)}`);
-  lines.push(`✓ Progress Hunting: ${summary.purchasedTotal > 0 ? `${formatCurrency(summary.purchasedTotal)} (${summary.totalItems - summary.remainingTotal === 0 ? "Selesai" : "Sedang Berburu"})` : "Belum ada yang dibeli"}`);
-  lines.push("─".repeat(42));
+  lines.push("-".repeat(40));
+  lines.push(`Total: ${circles.length} Circle Terpilih`);
   lines.push("");
-  lines.push("📍 RUTE BOOTH & DAFTAR KARYA:");
+  lines.push("RUTE BOOTH & DAFTAR CIRCLE:");
 
-  boothGroups.forEach((group, index) => {
-    const hall = group.hall || "Hall ICE";
-    const booth = group.boothCode || "-";
-    lines.push(`\n${index + 1}. [${hall} · Booth ${booth}] ${group.circleName}`);
+  circles.forEach((circle, index) => {
+    const booth = circle.boothCode || "TBA";
+    const day =
+      circle.day === "DAY_1"
+        ? "Day 1 (Sabtu)"
+        : circle.day === "DAY_2"
+          ? "Day 2 (Minggu)"
+          : "Both Days";
 
-    group.items.forEach((item) => {
-      const isBought = purchasedIds.has(item.id);
-      const mark = isBought ? "✓" : "[ ]";
-      const rushTag = item.isRush ? " [⚡ RUSH 10:00]" : "";
-      const poTag = item.purchaseType === "PO" ? " (PO)" : "";
-      lines.push(`   ${mark} ${item.name} - ${formatCurrency(item.price)}${rushTag}${poTag}`);
-    });
+    lines.push(`\n${index + 1}. [Booth ${booth} · ${day}] ${circle.name}`);
+    if (circle.fandom) {
+      lines.push(`   Fandom: ${circle.fandom}`);
+    }
   });
 
   lines.push("");
-  lines.push("─".repeat(42));
-  lines.push("💡 Dibuat dengan ComiPocket (100% Offline-ready Companion Comifuro)");
-  lines.push("https://comipocket.app/wishlist");
+  lines.push("-".repeat(40));
+  lines.push("Dibuat dengan ComiPocket (Offline-Ready Companion Comifuro)");
 
   return lines.join("\n");
 }
 
 export function ShareWishlistModal({
   eventName,
-  boothGroups,
-  summary,
-  purchasedIds
+  circles
 }: {
   eventName?: string;
-  boothGroups: BoothGroup[];
-  summary: WishlistSummary;
-  purchasedIds: Set<string>;
+  circles: CatalogCircle[];
 }) {
   const [isOpen, setIsOpen] = useState(false);
   const [copied, setCopied] = useState(false);
 
   useEffect(() => {
     if (!isOpen) return;
+
     const handleKeyDown = (e: KeyboardEvent) => {
       if (e.key === "Escape") {
         setIsOpen(false);
       }
     };
+
     window.addEventListener("keydown", handleKeyDown);
     return () => window.removeEventListener("keydown", handleKeyDown);
   }, [isOpen]);
 
-  const textToShare = generateWishlistSummaryText({
+  const shareText = generateSavedCirclesShareText({
     eventName,
-    boothGroups,
-    summary,
-    purchasedIds
+    circles
   });
 
-  const handleShare = async () => {
-    if (typeof navigator !== "undefined" && typeof navigator.share === "function") {
-      try {
-        await navigator.share({
-          title: `Wishlist ${eventName || "Comifuro"} - ComiPocket`,
-          text: textToShare
-        });
-        toast.success("Berhasil dibagikan!");
-        return;
-      } catch (err: unknown) {
-        // Jika user membatalkan share dialog, jangan buka modal error
-        if ((err as Error)?.name === "AbortError") {
-          return;
-        }
-      }
-    }
-
-    // Fallback: buka modal preview teks
-    setIsOpen(true);
-  };
-
-  const handleCopy = async () => {
+  async function handleCopy() {
     try {
-      await navigator.clipboard.writeText(textToShare);
+      if (navigator.clipboard?.writeText) {
+        await navigator.clipboard.writeText(shareText);
+      } else {
+        const textarea = document.createElement("textarea");
+        textarea.value = shareText;
+        document.body.appendChild(textarea);
+        textarea.select();
+        document.execCommand("copy");
+        document.body.removeChild(textarea);
+      }
+
       setCopied(true);
-      toast.success("Ringkasan wishlist disalin ke clipboard!", {
-        description: "Siap dipaste ke WhatsApp, Discord, X/Twitter, atau Notes."
-      });
+      toast.success("Rute circle berhasil disalin ke clipboard!");
       setTimeout(() => setCopied(false), 2500);
     } catch {
-      toast.error("Gagal menyalin teks ke clipboard.");
+      toast.error("Gagal menyalin rute circle.");
     }
-  };
+  }
+
+  async function handleNativeShare() {
+    if (typeof navigator !== "undefined" && navigator.share) {
+      try {
+        await navigator.share({
+          title: `Rute Hunting ${eventName || "Comifuro"}`,
+          text: shareText
+        });
+      } catch {
+        handleCopy();
+      }
+    } else {
+      handleCopy();
+    }
+  }
 
   return (
     <>
       <button
         type="button"
-        onClick={handleShare}
-        aria-label="Bagikan ringkasan wishlist"
-        className="inline-flex min-h-[44px] items-center gap-2 rounded-xl bg-ink-900 px-4 py-2.5 font-mono text-xs font-bold uppercase text-white shadow-soft hover:bg-brand-600 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500 transition-all active:scale-[0.98]"
+        onClick={() => setIsOpen(true)}
+        className="inline-flex min-h-[44px] items-center gap-2 rounded-xl bg-[#111215] px-4 py-2 font-mono text-xs font-bold uppercase tracking-wider text-white transition hover:bg-[#D6F834] hover:text-[#111215] active:scale-[0.98] shadow-xs focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#111215]"
       >
-        <Share2 className="h-4 w-4" aria-hidden="true" />
-        <span>Share Wishlist</span>
+        <Share2 className="h-4 w-4" />
+        <span>Bagikan Rute ({circles.length})</span>
       </button>
-      {isOpen && (
+
+      {isOpen ? (
         <div
           role="dialog"
           aria-modal="true"
-          aria-labelledby="share-wishlist-title"
-          onClick={() => setIsOpen(false)}
-          className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-xs animate-in fade-in duration-150"
+          aria-label="Bagikan Rute Circle Incaran"
+          className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-xs animate-in fade-in duration-200"
         >
           <div
+            className="relative w-full max-w-lg rounded-3xl border border-zinc-200 bg-white p-6 sm:p-7 shadow-2xl space-y-5"
             onClick={(e) => e.stopPropagation()}
-            className="relative w-full max-w-lg rounded-3xl border border-line bg-card p-6 shadow-2xl space-y-4 max-h-[90vh] flex flex-col"
           >
-            <div className="flex items-center justify-between border-b border-line pb-3">
-              <div className="flex items-center gap-2">
-                <span className="flex h-8 w-8 items-center justify-center rounded-lg bg-brand-500 text-white">
-                  <Sparkles className="h-4 w-4" aria-hidden="true" />
+            <div className="flex items-center justify-between border-b border-zinc-100 pb-4">
+              <div className="space-y-1">
+                <span className="font-mono text-[10px] font-bold uppercase tracking-wider text-zinc-400">
+                  EXPORT &amp; SHARE ROUTE
                 </span>
-                <div>
-                  <h3 id="share-wishlist-title" className="font-[var(--font-display)] text-2xl font-bold tracking-tight text-ink-900">
-                    Share Hunting Wishlist
-                  </h3>
-                  <p className="font-mono text-[11px] text-ink-500">
-                    Ringkasan rute belanja siap dibagikan ke teman atau grup
-                  </p>
-                </div>
+                <h3 className="font-[var(--font-display)] text-xl sm:text-2xl font-black uppercase tracking-tight text-zinc-900">
+                  Bagikan Rute Circle Incaran
+                </h3>
               </div>
               <button
                 type="button"
                 onClick={() => setIsOpen(false)}
-                aria-label="Tutup dialog share"
-                className="flex min-h-[44px] min-w-[44px] items-center justify-center rounded-full p-1.5 text-zinc-600 hover:bg-zinc-100 hover:text-zinc-900 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500"
+                aria-label="Tutup modal"
+                className="rounded-xl border border-zinc-200 p-2 text-zinc-500 hover:bg-zinc-100 hover:text-zinc-900 transition active:scale-[0.98] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#111215]"
               >
-                <X className="h-5 w-5" aria-hidden="true" />
+                <X className="h-4 w-4" />
               </button>
             </div>
-            <div className="flex-1 overflow-auto rounded-2xl border border-line bg-zinc-50/80 p-3.5">
-              <pre className="font-mono text-xs text-ink-900 whitespace-pre-wrap leading-relaxed select-all">
-                {textToShare}
-              </pre>
+
+            <p className="text-xs text-zinc-600 leading-relaxed font-medium">
+              Salin ringkasan rute meja stan dan daftar circle yang kamu tandai untuk dikirim ke teman hunting lewat WhatsApp, X (Twitter), atau catatan ponsel.
+            </p>
+
+            <div className="relative">
+              <textarea
+                readOnly
+                value={shareText}
+                rows={9}
+                className="w-full rounded-2xl border border-zinc-200 bg-zinc-50/80 p-4 font-mono text-xs text-zinc-800 leading-relaxed focus:outline-none select-all resize-none shadow-inner"
+              />
             </div>
-            <div className="flex items-center justify-end gap-2.5 pt-2 border-t border-line">
+
+            <div className="flex flex-col-reverse sm:flex-row items-center justify-end gap-2.5 pt-2 border-t border-zinc-100">
               <button
                 type="button"
                 onClick={() => setIsOpen(false)}
-                className="inline-flex min-h-[44px] items-center rounded-xl border border-line px-4 py-2 font-mono text-xs font-bold text-zinc-700 hover:bg-zinc-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500"
+                className="w-full sm:w-auto inline-flex min-h-[44px] items-center justify-center rounded-xl border border-zinc-300 bg-white px-5 py-2 font-mono text-xs font-bold uppercase tracking-wider text-zinc-700 hover:bg-zinc-50 transition active:scale-[0.98] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#111215]"
               >
                 Tutup
               </button>
+
               <button
                 type="button"
-                onClick={handleCopy}
-                className="inline-flex min-h-[44px] items-center gap-2 rounded-xl bg-brand-600 px-5 py-2 font-mono text-xs font-bold text-white shadow-xs hover:bg-brand-700 active:scale-[0.98] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500"
+                onClick={handleNativeShare}
+                className="w-full sm:w-auto inline-flex min-h-[44px] items-center justify-center gap-2 rounded-xl bg-[#111215] px-6 py-2 font-mono text-xs font-black uppercase tracking-wider text-[#D6F834] hover:bg-zinc-800 transition active:scale-[0.98] shadow-xs focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#111215]"
               >
-                {copied ? <Check className="h-4 w-4" /> : <Copy className="h-4 w-4" />}
-                <span>{copied ? "Berhasil Disalin!" : "Salin Teks Ringkasan"}</span>
+                {copied ? <Check className="h-4 w-4 text-[#D6F834]" /> : <Copy className="h-4 w-4" />}
+                <span>{copied ? "Tersalin!" : "Salin ke Clipboard"}</span>
               </button>
             </div>
           </div>
         </div>
-      )}
+      ) : null}
     </>
   );
 }

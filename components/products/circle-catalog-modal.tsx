@@ -1,7 +1,6 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
-import Link from "next/link";
 import { AnimatePresence, motion, useReducedMotion } from "motion/react";
 import { toast } from "sonner";
 import { ProductImage } from "@/components/products/product-image";
@@ -18,7 +17,6 @@ export interface CircleCatalogModalProps {
   circle: CompactCircleItem | null;
   isOpen: boolean;
   onClose: () => void;
-  floorMapId?: string | null;
 }
 
 function resolveDayConfig(dayStr?: string | null): { label: string; className: string } {
@@ -108,8 +106,7 @@ function cleanCircleBio(notes?: string | null): string {
 export function CircleCatalogModal({
   circle,
   isOpen,
-  onClose,
-  floorMapId
+  onClose
 }: CircleCatalogModalProps) {
   const shouldReduceMotion = Boolean(useReducedMotion());
   const [copiedPoId, setCopiedPoId] = useState<string | null>(null);
@@ -149,9 +146,6 @@ export function CircleCatalogModal({
 
   const rating = circle?.rating || parsedMeta?.rating || "GA";
   const ratingBadge = resolveRatingBadge(rating);
-
-  const effectiveFloorMapId =
-    floorMapId || circle?.locations?.[0]?.floorMapId || null;
 
   const rawFandom = circle?.fandom || parsedMeta?.fandom;
   const fandom = rawFandom?.replace(/\s*\(\s*-\s*\)/g, "").trim() || null;
@@ -399,15 +393,6 @@ export function CircleCatalogModal({
               </div>
             </div>
             <div className="mt-4 flex flex-wrap items-center gap-2 pt-3 border-t border-zinc-100">
-              {effectiveFloorMapId ? (
-                <Link
-                  href={`/maps/${effectiveFloorMapId}?circleId=${circle.id}`}
-                  className="inline-flex min-h-[44px] items-center rounded-xl bg-[#5398DA] px-4 py-2 font-mono text-xs font-black uppercase tracking-wider text-[#111215] transition hover:bg-[#4083c2] active:scale-[0.98] shadow-2xs select-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#111215]"
-                >
-                  PETA MEJA
-                </Link>
-              ) : null}
-
               <button
                 type="button"
                 onClick={handleCopyCircleLink}
@@ -577,15 +562,6 @@ export function CircleCatalogModal({
             </p>
 
             <div className="flex items-center gap-2 w-full sm:w-auto justify-end">
-              {effectiveFloorMapId ? (
-                <Link
-                  href={`/maps/${effectiveFloorMapId}?circleId=${circle.id}`}
-                  className="inline-flex min-h-[44px] items-center justify-center rounded-xl bg-[#5398DA] px-4 py-2 font-mono text-xs font-black uppercase tracking-wider text-[#111215] hover:bg-[#4083c2] transition active:scale-[0.98] select-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#111215]"
-                >
-                  PETA MEJA
-                </Link>
-              ) : null}
-
               <button
                 type="button"
                 onClick={onClose}

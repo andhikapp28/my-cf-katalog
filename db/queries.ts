@@ -12,6 +12,7 @@ import type { BoothLocation, Circle, EventDay, FloorMap, Product } from "@/db/sc
 import { checklistStatuses, sortChecklistItems } from "@/lib/checklist";
 import { compareBoothCodes, parseCircleNotes, type ParsedCircleMetadata } from "@/lib/floor-map";
 import { getCatalogCache } from "@/lib/map-data";
+import { getEventDetailData } from "@/lib/event-details-data";
 
 export { compareBoothCodes } from "@/lib/floor-map";
 
@@ -98,10 +99,20 @@ export type ProductListFilters = {
 };
 
 export async function getActiveEvent() {
-  return db.query.events.findFirst({
+  const active = await db.query.events.findFirst({
     where: eq(events.isActive, true),
     orderBy: [desc(events.startsAt)]
   });
+  if (active) return active;
+
+  return (
+    (await db.query.events.findFirst({
+      where: eq(events.slug, "cf23")
+    })) ??
+    (await db.query.events.findFirst({
+      orderBy: [desc(events.startsAt)]
+    }))
+  );
 }
 
 export async function getEventList() {
@@ -110,8 +121,30 @@ export async function getEventList() {
   });
 }
 
-export async function getCircleList() {
+export async function getCircleList(eventIdOrSlug?: string) {
+  if (!eventIdOrSlug) {
+    return db.query.circles.findMany({
+      orderBy: [asc(circles.name)]
+    });
+  }
+
+  const isUuid = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(eventIdOrSlug);
+  const selectedEvent = await db.query.events.findFirst({
+    where: isUuid ? eq(events.id, eventIdOrSlug) : eq(events.slug, eventIdOrSlug)
+  });
+
+  if (!selectedEvent) return [];
+
+  const booths = await db.query.boothLocations.findMany({
+    where: eq(boothLocations.eventId, selectedEvent.id),
+    columns: { circleId: true }
+  });
+
+  const circleIds = Array.from(new Set(booths.map((b) => b.circleId)));
+  if (circleIds.length === 0) return [];
+
   return db.query.circles.findMany({
+    where: inArray(circles.id, circleIds),
     orderBy: [asc(circles.name)]
   });
 }
@@ -127,11 +160,24 @@ const CACHE_TTL_MS = 120 * 1000; // 2 menit TTL untuk performa kilat (sub-2ms) s
 export async function getCatalogCircles(
   filters: CatalogCircleFilters = {}
 ): Promise<CatalogCircle[]> {
-  const selectedEvent =
-    (filters.eventId
-      ? await db.query.events.findFirst({ where: eq(events.id, filters.eventId) })
-      : await getActiveEvent()) ??
-    (await db.query.events.findFirst({ orderBy: [desc(events.startsAt)] }));
+  let selectedEvent = null;
+  if (filters.eventId) {
+    const isUuid = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(filters.eventId);
+    selectedEvent = await db.query.events.findFirst({
+      where: isUuid ? eq(events.id, filters.eventId) : eq(events.slug, filters.eventId)
+    });
+  }
+
+  if (!selectedEvent) {
+    // Gunakan event resmi yang memiliki data booth (CF 22) selama CF 23 masih menunggu rilis scraping panitia
+    const eventWithBooths = await db.query.events.findFirst({
+      where: eq(events.slug, "cf22")
+    });
+    selectedEvent =
+      eventWithBooths ??
+      (await getActiveEvent()) ??
+      (await db.query.events.findFirst({ orderBy: [desc(events.startsAt)] }));
+  }
 
   const eventIdKey = selectedEvent?.id || "all-events";
   const now = Date.now();
@@ -163,9 +209,15 @@ export async function getCatalogCircles(
       orderBy: [asc(circles.name)]
     });
 
+    // Hanya sertakan circle yang benar-benar terdaftar / berpartisipasi pada selectedEvent
+    // (memiliki penempatan booth atau karya terdaftar di event yang dipilih)
+    const participatingCircles = selectedEvent
+      ? circlesList.filter((c) => c.boothLocations.length > 0 || c.products.length > 0)
+      : circlesList;
+
     const catalog = getCatalogCache();
 
-    enrichedCircles = circlesList.map((circle) => {
+    enrichedCircles = participatingCircles.map((circle) => {
     const location = circle.boothLocations[0];
     const boothCode = location?.boothCode ?? null;
     const day = location?.day ?? "ALL_DAYS";
@@ -719,7 +771,9 @@ export async function getUpcomingDeadlines(limit = 8) {
 }
 
 export async function getLandingPageData() {
-  const activeEvent = (await getActiveEvent()) ?? (await db.query.events.findFirst({ orderBy: [desc(events.startsAt)] }));
+  const activeEvent =
+    (await getActiveEvent()) ??
+    (await db.query.events.findFirst({ orderBy: [desc(events.startsAt)] }));
 
   if (!activeEvent) {
     return null;
@@ -766,17 +820,52 @@ export async function getLandingPageData() {
     })
   ]);
 
+  const isCf23 = activeEvent.slug === "cf23";
+  const detail = getEventDetailData(activeEvent.slug);
+  const ticketPricing = detail?.ticketInfo ?? {
+    platform: "Ticket2U",
+    regularPrice: 75000,
+    regularPriceFormatted: "Rp 75.000",
+    bundlePrice: 130000,
+    bundlePriceFormatted: "Rp 130.000",
+    salesModel: "100% Online via Ticket2U",
+    wristbandExchangeHours: "08:00 - 18:15 WIB",
+    gateCloseHour: "18:30 WIB",
+    childPolicy: "Anak >= 2 tahun wajib tiket",
+    notes: [
+      "100% Online via Ticket2U",
+      "Regular Single Day Rp 75.000",
+      "Bundle Official Goods Rp 130.000"
+    ]
+  };
+
   return {
     event: activeEvent,
     stats: {
-      totalCircles: totalCirclesResult[0]?.value ?? 0,
+      totalCircles: isCf23 ? 1959 : (totalCirclesResult[0]?.value ?? 0),
       totalProducts: totalProductsResult[0]?.value ?? 0,
-      totalHalls: maps.length || 2,
+      totalHalls: maps.length > 0 ? maps.length : (isCf23 ? 6 : 2),
       totalBooths: allLocations.length
     },
+    ticketPricing: {
+      platform: ticketPricing.platform,
+      regularPrice: ticketPricing.regularPrice,
+      regularPriceFormatted: ticketPricing.regularPriceFormatted,
+      bundlePrice: ticketPricing.bundlePrice,
+      bundlePriceFormatted: ticketPricing.bundlePriceFormatted,
+      salesModel: ticketPricing.salesModel
+    },
+    ticketInfo: ticketPricing,
     maps,
     featuredCircles,
     featuredProducts,
     locations: allLocations
   };
+}
+
+export async function getActiveEventTicketPricing() {
+  const activeEvent = await getActiveEvent();
+  if (!activeEvent) return null;
+  const detail = getEventDetailData(activeEvent.slug);
+  return detail?.ticketInfo ?? null;
 }

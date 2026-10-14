@@ -63,7 +63,7 @@ export function FadeInView({
   distance = 20,
   direction = "up",
   once = true,
-  margin = "-30px",
+  margin = "150px",
   ...props
 }: FadeInViewProps) {
   const shouldReduceMotion = Boolean(useReducedMotion());
@@ -249,7 +249,7 @@ export function MetricCardMotion({
     <motion.div
       initial={{ opacity: 0, y: 16 }}
       whileInView={{ opacity: 1, y: 0 }}
-      viewport={{ once: true, margin: "-30px" }}
+      viewport={{ once: true, margin: "150px" }}
       transition={{
         duration: 0.45,
         delay,

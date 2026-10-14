@@ -23,11 +23,11 @@ export default async function CircleDetailPage({ params }: { params: Promise<{ i
         <div className="mt-5 flex flex-wrap gap-3">
           {circle.socialLink ? (
             <Link href={circle.socialLink} target="_blank" className="rounded-full bg-brand-500 px-4 py-2 text-sm font-medium text-white">
-              Buka media sosial
+              Open social
             </Link>
           ) : null}
           <Link href={`/products?circle=${circle.id}`} className="rounded-full border border-line px-4 py-2 text-sm font-medium text-ink-700">
-            Lihat katalog karya
+            View products
           </Link>
         </div>
       </section>
@@ -35,7 +35,7 @@ export default async function CircleDetailPage({ params }: { params: Promise<{ i
       <section className="grid gap-6 lg:grid-cols-2">
         <Card>
           <CardContent className="space-y-4">
-            <h2 className="font-[var(--font-display)] text-2xl font-semibold">Lokasi Booth</h2>
+            <h2 className="font-[var(--font-display)] text-2xl font-semibold">Booth locations</h2>
             <div className="space-y-3">
               {circle.locations.length ? (
                 circle.locations.map((location) => (
@@ -43,7 +43,7 @@ export default async function CircleDetailPage({ params }: { params: Promise<{ i
                     <p className="font-medium text-ink-900">{location.event.name}</p>
                     <p className="mt-1">Booth {location.boothCode}</p>
                     <Link href={`/maps/${location.floorMapId}?circleId=${circle.id}`} className="mt-2 inline-flex text-brand-700">
-                      Lihat di peta
+                      Open map
                     </Link>
                   </div>
                 ))
@@ -55,7 +55,7 @@ export default async function CircleDetailPage({ params }: { params: Promise<{ i
         </Card>
         <Card>
           <CardContent className="space-y-4">
-            <h2 className="font-[var(--font-display)] text-2xl font-semibold">Katalog Karya Circle</h2>
+            <h2 className="font-[var(--font-display)] text-2xl font-semibold">Target products</h2>
             <div className="space-y-3">
               {circle.products.length ? (
                 circle.products.map((product) => (

@@ -1,12 +1,10 @@
 import { describe, expect, it } from "vitest";
 import {
   calculateAtmCashReadiness,
-  calculateWishlistSummary,
-  compareBoothOrder,
-  type WishlistProductItem
+  compareBoothOrder
 } from "@/lib/wishlist";
-import { generateWishlistSummaryText } from "@/components/wishlist/share-wishlist-modal";
-import type { BoothGroup } from "@/components/wishlist/types";
+import { generateSavedCirclesShareText } from "@/components/wishlist/share-wishlist-modal";
+import type { CatalogCircle } from "@/db/queries";
 
 describe("Wishlist Page & Helpers - Unit Tests", () => {
   describe("compareBoothOrder (Hall and Table natural sorting)", () => {
@@ -38,8 +36,8 @@ describe("Wishlist Page & Helpers - Unit Tests", () => {
       expect(res.requiredCash).toBe(450000);
       expect(res.cashInHand).toBe(100000);
       expect(res.shortfall).toBe(350000);
-      expect(res.notes50k).toBe(7); // 350.000 / 50.000 = 7 lembar
-      expect(res.notes100k).toBe(4); // 350.000 / 100.000 = 4 lembar (400.000)
+      expect(res.notes50k).toBe(7);
+      expect(res.notes100k).toBe(4);
       expect(res.isSufficient).toBe(false);
     });
 
@@ -52,68 +50,36 @@ describe("Wishlist Page & Helpers - Unit Tests", () => {
     });
   });
 
-  describe("generateWishlistSummaryText (Share format)", () => {
+  describe("generateSavedCirclesShareText (Share format)", () => {
     it("menghasilkan teks terformat rapi untuk share WA/Twitter", () => {
-      const sampleGroups: BoothGroup[] = [
+      const sampleCircles = [
         {
-          circleId: "c-1",
-          circleName: "Circle Alpha",
+          id: "c-1",
+          name: "Circle Alpha",
           boothCode: "A-15a",
-          hall: "Hall 8",
-          floorMapId: "map-1",
-          allPurchased: false,
-          hasRush: true,
-          items: [
-            {
-              id: "p-1",
-              name: "Artbook Illust Vol 1",
-              price: 100000,
-              quantity: 1,
-              priority: "HIGH",
-              status: "TARGET",
-              targetDay: "DAY_1",
-              isRush: true,
-              purchaseType: "ON_THE_SPOT",
-              productLink: null,
-              poDeadline: null,
-              poPickupNotes: null,
-              notes: null,
-              circleId: "c-1",
-              circleName: "Circle Alpha",
-              eventId: "ev-1",
-              eventName: "Comic Frontier 19",
-              boothCode: "A-15a",
-              hall: "Hall 8",
-              floorMapId: "map-1",
-              imageUrl: null
-            }
-          ]
-        }
-      ];
-
-      const summary = calculateWishlistSummary([
+          day: "DAY_1",
+          fandom: "Original, Hololive"
+        },
         {
-          id: "p-1",
-          price: 100000,
-          quantity: 1,
-          purchaseType: "ON_THE_SPOT",
-          isPurchased: false
+          id: "c-2",
+          name: "Circle Beta",
+          boothCode: "C-02b",
+          day: "DAY_2",
+          fandom: "Genshin Impact"
         }
-      ]);
+      ] as unknown as CatalogCircle[];
 
-      const text = generateWishlistSummaryText({
-        eventName: "Comic Frontier 19",
-        boothGroups: sampleGroups,
-        summary,
-        purchasedIds: new Set<string>()
+      const text = generateSavedCirclesShareText({
+        eventName: "Comic Frontier 22",
+        circles: sampleCircles
       });
 
-      expect(text).toContain("MY COMIPOCKET - WISHLIST & HUNTING CHECKLIST");
-      expect(text).toContain("Comic Frontier 19");
-      expect(text).toContain("[Hall 8 · Booth A-15a] Circle Alpha");
-      expect(text).toContain("Artbook Illust Vol 1");
-      expect(text).toContain("RUSH 10:00");
-      expect(text).toContain("https://comipocket.app/wishlist");
+      expect(text).toContain("DAFTAR CIRCLE INCARAN SAYA");
+      expect(text).toContain("Comic Frontier 22");
+      expect(text).toContain("[Booth A-15a · Day 1 (Sabtu)] Circle Alpha");
+      expect(text).toContain("Original, Hololive");
+      expect(text).toContain("[Booth C-02b · Day 2 (Minggu)] Circle Beta");
+      expect(text).toContain("ComiPocket");
     });
   });
 });

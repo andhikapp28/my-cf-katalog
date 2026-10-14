@@ -123,16 +123,26 @@ describe("Event Details Data Module (docs/comifuro-events-reference.md)", () => 
       expect(highlightText).toContain("Amanda Brownies");
     });
 
-    it("CF 23: validasi Halloween Weekend, seleksi 100% kurasi komite, dan Free Community Booth Hall 5", () => {
+    it("CF 23: validasi Halloween Weekend, seleksi 100% kurasi komite, 1.959 circle, 6 hall venue, dan tiket Ticket2U", () => {
       const cf23 = EVENT_DETAILS_MAP.cf23;
+      expect(cf23.isActive).toBe(true);
+      expect(EVENT_DETAILS_MAP.cf22.isActive).toBe(false);
       expect(cf23.attendance.estimatedAttendees).toContain("60.000 – 70.000");
-      expect(cf23.attendance.estimatedCircles).toContain("1.500+ Terkurasi");
+      expect(cf23.attendance.estimatedCircles).toContain("1.959 Circle");
+      expect(cf23.attendance.estimatedCircles).toContain("official CF23 registration number");
+      expect(cf23.attendance.venueHalls).toContain("6 Hall Venue");
+      expect(cf23.venueFull).toContain("Hall 5, 6, 7, 8, 9, 10");
+      expect(cf23.ticketInfo.platform).toBe("Ticket2U");
+      expect(cf23.ticketInfo.regularPrice).toBe(75000);
+      expect(cf23.ticketInfo.bundlePrice).toBe(130000);
+      expect(cf23.ticketInfo.salesModel).toBe("100% Online via Ticket2U");
 
       const highlightText = JSON.stringify(cf23.highlights);
       expect(highlightText).toContain("Halloween Weekend");
       expect(highlightText).toContain("Kurasi Komite");
       expect(highlightText).toContain("Community Booth");
       expect(highlightText).toContain("Hall 5");
+      expect(highlightText).toContain("1.959 Circle");
     });
   });
 

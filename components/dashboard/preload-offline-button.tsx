@@ -7,9 +7,6 @@ import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 
 export function PreloadOfflineButton({
-  productIds = [],
-  mapIds = [],
-  circleIds = [],
   className
 }: {
   productIds?: string[];
@@ -32,13 +29,10 @@ export function PreloadOfflineButton({
     try {
       const urlsToPreload = [
         "/",
-        "/products",
+        "/events",
         "/circles",
-        "/maps",
         "/wishlist",
-        ...productIds.slice(0, 30).map((id) => `/products/${id}`),
-        ...mapIds.map((id) => `/maps/${id}`),
-        ...circleIds.slice(0, 20).map((id) => `/circles/${id}`)
+        "/docs"
       ];
 
       // Fetch each URL through browser cache (Service Worker will intercept and cache them)

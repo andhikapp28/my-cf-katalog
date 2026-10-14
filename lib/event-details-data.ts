@@ -129,6 +129,7 @@ export interface EventDetailMetadata {
   highlights: EventHighlightItem[];
   transportGuide: EventTransportGuide;
   communityRules: EventCommunityRules;
+  isActive?: boolean;
 }
 
 // Panduan operasional transportasi dan regulasi komunitas standar ICE BSD
@@ -597,6 +598,7 @@ export const EVENT_DETAILS_MAP: Record<string, EventDetailMetadata> = {
     editionName: "Comic Frontier 22 (Comifuro 22)",
     datesText: "16 – 17 Mei 2026",
     venueFull: "ICE BSD City (Hall 6, 7, 8, 9, dan 10)",
+    isActive: false,
     ticketInfo: {
       platform: "Ticket2U",
       regularPrice: 75000,
@@ -651,19 +653,22 @@ export const EVENT_DETAILS_MAP: Record<string, EventDetailMetadata> = {
     editionNumber: 23,
     editionName: "Comic Frontier 23 (Comifuro 23)",
     datesText: "31 Oktober – 1 November 2026",
-    venueFull: "ICE BSD City (Hall 6 – 10 + Hall 5 Komunitas)",
+    venueFull: "ICE BSD City (Hall 5, 6, 7, 8, 9, 10)",
+    isActive: true,
     ticketInfo: {
       platform: "Ticket2U",
       regularPrice: 75000,
       regularPriceFormatted: "Rp 75.000",
       bundlePrice: 130000,
       bundlePriceFormatted: "Rp 130.000",
-      salesModel: "100% Online Ticketing",
+      salesModel: "100% Online via Ticket2U",
       wristbandExchangeHours: "08:00 - 18:15 WIB",
       gateCloseHour: "18:30 WIB",
       childPolicy: "Anak >= 2 tahun wajib tiket",
       notes: [
-        "100% Online Ticketing",
+        "100% Online via Ticket2U",
+        "Regular Single Day Rp 75.000",
+        "Bundle Official Goods Rp 130.000",
         "Edisi Tematik Halloween Weekend",
         "Penukaran Wristband 08:00 - 18:15 WIB",
         "Pintu Masuk Tutup 18:30 WIB",
@@ -672,9 +677,9 @@ export const EVENT_DETAILS_MAP: Record<string, EventDetailMetadata> = {
     },
     attendance: {
       estimatedAttendees: "± 60.000 – 70.000",
-      estimatedCircles: "1.500+ Terkurasi",
-      venueHalls: "Hall 6 – 10 (+ Hall 5 Komunitas)",
-      milestone: "Edisi Halloween Weekend dengan seleksi 100% kurasi komite ketat dan free community booth"
+      estimatedCircles: "1.959 Circle (official CF23 registration number)",
+      venueHalls: "6 Hall Venue (Hall 5, 6, 7, 8, 9, 10 ICE BSD City)",
+      milestone: "Perhelatan akbar Comic Frontier 23 di ICE BSD City (Hall 5-10) bertema Halloween dengan 1.959 circle kreator terkurasi dan area Free Community Booths."
     },
     highlights: [
       {
@@ -694,8 +699,8 @@ export const EVENT_DETAILS_MAP: Record<string, EventDetailMetadata> = {
       },
       {
         tag: "MASSIVE MARKET",
-        title: "Lebih dari 1.500 Meja Kreator Terkurasi",
-        description: "Pameran karya kreasi komik mandiri terbesar di Asia Tenggara dengan alur koridor belanja yang dirancang lebih luas."
+        title: "Kapasitas 1.959 Circle Kreator Terkurasi",
+        description: "Pameran karya kreasi komik mandiri terbesar di Asia Tenggara dengan alur koridor belanja yang dirancang lebih luas di 6 hall venue ICE BSD City."
       }
     ],
     transportGuide: DEFAULT_TRANSPORT_GUIDE,
