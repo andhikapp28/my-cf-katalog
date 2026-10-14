@@ -107,6 +107,21 @@ describe("Ventixe Event Detail Redesign Components (SSR)", () => {
       expect(html).toContain("Beli Tiket di Ticket2U");
       expect(html).toContain("https://www.ticket2u.id");
     });
+
+    it("merender status arsip jika isPastEvent bernilai true", () => {
+      const html = renderToString(
+        React.createElement(EventTicketsSidebar, {
+          platform: "Ticket2U",
+          ticketUrl: "https://www.ticket2u.id",
+          isPastEvent: true
+        })
+      );
+
+      expect(html).toContain("Arsip Paket Tiket");
+      expect(html).toContain("Arsip Resmi");
+      expect(html).toContain("Penyelenggaraan Selesai");
+      expect(html).toContain("Penjualan tiket untuk edisi ini telah ditutup.");
+    });
   });
 
   describe("5. EventBenefitsSidebar (Benefit & Fasilitas Pengunjung)", () => {

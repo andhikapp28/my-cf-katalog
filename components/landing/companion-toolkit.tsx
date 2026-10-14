@@ -180,7 +180,7 @@ export function CompanionToolkitSection({
     <section
       id={id}
       className={cn(
-        "relative z-10 bg-[#F0F5FA] px-4 py-20 text-[#111215] sm:px-6 md:py-28 lg:px-8 border-t border-sky-100/80",
+        "relative z-10 bg-[#F0F5FA] px-4 py-14 text-[#111215] sm:px-6 md:py-20 lg:py-24 border-t border-sky-100/80",
         className
       )}
     >

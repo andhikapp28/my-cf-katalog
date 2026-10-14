@@ -6,7 +6,7 @@ import {
   Users
 } from "lucide-react";
 
-interface TermRuleItem {
+export interface TermRuleItem {
   number: string;
   title: string;
   icon: typeof AlertCircle;
@@ -14,7 +14,7 @@ interface TermRuleItem {
   rules: string[];
 }
 
-const DEFAULT_TERMS: TermRuleItem[] = [
+export const DEFAULT_TERMS: TermRuleItem[] = [
   {
     number: "01",
     title: "Tiket Masuk & Identitas",

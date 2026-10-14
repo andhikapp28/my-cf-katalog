@@ -45,9 +45,11 @@ const DEFAULT_HIGHLIGHTS: HighlightCardData[] = [
 ];
 
 export function EventHighlightsSection({
-  highlights = DEFAULT_HIGHLIGHTS
+  highlights = DEFAULT_HIGHLIGHTS,
+  eventName
 }: {
   highlights?: HighlightCardData[];
+  eventName?: string;
 }) {
   return (
     <section
@@ -62,7 +64,7 @@ export function EventHighlightsSection({
           Program Khusus &amp; Bintang Tamu
         </h2>
         <p className="mt-1 text-xs sm:text-sm text-zinc-600 font-normal">
-          Rangkaian agenda resmi, program komunitas, dan kolaborasi eksklusif Comifuro 23.
+          Rangkaian agenda resmi, program komunitas, dan kolaborasi eksklusif {eventName || "Comic Frontier"}.
         </p>
       </div>
 

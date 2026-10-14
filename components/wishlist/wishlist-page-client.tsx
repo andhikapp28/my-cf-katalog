@@ -4,6 +4,7 @@ import { useEffect, useMemo, useState, useSyncExternalStore } from "react";
 import Link from "next/link";
 import {
   Calendar,
+  ChevronRight,
   Heart,
   Search,
   Store,
@@ -123,6 +124,15 @@ export function WishlistPageClient({
 
   return (
     <div className="container-shell space-y-8 py-8 sm:py-10">
+      {/* Breadcrumb Navigation */}
+      <nav aria-label="Breadcrumb" className="flex items-center gap-1.5 font-mono text-xs text-zinc-500">
+        <Link href="/" className="transition hover:text-zinc-900 font-medium">
+          Dashboard
+        </Link>
+        <ChevronRight className="h-3 w-3 text-zinc-400" />
+        <span className="font-bold text-zinc-900">Circle Tersimpan</span>
+      </nav>
+
       {/* 1. Header Section */}
       <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between border-b border-black/10 pb-6 sm:pb-8">
         <div className="space-y-3 max-w-3xl">

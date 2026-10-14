@@ -130,7 +130,7 @@ export default async function HomePage() {
                 height={850}
                 priority
                 unoptimized
-                className="h-[360px] sm:h-[460px] md:h-[540px] lg:h-[620px] w-auto object-contain drop-shadow-[0_25px_50px_rgba(0,0,0,0.35)] select-none"
+                className="h-[250px] sm:h-[400px] md:h-[500px] lg:h-[580px] w-auto object-contain drop-shadow-[0_25px_50px_rgba(0,0,0,0.35)] select-none"
               />
             </div>
           </div>
@@ -141,7 +141,7 @@ export default async function HomePage() {
                 href="/circles"
                 className="inline-flex items-center justify-center rounded-full bg-[#D6F834] px-8 py-3.5 text-sm font-extrabold text-[#111215] shadow-xl hover:bg-[#cbf128] transition active:scale-[0.98] uppercase tracking-wide focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#111215] focus-visible:ring-offset-2"
               >
-                JELAJAHI 1.959 CIRCLE
+                JELAJAHI {stats.totalCircles ? stats.totalCircles.toLocaleString("id-ID") : "1.959"} CIRCLE
               </Link>
             </HeroEntranceItem>
 
@@ -167,7 +167,7 @@ export default async function HomePage() {
       </section>
 
       {/* SECTION 2: EVENT PULSE & COUNTDOWN (COMIFURO 23 AKTIF) */}
-      <section className="relative z-10 bg-[#D6F834] px-4 py-20 text-[#111215] sm:px-6 md:py-28 lg:px-8 border-t border-black/10">
+      <section className="relative z-10 bg-[#D6F834] px-4 py-14 text-[#111215] sm:px-6 md:py-20 lg:py-24 border-t border-black/10">
         <div className="container-shell max-w-7xl mx-auto space-y-10 sm:space-y-12">
           <FadeInView>
             <div className="grid gap-6 lg:grid-cols-12 lg:items-end border-b border-black/15 pb-8">
@@ -281,7 +281,7 @@ export default async function HomePage() {
       </section>
 
       {/* SECTION 3: COMIFURO EDITIONS ARSIP */}
-      <section className="relative z-10 bg-[#FFFFFF] px-4 py-20 text-[#111215] sm:px-6 md:py-28 lg:px-8 border-t border-zinc-200">
+      <section className="relative z-10 bg-[#FFFFFF] px-4 py-14 text-[#111215] sm:px-6 md:py-20 lg:py-24 border-t border-zinc-200">
         <div className="container-shell max-w-7xl mx-auto space-y-12">
           <FadeInView>
             <div className="flex flex-col gap-6 sm:flex-row sm:items-end sm:justify-between border-b border-zinc-200 pb-8">

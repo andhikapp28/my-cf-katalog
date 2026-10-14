@@ -1,7 +1,7 @@
 export const revalidate = 120;
 
 import Link from "next/link";
-import { RotateCcw, Search, X } from "lucide-react";
+import { ChevronRight, RotateCcw, Search, X } from "lucide-react";
 import { Pagination } from "@/components/ui/pagination";
 import { CircleCatalogClient } from "@/components/products/circle-catalog-client";
 import { getCatalogCircles, getEventsWithCounts } from "@/db/queries";
@@ -82,6 +82,17 @@ export default async function ProductsPage({
 
   return (
     <div className="container-shell space-y-8 py-8 sm:py-10">
+      {/* =================================================================== */}
+      {/* 1. BREADCRUMB NAVIGATION                                            */}
+      {/* =================================================================== */}
+      <nav aria-label="Breadcrumb" className="flex items-center gap-1.5 font-mono text-xs text-zinc-500">
+        <Link href="/" className="transition hover:text-zinc-900 font-medium">
+          Dashboard
+        </Link>
+        <ChevronRight className="h-3 w-3 text-zinc-400" />
+        <span className="font-bold text-zinc-900">Katalog Karya</span>
+      </nav>
+
       {/* =================================================================== */}
       {/* EDITORIAL HEADER (TANALOKA STYLE)                                   */}
       {/* =================================================================== */}

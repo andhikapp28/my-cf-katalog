@@ -2,7 +2,7 @@
 
 import { useMemo, useState } from "react";
 import Link from "next/link";
-import { ArrowUpDown, RotateCcw, Search, Sparkles, X } from "lucide-react";
+import { ArrowUpDown, ChevronRight, RotateCcw, Search, Sparkles, X } from "lucide-react";
 import {
   CompactCircleCard,
   type CompactCircleItem
@@ -117,6 +117,15 @@ export function CirclesDirectoryClient({
 
   return (
     <div className="space-y-6">
+      {/* BREADCRUMB NAVIGATION */}
+      <nav aria-label="Breadcrumb" className="flex items-center gap-1.5 font-mono text-xs text-zinc-500">
+        <Link href="/" className="transition hover:text-zinc-900 font-medium">
+          Dashboard
+        </Link>
+        <ChevronRight className="h-3 w-3 text-zinc-400" />
+        <span className="font-bold text-zinc-900">Direktori Circle</span>
+      </nav>
+
       {/* HEADER SECTION */}
       <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between border-b border-zinc-200/80 pb-6">
         <div className="space-y-1">

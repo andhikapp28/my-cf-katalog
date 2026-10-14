@@ -4,14 +4,37 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { eq } from "drizzle-orm";
-import { ChevronRight } from "lucide-react";
+import {
+  Building2,
+  Bus,
+  ChevronRight,
+  CreditCard,
+  FileCheck2,
+  Ghost,
+  Package,
+  Sparkles,
+  Users
+} from "lucide-react";
 import { db } from "@/db";
 import { events } from "@/db/schema";
 import { EventHeroCard } from "@/components/events/event-hero-card";
-import { EventTermsSection } from "@/components/events/event-terms-section";
-import { EventHighlightsSection } from "@/components/events/event-highlights-section";
-import { EventTicketsSidebar } from "@/components/events/event-tickets-sidebar";
-import { EventBenefitsSidebar } from "@/components/events/event-benefits-sidebar";
+import {
+  EventTermsSection,
+  DEFAULT_TERMS,
+  type TermRuleItem
+} from "@/components/events/event-terms-section";
+import {
+  EventHighlightsSection,
+  type HighlightCardData
+} from "@/components/events/event-highlights-section";
+import {
+  EventTicketsSidebar,
+  type TicketPackageItem
+} from "@/components/events/event-tickets-sidebar";
+import {
+  EventBenefitsSidebar,
+  type BenefitFacilityItem
+} from "@/components/events/event-benefits-sidebar";
 import { EventMapPreviewCard } from "@/components/events/event-map-preview-card";
 import { EventGuidesSection } from "@/components/events/event-guides-section";
 import { getEventDetailDataWithFallback } from "@/lib/event-details-data";
@@ -78,6 +101,99 @@ export default async function EventDetailPage({
     ? "Comic Frontier 23"
     : (event.name.includes(" (") ? event.name.split(" (")[0] : event.name);
 
+  // 1. Program khusus & sorotan faktual per edisi
+  const highlightsList: HighlightCardData[] = guideData.highlights.map((h) => {
+    let icon = Sparkles;
+    const tagUpper = h.tag.toUpperCase();
+    if (tagUpper.includes("COMMUTER") || tagUpper.includes("KAI") || tagUpper.includes("TRANSPORT")) {
+      icon = CreditCard;
+    } else if (tagUpper.includes("COSPLAY") || tagUpper.includes("HALLOWEEN") || tagUpper.includes("PARADE")) {
+      icon = Ghost;
+    } else if (tagUpper.includes("MERCH") || tagUpper.includes("GOODS") || tagUpper.includes("CULINARY")) {
+      icon = Package;
+    } else if (
+      tagUpper.includes("COMMUNITY") ||
+      tagUpper.includes("STAGE") ||
+      tagUpper.includes("HOLOLIVE") ||
+      tagUpper.includes("CREATOR") ||
+      tagUpper.includes("MARKET")
+    ) {
+      icon = Users;
+    }
+
+    return {
+      category: h.tag,
+      title: h.title,
+      description: h.description,
+      icon
+    };
+  });
+
+  // 2. Tata tertib dinamis menyesuaikan data gate edisi
+  const eventTerms: TermRuleItem[] = [
+    {
+      number: "01",
+      title: "Tiket Masuk & Identitas",
+      icon: FileCheck2,
+      summary: `Penukaran wristband resmi dan verifikasi identitas pengunjung ${breadcrumbName}.`,
+      rules: [
+        `Penukaran e-voucher wristband di gate venue mulai pukul ${guideData.ticketInfo.wristbandExchangeHours || "08:00 - 18:15 WIB"}.`,
+        "Wajib menunjukkan kartu identitas resmi (KTP, kartu pelajar, atau paspor) yang sesuai dengan akun pemesan tiket.",
+        `Pintu masuk hall ditutup pukul ${guideData.ticketInfo.gateCloseHour || "18:30 WIB"}; ${guideData.ticketInfo.childPolicy || "anak berusia 2 tahun ke atas wajib tiket"}.`
+      ]
+    },
+    ...DEFAULT_TERMS.slice(1)
+  ];
+
+  // 3. Paket tiket resmi / arsip harga edisi
+  const ticketPackages: TicketPackageItem[] = [
+    {
+      id: "single-day",
+      name: "Single Day Pass",
+      priceFormatted: guideData.ticketInfo.regularPriceFormatted || "Rp 75.000",
+      description: `Akses 1 hari pameran (${guideData.ticketInfo.salesModel || "100% online"}).`,
+      benefits: [
+        `Akses Artist Alley & stan circle di ${guideData.attendance.venueHalls}`,
+        "Layanan gratis Shuttle Bus Lorena PP (St. Cisauk - ICE BSD)",
+        "Akses pameran karya komunitas kreatif"
+      ]
+    },
+    {
+      id: "bundle-goods",
+      name: "Bundle Official Goods",
+      priceFormatted: guideData.ticketInfo.bundlePriceFormatted || "Rp 130.000",
+      badge: "Edisi Terbatas",
+      description: `Akses 1 hari pameran ditambah merchandise resmi edisi ${breadcrumbName}.`,
+      benefits: [
+        `Tiket masuk 1 hari pameran ${breadcrumbName}`,
+        "Wristband kolektor resmi edisi khusus",
+        "Paket merchandise dan katalog kurasi resmi"
+      ]
+    }
+  ];
+
+  // 4. Benefit fasilitas disesuaikan dengan venue & kapasitas edisi
+  const benefitsList: BenefitFacilityItem[] = [
+    {
+      icon: Bus,
+      title: "Shuttle Bus Gratis Lorena",
+      badge: "100% Gratis",
+      description: "Rute PP St. Cisauk (Terminal Intermoda) ke Hall 10 ICE BSD, armada bus AC beroperasi 07:00 - 21:30 WIB."
+    },
+    {
+      icon: Users,
+      title: "Area Kreator & Komunitas",
+      badge: "Kreator Alley",
+      description: `Eksplorasi karya mandiri ribuan circle terkurasi di area ${guideData.attendance.venueHalls}.`
+    },
+    {
+      icon: Building2,
+      title: "Venue Ber-AC & Fasilitas Lengkap",
+      badge: "Fasilitas Resmi",
+      description: "Kenyamanan pendingin udara penuh di seluruh hall, bilik ruang ganti cosplayer terpisah, pos medis darurat, dan mushola."
+    }
+  ];
+
   return (
     <div className="container-shell space-y-8 py-6 md:py-10">
       {/* 1. Breadcrumb Navigation (Ventixe Layout: Dashboard / Events / Comic Frontier 23) */}
@@ -124,22 +240,24 @@ export default async function EventDetailPage({
         {/* Kolom Kiri (~65% / 8 Kolom Desktop): Tata Tertib & Ketentuan Masuk + Program Khusus & Tamu */}
         <div className="lg:col-span-8 space-y-8">
           {/* Section 1: Tata Tertib & Ketentuan Masuk */}
-          <EventTermsSection />
+          <EventTermsSection terms={eventTerms} />
 
           {/* Section 2: Program Khusus & Bintang Tamu */}
-          <EventHighlightsSection />
+          <EventHighlightsSection highlights={highlightsList} eventName={breadcrumbName} />
         </div>
 
         {/* Kolom Kanan (~35% / 4 Kolom Desktop): Tiket Resmi + Benefit Pengunjung + Denah & Peta */}
         <aside className="lg:col-span-4 space-y-8">
           {/* Widget 1: Paket Tiket Resmi */}
           <EventTicketsSidebar
+            packages={ticketPackages}
             platform={ticketPlatform}
             ticketUrl="https://www.ticket2u.id"
+            isPastEvent={!isUpcoming && !event.isActive}
           />
 
           {/* Widget 2: Benefit & Fasilitas Pengunjung */}
-          <EventBenefitsSidebar />
+          <EventBenefitsSidebar benefits={benefitsList} />
 
           {/* Widget 3: Akses Denah & Peta Event */}
           <EventMapPreviewCard

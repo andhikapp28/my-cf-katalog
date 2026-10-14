@@ -21,12 +21,24 @@ const config: Config = {
         muted: "hsl(var(--muted))",
         accent: "hsl(var(--accent))",
         line: "hsl(var(--line))",
+        comi: {
+          blue: "#5398DA",
+          lime: "#D6F834",
+          crimson: "#F84632",
+          dark: "#111215",
+          ice: "#F0F5FA"
+        },
         brand: {
           50: "#fff8f1",
           100: "#ffedd4",
           500: "#d46a3a",
           600: "#b8562d",
-          700: "#8f4424"
+          700: "#8f4424",
+          blue: "#5398DA",
+          lime: "#D6F834",
+          crimson: "#F84632",
+          dark: "#111215",
+          ice: "#F0F5FA"
         },
         ink: {
           900: "#201815",
