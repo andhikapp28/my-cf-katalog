@@ -3,7 +3,7 @@
 import { useEffect, useState, useSyncExternalStore } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Menu, X } from "lucide-react";
+import { Menu, Search, X } from "lucide-react";
 import { cn } from "@/lib/utils";
 import {
   getWishlistServerSnapshot,
@@ -103,7 +103,32 @@ export function SiteHeader() {
             })}
           </nav>
         </div>
+
+        {/* Quick Booth Lookup Trigger (Desktop) */}
+        <div className="hidden md:flex items-center gap-3">
+          <button
+            type="button"
+            onClick={() => window.dispatchEvent(new CustomEvent("open-quick-lookup"))}
+            className="group flex min-h-[40px] items-center gap-2 rounded-xl border border-black/15 bg-white/40 px-3.5 py-1.5 font-mono text-xs text-[#111215] shadow-xs backdrop-blur-xs transition hover:bg-white hover:border-black/30 active:scale-[0.98] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#111215]"
+            title="Cari nomor meja booth atau circle (Shortcut: Ctrl+K)"
+          >
+            <Search className="h-3.5 w-3.5 text-[#111215]/70 group-hover:text-[#111215]" />
+            <span className="font-semibold">Cari Booth...</span>
+            <kbd className="ml-1 rounded border border-black/20 bg-white/70 px-1.5 py-0.5 text-[10px] font-bold text-[#111215]">
+              ⌘K
+            </kbd>
+          </button>
+        </div>
+
         <div className="flex items-center gap-2 md:hidden">
+          <button
+            type="button"
+            onClick={() => window.dispatchEvent(new CustomEvent("open-quick-lookup"))}
+            aria-label="Cari Booth dan Circle"
+            className="inline-flex min-h-[44px] min-w-[44px] items-center justify-center rounded-xl border border-[#111215]/20 bg-[#111215]/10 text-[#111215] transition active:scale-[0.98] hover:bg-[#111215]/20 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#111215]"
+          >
+            <Search className="h-4 w-4" />
+          </button>
           <Link
             href="/wishlist"
             aria-label={`Buka Wishlist (${wishlistCount} item)`}

@@ -27,6 +27,7 @@ import {
 } from "@/components/products/compact-circle-card";
 import { CircleCatalogModal } from "@/components/products/circle-catalog-modal";
 import { ShareWishlistModal } from "./share-wishlist-modal";
+import { WishlistCashCalculator } from "./wishlist-cash-calculator";
 import type { CatalogCircle } from "@/db/queries";
 
 export function WishlistPageClient({
@@ -173,6 +174,12 @@ export function WishlistPageClient({
 
       {savedCircles.length > 0 ? (
         <div className="space-y-6">
+          {/* Wishlist Cash Calculator & Budget Planner */}
+          <WishlistCashCalculator
+            savedCircles={savedCircles}
+            activeEventName={activeEventName}
+          />
+
           {/* 2. Filter & Sort Toolbar */}
           <div className="space-y-4 rounded-3xl border border-zinc-200 bg-white/90 p-4 shadow-sm sm:p-5">
             <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">

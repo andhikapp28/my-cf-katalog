@@ -5,6 +5,8 @@ import "./globals.css";
 import { SiteHeader } from "@/components/layout/site-header";
 import { SiteFooter } from "@/components/layout/site-footer";
 import { ServiceWorkerRegister } from "@/components/layout/service-worker-register";
+import { QuickLookupModal } from "@/components/navigation/quick-lookup-modal";
+import { PwaInstallBanner } from "@/components/pwa/pwa-install-banner";
 import { Toaster } from "sonner";
 
 const sans = Plus_Jakarta_Sans({
@@ -52,7 +54,7 @@ export const metadata: Metadata = {
 export const viewport: Viewport = {
   width: "device-width",
   initialScale: 1,
-  themeColor: "#d46a3a"
+  themeColor: "#5398DA"
 };
 
 export default function RootLayout({ children }: Readonly<{ children: ReactNode }>) {
@@ -73,6 +75,8 @@ export default function RootLayout({ children }: Readonly<{ children: ReactNode 
           <SiteFooter />
         </div>
         <Toaster richColors position="top-right" />
+        <QuickLookupModal />
+        <PwaInstallBanner />
         <ServiceWorkerRegister />
       </body>
     </html>
