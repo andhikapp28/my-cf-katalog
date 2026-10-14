@@ -87,7 +87,7 @@ export function SiteFooter() {
                 width={260}
                 height={270}
                 unoptimized
-                className="h-36 sm:h-48 md:h-56 lg:h-64 w-auto object-contain drop-shadow-xl select-none"
+                className="h-20 sm:h-40 md:h-52 lg:h-64 w-auto object-contain drop-shadow-xl select-none translate-y-1 sm:translate-y-2"
               />
             </div>
           </div>

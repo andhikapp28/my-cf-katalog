@@ -374,6 +374,29 @@ export function compareBoothCodes(a?: string | null, b?: string | null): number 
 }
 
 /**
+ * Mengambil kode booth primer untuk sebuah circle.
+ */
+export function getCirclePrimaryBoothCode(circle: {
+  boothLocations?: Array<{ boothCode?: string | null }> | null;
+  boothCode?: string | null;
+}): string {
+  if (circle.boothCode && circle.boothCode.trim()) {
+    return circle.boothCode.trim();
+  }
+  if (!circle.boothLocations || circle.boothLocations.length === 0) {
+    return "";
+  }
+  const codes = circle.boothLocations
+    .map((b) => (b.boothCode || "").trim())
+    .filter(Boolean);
+  if (codes.length === 0) {
+    return "";
+  }
+  codes.sort(compareBoothCodes);
+  return codes[0] || "";
+}
+
+/**
  * Pilih booth berikutnya yang perlu dikunjungi untuk rute belanja di venue.
  */
 export function pickNextBooth(markers: BoothMarker[], currentBoothId?: string): BoothMarker | null {

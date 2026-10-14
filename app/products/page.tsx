@@ -4,7 +4,7 @@ import Link from "next/link";
 import { RotateCcw, Search, X } from "lucide-react";
 import { Pagination } from "@/components/ui/pagination";
 import { CircleCatalogClient } from "@/components/products/circle-catalog-client";
-import { getCatalogCircles } from "@/db/queries";
+import { getCatalogCircles, getEventsWithCounts } from "@/db/queries";
 import { buildPathWithQuery, getPageParam, paginateItems, type SearchParams } from "@/lib/admin-ui";
 import { cn } from "@/lib/utils";
 
@@ -36,14 +36,17 @@ export default async function ProductsPage({
   const eventId = typeof params.event === "string" ? params.event : undefined;
   const activeEventSlug = eventId || "cf22";
 
-  const circles = await getCatalogCircles({
-    q: q || undefined,
-    fandom: fandom || undefined,
-    day: targetDay || undefined,
-    circleId: circleId || undefined,
-    eventId: eventId || undefined,
-    sort
-  });
+  const [allEvents, circles] = await Promise.all([
+    getEventsWithCounts(),
+    getCatalogCircles({
+      q: q || undefined,
+      fandom: fandom || undefined,
+      day: targetDay || undefined,
+      circleId: circleId || undefined,
+      eventId: eventId || undefined,
+      sort
+    })
+  ]);
 
   const pageParam = getPageParam(params as SearchParams);
   const pagination = paginateItems(circles, pageParam, 24);
@@ -108,48 +111,39 @@ export default async function ProductsPage({
           <span className="font-mono text-xs font-bold uppercase tracking-wider text-zinc-400 mr-1 shrink-0">
             EDISI EVENT:
           </span>
-          <Link
-            href={getFilterHref({ event: "cf22", page: undefined })}
-            className={cn(
-              "rounded-full px-3.5 py-1.5 font-mono text-xs font-bold uppercase tracking-wider transition border flex items-center gap-2",
-              activeEventSlug === "cf22"
-                ? "bg-[#111215] text-[#D6F834] border-[#111215] shadow-xs"
-                : "bg-white text-zinc-600 border-zinc-200 hover:border-zinc-300 hover:bg-zinc-50"
-            )}
-          >
-            <span>Comic Frontier 22</span>
-            <span
-              className={cn(
-                "rounded-full px-2 py-0.5 text-[10px] font-mono",
-                activeEventSlug === "cf22"
-                  ? "bg-white/20 text-white"
-                  : "bg-zinc-100 text-zinc-600"
-              )}
-            >
-              1.477 Circle
-            </span>
-          </Link>
-          <Link
-            href={getFilterHref({ event: "cf23", page: undefined })}
-            className={cn(
-              "rounded-full px-3.5 py-1.5 font-mono text-xs font-bold uppercase tracking-wider transition border flex items-center gap-2",
-              activeEventSlug === "cf23"
-                ? "bg-[#111215] text-[#D6F834] border-[#111215] shadow-xs"
-                : "bg-white text-zinc-600 border-zinc-200 hover:border-zinc-300 hover:bg-zinc-50"
-            )}
-          >
-            <span>Comic Frontier 23</span>
-            <span
-              className={cn(
-                "rounded-full px-2 py-0.5 text-[10px] font-mono",
-                activeEventSlug === "cf23"
-                  ? "bg-amber-400/20 text-amber-300"
-                  : "bg-amber-50 text-amber-700 border border-amber-200/60"
-              )}
-            >
-              Upcoming
-            </span>
-          </Link>
+          {allEvents
+            .filter((ev) => ev.slug === "cf22" || ev.slug === "cf23" || ev.circleCount > 0)
+            .map((ev) => {
+              const isActiveTab = activeEventSlug === ev.slug;
+              return (
+                <Link
+                  key={ev.slug}
+                  href={getFilterHref({ event: ev.slug, page: undefined })}
+                  className={cn(
+                    "rounded-full px-3.5 py-1.5 font-mono text-xs font-bold uppercase tracking-wider transition border flex items-center gap-2",
+                    isActiveTab
+                      ? "bg-[#111215] text-[#D6F834] border-[#111215] shadow-xs"
+                      : "bg-white text-zinc-600 border-zinc-200 hover:border-zinc-300 hover:bg-zinc-50"
+                  )}
+                >
+                  <span>{ev.name.replace(/\s*\(.*?\)/, "")}</span>
+                  <span
+                    className={cn(
+                      "rounded-full px-2 py-0.5 text-[10px] font-mono",
+                      isActiveTab
+                        ? "bg-white/20 text-white"
+                        : ev.circleCount > 0
+                          ? "bg-zinc-100 text-zinc-600"
+                          : "bg-amber-50 text-amber-700 border border-amber-200/60"
+                    )}
+                  >
+                    {ev.circleCount > 0
+                      ? `${ev.circleCount.toLocaleString("id-ID")} Circle`
+                      : "Upcoming"}
+                  </span>
+                </Link>
+              );
+            })}
         </div>
 
         {/* Search Bar Terpadu */}

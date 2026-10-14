@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { formatCurrency, formatDate, formatDateTime } from "@/lib/format";
+import { formatCurrency, formatDate, formatDateTime, formatDateRange } from "@/lib/format";
 
 describe("formatCurrency", () => {
   it("memformat angka menjadi mata uang IDR tanpa desimal", () => {
@@ -61,5 +61,25 @@ describe("formatDateTime", () => {
     expect(result).not.toBe("-");
     // format waktu id-ID umumnya memuat titik dua pemisah jam:menit
     expect(result).toMatch(/\d/);
+  });
+});
+
+describe("formatDateRange", () => {
+  it("mengembalikan '-' jika startsAt null/undefined", () => {
+    expect(formatDateRange(null)).toBe("-");
+    expect(formatDateRange(undefined)).toBe("-");
+  });
+
+  it("memformat rentang tanggal dalam bulan yang sama", () => {
+    const result = formatDateRange("2026-10-31T09:00:00+07:00", "2026-11-01T18:00:00+07:00");
+    expect(result).toContain("31");
+    expect(result).toContain("1");
+    expect(result).toContain("2026");
+  });
+
+  it("memformat rentang tanggal satu hari saja jika endsAt tidak diberikan", () => {
+    const result = formatDateRange("2026-05-16T09:00:00+07:00");
+    expect(result).toContain("16");
+    expect(result).toContain("2026");
   });
 });

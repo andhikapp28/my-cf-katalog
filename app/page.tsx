@@ -23,99 +23,15 @@ import {
   BannerBadgeMotion
 } from "@/components/landing/landing-motion";
 import { CompanionToolkit } from "@/components/landing/companion-toolkit";
-import { getLandingPageData } from "@/db/queries";
+import { getEventsWithCounts, getLandingPageData } from "@/db/queries";
+import { formatDateRange } from "@/lib/format";
 import { cn } from "@/lib/utils";
 
-interface ComifuroEdition {
-  id: string;
-  editionBadge: string;
-  title: string;
-  status: "Coming Soon" | "Active Event" | "Past Event";
-  date: string;
-  venue: string;
-  bannerImage: string;
-  linkHref: string;
-  linkText: string;
-  description: string;
-}
-
-const comifuroEditions: ComifuroEdition[] = [
-  {
-    id: "cf23",
-    editionBadge: "CF 23",
-    title: "Comic Frontier 23",
-    status: "Active Event",
-    date: "31 Okt - 1 Nov 2026",
-    venue: "ICE BSD City (Hall 5, 6, 7, 8, 9, 10)",
-    bannerImage: "/banner/cf23.jpg",
-    linkHref: "/events/cf23",
-    linkText: "Detail Event",
-    description: "Perhelatan akbar Comic Frontier 23 di ICE BSD City (Hall 5-10) bertema Halloween dengan 1.959 circle kreator terkurasi dan area Free Community Booths."
-  },
-  {
-    id: "cf22",
-    editionBadge: "CF 22",
-    title: "Comic Frontier 22",
-    status: "Past Event",
-    date: "16 - 17 Mei 2026",
-    venue: "ICE BSD City (Hall 6 - 10)",
-    bannerImage: "/banner/cf22.jpg",
-    linkHref: "/events/cf22",
-    linkText: "Lihat Arsip",
-    description: "1.500+ circle kreator, Bushiroad EXPO, dan tiket KMT KAI."
-  },
-  {
-    id: "cf21",
-    editionBadge: "CF 21",
-    title: "Comic Frontier 21",
-    status: "Past Event",
-    date: "15 - 16 November 2025",
-    venue: "ICE BSD City (Hall 6 - 10)",
-    bannerImage: "/banner/cf21.jpg",
-    linkHref: "/events/cf21",
-    linkText: "Lihat Arsip",
-    description: "Rekor 70.000 pengunjung dan konser akbar hololive ID."
-  },
-  {
-    id: "cf20",
-    editionBadge: "CF 20",
-    title: "Comic Frontier 20",
-    status: "Past Event",
-    date: "24 - 25 Mei 2025",
-    venue: "ICE BSD City (Hall 6 - 10)",
-    bannerImage: "/banner/cf20.jpg",
-    linkHref: "/events/cf20",
-    linkText: "Lihat Arsip",
-    description: "Edisi ke-20 (CF XX), Bushiroad EXPO, dan temu kreator."
-  },
-  {
-    id: "cf19",
-    editionBadge: "CF 19",
-    title: "Comic Frontier 19",
-    status: "Past Event",
-    date: "9 - 10 November 2024",
-    venue: "ICE BSD City (Hall 7 - 10)",
-    bannerImage: "/banner/cf19.jpg",
-    linkHref: "/events/cf19",
-    linkText: "Lihat Arsip",
-    description: "Konser anisong Konomi Suzuki dan panggung musik J-pop."
-  },
-  {
-    id: "cf18",
-    editionBadge: "CF 18",
-    title: "Comic Frontier 18",
-    status: "Past Event",
-    date: "11 - 12 Mei 2024",
-    venue: "ICE BSD City (Hall 6 - 10)",
-    bannerImage: "/banner/cf18.jpg",
-    linkHref: "/events/cf18",
-    linkText: "Lihat Arsip",
-    description: "Bushiroad EXPO 2024 dan temu bintang seiyuu Jepang."
-  }
-];
-
 export default async function HomePage() {
-  const data = await getLandingPageData();
+  const [data, eventsList] = await Promise.all([
+    getLandingPageData(),
+    getEventsWithCounts()
+  ]);
 
   if (!data) {
     return (
@@ -129,6 +45,32 @@ export default async function HomePage() {
   }
 
   const { featuredCircles, featuredProducts, stats } = data;
+
+  const editions = eventsList.slice(0, 6).map((ev) => {
+    const isUpcoming = ev.startsAt ? new Date(ev.startsAt) > new Date() : false;
+    const status: "Coming Soon" | "Active Event" | "Past Event" = ev.isActive
+      ? "Active Event"
+      : isUpcoming
+        ? "Coming Soon"
+        : "Past Event";
+
+    const badge = ev.slug.toUpperCase().replace(/^CF/, "CF ");
+
+    return {
+      id: ev.id,
+      slug: ev.slug,
+      editionBadge: badge,
+      title: ev.name,
+      status,
+      date: formatDateRange(ev.startsAt, ev.endsAt),
+      venue: ev.venue,
+      bannerImage: ev.bannerImageUrl || `/banner/${ev.slug}.jpg`,
+      linkHref: `/events/${ev.slug}`,
+      linkText: ev.isActive ? "Detail Event" : "Lihat Arsip",
+      description: ev.description || "",
+      circleCount: ev.circleCount
+    };
+  });
 
   return (
     <div className="relative min-h-screen selection:bg-[#D6F834] selection:text-[#111215]">
@@ -240,7 +182,7 @@ export default async function HomePage() {
               </div>
               <div className="lg:col-span-5">
                 <p className="text-sm sm:text-base leading-relaxed text-[#111215]/85 font-medium">
-                  Direktori 1.959 kreator independen dan booth aktif Comic Frontier 23. Disimpan langsung ke memori offline peramban agar tetap cepat diakses di tengah hall tanpa bergantung pada sinyal seluler.
+                  Direktori {stats.totalCircles.toLocaleString("id-ID")} kreator independen dan booth aktif {data.event.name}. Disimpan langsung ke memori offline peramban agar tetap cepat diakses di tengah hall tanpa bergantung pada sinyal seluler.
                 </p>
               </div>
             </div>
@@ -261,7 +203,7 @@ export default async function HomePage() {
             >
               <div>
                 <div className="font-mono text-4xl sm:text-5xl lg:text-6xl font-black tracking-tight text-[#111215] group-hover:text-[#F84632] transition-colors">
-                  {stats.totalCircles ? stats.totalCircles.toLocaleString("id-ID") : "1.959"}
+                  {stats.totalCircles.toLocaleString("id-ID")}
                 </div>
               </div>
               <div className="pt-6 border-t border-black/10">
@@ -371,7 +313,7 @@ export default async function HomePage() {
           </FadeInView>
 
           <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-            {comifuroEditions.map((edition, idx) => (
+            {editions.map((edition, idx) => (
               <FadeInView key={edition.id} delay={idx * 0.08} duration={0.45}>
                 <article className="h-full">
                   <Link
@@ -417,6 +359,15 @@ export default async function HomePage() {
                           <Calendar className="h-3 w-3 text-[#F84632]" />
                           <span>{edition.date}</span>
                         </div>
+                        {edition.circleCount > 0 && (
+                          <>
+                            <span>·</span>
+                            <div className="flex items-center gap-1 text-zinc-700 font-medium">
+                              <Users2 className="h-3 w-3 text-zinc-400" />
+                              <span>{edition.circleCount.toLocaleString("id-ID")} Circle</span>
+                            </div>
+                          </>
+                        )}
                         <span>·</span>
                         <div className="flex items-center gap-1 truncate">
                           <MapPin className="h-3 w-3 text-zinc-400" />

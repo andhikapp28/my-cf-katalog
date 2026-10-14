@@ -10,11 +10,11 @@ import {
 } from "@/db/schema";
 import type { BoothLocation, Circle, EventDay, FloorMap, Product } from "@/db/schema";
 import { checklistStatuses, sortChecklistItems } from "@/lib/checklist";
-import { compareBoothCodes, parseCircleNotes, type ParsedCircleMetadata } from "@/lib/floor-map";
+import { compareBoothCodes, getCirclePrimaryBoothCode, parseCircleNotes, type ParsedCircleMetadata } from "@/lib/floor-map";
 import { getCatalogCache } from "@/lib/map-data";
 import { getEventDetailData } from "@/lib/event-details-data";
 
-export { compareBoothCodes } from "@/lib/floor-map";
+export { compareBoothCodes, getCirclePrimaryBoothCode } from "@/lib/floor-map";
 
 export type CatalogCircleFilters = {
   q?: string;
@@ -46,26 +46,6 @@ export type CatalogCircle = Circle & {
   socialLinks: Array<{ platform: string; url: string; label: string }>;
   categories: string[];
 };
-
-export function getCirclePrimaryBoothCode(circle: {
-  boothLocations?: Array<{ boothCode?: string | null }> | null;
-  boothCode?: string | null;
-}): string {
-  if (circle.boothCode && circle.boothCode.trim()) {
-    return circle.boothCode.trim();
-  }
-  if (!circle.boothLocations || circle.boothLocations.length === 0) {
-    return "";
-  }
-  const codes = circle.boothLocations
-    .map((b) => (b.boothCode || "").trim())
-    .filter(Boolean);
-  if (codes.length === 0) {
-    return "";
-  }
-  codes.sort(compareBoothCodes);
-  return codes[0] || "";
-}
 
 export function sortCirclesByBooth<
   T extends {
