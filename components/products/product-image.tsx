@@ -11,7 +11,7 @@ export function ProductImage({
   className,
   imageClassName,
   fallbackLabel = "No Image",
-  fallbackDescription,
+  fallbackDescription: _fallbackDescription,
   showLoading = true,
   loading = "lazy"
 }: {
@@ -64,19 +64,13 @@ export function ProductImage({
       ) : null}
 
       {state === "loading" && showLoading ? (
-        <div className="absolute inset-0 animate-pulse motion-reduce:animate-none bg-[linear-gradient(135deg,rgba(212,106,58,0.16),rgba(255,255,255,0.92),rgba(212,106,58,0.10))]" />
+        <div className="absolute inset-0 bg-zinc-100" />
       ) : null}
 
       {state === "empty" || state === "error" ? (
-        <div className="absolute inset-0 flex flex-col items-center justify-center bg-[radial-gradient(circle_at_top,_rgba(212,106,58,0.16),_transparent_58%)] px-6 text-center">
-          <p className="text-sm font-semibold uppercase tracking-[0.18em] text-ink-500">
-            {state === "error" ? "Image preview unavailable" : fallbackLabel}
-          </p>
-          <p className="mt-2 text-xs leading-5 text-ink-500">
-            {fallbackDescription ??
-              (state === "error"
-                ? "Periksa ulang direct image URL yang dipakai."
-                : "Tambahkan direct image URL untuk menampilkan preview produk.")}
+        <div className="absolute inset-0 flex flex-col items-center justify-center bg-zinc-50 px-4 text-center">
+          <p className="text-xs font-medium text-zinc-400">
+            {state === "error" ? "Preview tidak tersedia" : fallbackLabel}
           </p>
         </div>
       ) : null}

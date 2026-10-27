@@ -2,7 +2,7 @@
 
 import { useMemo, useState } from "react";
 import Link from "next/link";
-import { ArrowUpDown, ChevronRight, RotateCcw, Search, Sparkles, X } from "lucide-react";
+import { ArrowUpDown, ChevronRight, RotateCcw, Search, X } from "lucide-react";
 import {
   CompactCircleCard,
   type CompactCircleItem
@@ -127,13 +127,12 @@ export function CirclesDirectoryClient({
 
       {/* HEADER SECTION */}
       <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between border-b border-zinc-200/80 pb-6">
-        <div className="space-y-1">
-          <div className="inline-flex items-center gap-2 font-mono text-xs font-bold uppercase tracking-widest text-[#F84632]">
-            <Sparkles className="h-3.5 w-3.5" />
-            <span>KREATOR & BOOTH DIRECTORY</span>
+        <div className="space-y-1.5">
+          <div className="inline-flex items-center gap-1.5 font-sans text-xs font-bold uppercase tracking-wider text-[#F84632]">
+            <span>Direktori Kreator & Booth</span>
           </div>
-          <h1 className="font-[var(--font-display)] text-3xl sm:text-4xl md:text-5xl font-black uppercase tracking-tight text-[#111215]">
-            DIREKTORI CIRCLE COMIFURO
+          <h1 className="font-sans text-2xl sm:text-3xl md:text-4xl font-extrabold tracking-tight text-[#111215]">
+            Direktori Circle Comifuro
           </h1>
           <p className="text-xs sm:text-sm text-zinc-600 font-medium max-w-xl">
             Jelajahi circle kreator independen, nomor meja booth resmi, fandom karya, dan simpan wishlist karya favorit.
@@ -174,8 +173,8 @@ export function CirclesDirectoryClient({
 
       {/* EVENT SWITCHER TABS */}
       <div className="flex flex-wrap items-center gap-2 pb-2">
-        <span className="font-mono text-xs font-bold uppercase tracking-wider text-zinc-400 mr-1 shrink-0">
-          EDISI EVENT:
+        <span className="font-sans text-xs font-semibold text-zinc-400 mr-1 shrink-0">
+          Edisi Event:
         </span>
         {events.map((ev) => {
           const isActiveTab = activeEventSlug === ev.slug;
@@ -184,7 +183,7 @@ export function CirclesDirectoryClient({
               key={ev.slug}
               href={`/circles?event=${ev.slug}`}
               className={cn(
-                "rounded-full px-4 py-2 font-mono text-xs font-bold uppercase tracking-wider transition border flex items-center gap-2 shadow-xs active:scale-98",
+                "rounded-full px-4 py-2 font-sans text-xs font-semibold transition border flex items-center gap-2 shadow-xs active:scale-98",
                 isActiveTab
                   ? "bg-[#111215] text-[#D6F834] border-[#111215]"
                   : "bg-white text-zinc-700 border-zinc-200 hover:border-zinc-300 hover:bg-zinc-50"
@@ -193,7 +192,7 @@ export function CirclesDirectoryClient({
               <span>{ev.name}</span>
               <span
                 className={cn(
-                  "rounded-full px-2 py-0.5 text-[10px] font-mono",
+                  "rounded-full px-2 py-0.5 text-[11px] font-sans font-medium",
                   isActiveTab
                     ? "bg-white/20 text-white"
                     : ev.circleCount > 0
@@ -212,11 +211,11 @@ export function CirclesDirectoryClient({
 
       {/* FILTER STRIP & CONTROLS (IF NOT EMPTY CF23) */}
       {!isCF23Empty && (
-        <div className="flex flex-wrap items-center justify-between gap-3 rounded-2xl border border-zinc-200 bg-white/70 p-3 sm:p-4 backdrop-blur-md shadow-xs">
+        <div className="flex flex-wrap items-center justify-between gap-3 rounded-2xl border border-zinc-200 bg-white p-3 sm:p-4 shadow-xs">
           {/* DAY FILTER PILLS */}
           <div className="flex flex-wrap items-center gap-1.5">
-            <span className="font-mono text-[11px] font-bold uppercase tracking-wider text-zinc-400 mr-1 hidden sm:inline">
-              HARI:
+            <span className="font-sans text-xs font-semibold text-zinc-400 mr-1 hidden sm:inline">
+              Hari:
             </span>
             <button
               onClick={() => {
@@ -224,7 +223,7 @@ export function CirclesDirectoryClient({
                 setCurrentPage(1);
               }}
               className={cn(
-                "rounded-full px-3 py-1 font-mono text-xs font-bold transition",
+                "rounded-full px-3.5 py-1.5 font-sans text-xs font-semibold transition",
                 selectedDay === "ALL"
                   ? "bg-[#111215] text-white"
                   : "bg-zinc-100 text-zinc-600 hover:bg-zinc-200"
@@ -238,7 +237,7 @@ export function CirclesDirectoryClient({
                 setCurrentPage(1);
               }}
               className={cn(
-                "rounded-full px-3 py-1 font-mono text-xs font-bold transition",
+                "rounded-full px-3.5 py-1.5 font-sans text-xs font-semibold transition",
                 selectedDay === "DAY_1"
                   ? "bg-[#5398DA] text-[#111215]"
                   : "bg-zinc-100 text-zinc-600 hover:bg-zinc-200"
@@ -252,7 +251,7 @@ export function CirclesDirectoryClient({
                 setCurrentPage(1);
               }}
               className={cn(
-                "rounded-full px-3 py-1 font-mono text-xs font-bold transition",
+                "rounded-full px-3.5 py-1.5 font-sans text-xs font-semibold transition",
                 selectedDay === "DAY_2"
                   ? "bg-[#F84632] text-white"
                   : "bg-zinc-100 text-zinc-600 hover:bg-zinc-200"
@@ -264,7 +263,7 @@ export function CirclesDirectoryClient({
 
           {/* SORT CONTROLS & STATS */}
           <div className="flex items-center gap-3">
-            <div className="flex items-center gap-1.5 text-xs font-mono">
+            <div className="flex items-center gap-1.5 text-xs font-sans">
               <ArrowUpDown className="h-3.5 w-3.5 text-zinc-400" />
               <label htmlFor="sort-select" className="sr-only">
                 Urutkan circle
@@ -276,7 +275,7 @@ export function CirclesDirectoryClient({
                   setSortBy(e.target.value as "booth" | "name" | "items");
                   setCurrentPage(1);
                 }}
-                className="rounded-lg border border-zinc-200 bg-white px-2.5 py-1 text-xs font-mono font-bold text-zinc-700 focus:outline-none focus:ring-1 focus:ring-[#111215]"
+                className="rounded-lg border border-zinc-200 bg-white px-2.5 py-1 text-xs font-sans font-semibold text-zinc-700 focus:outline-none focus:ring-1 focus:ring-[#111215]"
               >
                 <option value="booth">Nomor Meja (A-Z)</option>
                 <option value="name">Nama Circle (A-Z)</option>
@@ -284,9 +283,9 @@ export function CirclesDirectoryClient({
               </select>
             </div>
 
-            <span className="font-mono text-xs text-zinc-400 hidden md:inline">·</span>
+            <span className="font-sans text-xs text-zinc-300 hidden md:inline">·</span>
 
-            <span className="font-mono text-xs font-bold text-zinc-500">
+            <span className="font-sans text-xs font-semibold text-zinc-500">
               {totalItems.toLocaleString("id-ID")} Circle
             </span>
           </div>
@@ -349,7 +348,7 @@ export function CirclesDirectoryClient({
           {/* CLIENT-SIDE PAGINATION */}
           {totalPages > 1 && (
             <div className="flex flex-col sm:flex-row items-center justify-between gap-4 border-t border-zinc-200/80 pt-6">
-              <span className="font-mono text-xs text-zinc-500">
+              <span className="font-sans text-xs text-zinc-500">
                 Menampilkan {(currentPage - 1) * ITEMS_PER_PAGE + 1} -{" "}
                 {Math.min(currentPage * ITEMS_PER_PAGE, totalItems)} dari {totalItems.toLocaleString("id-ID")} Circle
               </span>
@@ -358,19 +357,19 @@ export function CirclesDirectoryClient({
                 <button
                   onClick={() => handlePageChange(Math.max(1, currentPage - 1))}
                   disabled={currentPage <= 1}
-                  className="rounded-xl border border-zinc-200 bg-white px-4 py-2 font-mono text-xs font-bold text-zinc-700 transition hover:bg-zinc-50 disabled:opacity-40 disabled:pointer-events-none"
+                  className="rounded-xl border border-zinc-200 bg-white px-4 py-2 font-sans text-xs font-semibold text-zinc-700 transition hover:bg-zinc-50 disabled:opacity-40 disabled:pointer-events-none shadow-2xs"
                 >
                   Sebelumnya
                 </button>
 
-                <span className="font-mono text-xs font-bold px-3 py-1 rounded-lg bg-zinc-100 text-zinc-800">
+                <span className="font-sans text-xs font-semibold px-3 py-1.5 rounded-lg bg-zinc-100 text-zinc-800">
                   Halaman {currentPage} / {totalPages}
                 </span>
 
                 <button
                   onClick={() => handlePageChange(Math.min(totalPages, currentPage + 1))}
                   disabled={currentPage >= totalPages}
-                  className="rounded-xl border border-zinc-200 bg-white px-4 py-2 font-mono text-xs font-bold text-zinc-700 transition hover:bg-zinc-50 disabled:opacity-40 disabled:pointer-events-none"
+                  className="rounded-xl border border-zinc-200 bg-white px-4 py-2 font-sans text-xs font-semibold text-zinc-700 transition hover:bg-zinc-50 disabled:opacity-40 disabled:pointer-events-none shadow-2xs"
                 >
                   Selanjutnya
                 </button>

@@ -154,7 +154,7 @@ export function QuickLookupModal() {
     >
       {/* Backdrop */}
       <div
-        className="fixed inset-0 bg-[#111215]/75 backdrop-blur-sm transition-opacity"
+        className="fixed inset-0 bg-[#111215]/80 transition-opacity"
         onClick={() => setIsOpen(false)}
         aria-hidden="true"
       />
@@ -172,7 +172,7 @@ export function QuickLookupModal() {
             onChange={(e) => setQuery(e.target.value)}
             onKeyDown={handleInputKeyDown}
             placeholder="Cari nomor booth (misal: AA-01) atau nama circle..."
-            className="w-full bg-transparent text-sm sm:text-base font-medium text-zinc-900 placeholder:text-zinc-400 focus:outline-none"
+            className="w-full bg-transparent text-sm sm:text-base font-sans font-medium text-zinc-900 placeholder:text-zinc-400 focus:outline-none"
           />
           {query && (
             <button
@@ -184,7 +184,7 @@ export function QuickLookupModal() {
               <X className="h-4 w-4" />
             </button>
           )}
-          <div className="hidden sm:flex items-center gap-1 font-mono text-[10px] font-bold text-zinc-400 bg-zinc-100 px-2 py-0.5 rounded border border-zinc-200">
+          <div className="hidden sm:flex items-center gap-1 font-sans text-[11px] font-semibold text-zinc-400 bg-zinc-100 px-2 py-0.5 rounded border border-zinc-200">
             <span>ESC</span>
           </div>
         </div>
@@ -192,34 +192,34 @@ export function QuickLookupModal() {
         {/* Edition Switcher & Quick Filters */}
         <div className="flex items-center justify-between border-b border-zinc-100 bg-zinc-50/70 px-4 py-2 text-xs">
           <div className="flex items-center gap-1.5">
-            <span className="font-mono text-[11px] font-bold text-zinc-500 uppercase mr-1">Edisi:</span>
+            <span className="font-sans text-xs font-semibold text-zinc-500 mr-1">Edisi:</span>
             <button
               type="button"
               onClick={() => setEventSlug("cf23")}
               className={cn(
-                "rounded-md px-2.5 py-1 font-mono text-[11px] font-bold transition",
+                "rounded-md px-2.5 py-1 font-sans text-xs font-semibold transition",
                 eventSlug === "cf23"
                   ? "bg-[#111215] text-[#D6F834] shadow-xs"
                   : "bg-white text-zinc-600 hover:bg-zinc-200/80 border border-zinc-200"
               )}
             >
-              CF 23 (Resmi 1.957 Booth)
+              CF 23 (1.957 Booth)
             </button>
             <button
               type="button"
               onClick={() => setEventSlug("cf22")}
               className={cn(
-                "rounded-md px-2.5 py-1 font-mono text-[11px] font-bold transition",
+                "rounded-md px-2.5 py-1 font-sans text-xs font-semibold transition",
                 eventSlug === "cf22"
                   ? "bg-[#111215] text-[#D6F834] shadow-xs"
                   : "bg-white text-zinc-600 hover:bg-zinc-200/80 border border-zinc-200"
               )}
             >
-              CF 22 (Arsip 1.477 Booth)
+              CF 22 (1.477 Booth)
             </button>
           </div>
 
-          <span className="hidden sm:inline font-mono text-[11px] text-zinc-500">
+          <span className="hidden sm:inline font-sans text-xs text-zinc-500">
             {loading ? "Mencari..." : `${items.length} hasil ditemukan`}
           </span>
         </div>
@@ -294,7 +294,7 @@ export function QuickLookupModal() {
                           {item.fandom || "Multi-Fandom / Original"}
                         </span>
                         <span className={isSelected ? "text-zinc-600" : "text-zinc-300"}>·</span>
-                        <span className={cn("font-mono text-[11px]", isSelected ? "text-zinc-400" : "text-zinc-500")}>
+                        <span className={cn("font-sans text-[11px]", isSelected ? "text-zinc-400" : "text-zinc-500")}>
                           {dayLabel}
                         </span>
                       </div>
@@ -306,7 +306,7 @@ export function QuickLookupModal() {
                     {item.boothCode && (
                       <span
                         className={cn(
-                          "inline-flex items-center gap-1 rounded-md px-2 py-1 font-mono text-[11px] font-bold transition",
+                          "inline-flex items-center gap-1 rounded-md px-2 py-1 font-sans text-[11px] font-semibold transition",
                           isSelected
                             ? "bg-white/10 text-white"
                             : "bg-zinc-100 text-zinc-600 group-hover:bg-zinc-200"

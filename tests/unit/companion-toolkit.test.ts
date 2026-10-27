@@ -64,7 +64,7 @@ describe("Companion Toolkit & Hunting Flow Module", () => {
       expect(step1.step).toBe("01");
       expect(step1.title).toBe("Riset & Tandai Circle di Rumah");
       const step1Content = JSON.stringify(step1);
-      expect(step1Content).toContain("1.400+");
+      expect(step1Content).toContain("circle kreator");
       expect(step1Content).toContain("bookmark");
 
       // Step 02: Cek Jadwal & Rute Kunjungan
@@ -86,7 +86,7 @@ describe("Companion Toolkit & Hunting Flow Module", () => {
   describe("Server-Side Rendering (SSR) Output", () => {
     it("CompanionToolkitSection merender judul dan 3 kartu fitur ke HTML", () => {
       const html = renderToString(React.createElement(CompanionToolkitSection));
-      expect(html).toContain("EVENT DAY SURVIVAL &amp; COMPANION TOOLKIT");
+      expect(html).toContain("Event Day Survival &amp; Companion Toolkit");
       expect(html).toContain("Pencarian Booth &amp; Meja Circle");
       expect(html).toContain("Circle Tersimpan (Bookmark)");
       expect(html).toContain("Akses 100% Offline PWA");
@@ -98,7 +98,7 @@ describe("Companion Toolkit & Hunting Flow Module", () => {
 
     it("ConventionHuntingFlowSection merender judul dan 3 langkah alur ke HTML", () => {
       const html = renderToString(React.createElement(ConventionHuntingFlowSection));
-      expect(html).toContain("3-STEP CONVENTION HUNTING FLOW");
+      expect(html).toContain("3 Langkah Hunting di Konvensi");
       expect(html).toContain("01");
       expect(html).toContain("Riset &amp; Tandai Circle di Rumah");
       expect(html).toContain("02");
@@ -109,20 +109,20 @@ describe("Companion Toolkit & Hunting Flow Module", () => {
 
     it("CompanionToolkit wrapper merender kedua seksi dan mendukung toggle visibilitas", () => {
       const fullHtml = renderToString(React.createElement(CompanionToolkit));
-      expect(fullHtml).toContain("EVENT DAY SURVIVAL &amp; COMPANION TOOLKIT");
-      expect(fullHtml).toContain("3-STEP CONVENTION HUNTING FLOW");
+      expect(fullHtml).toContain("Event Day Survival &amp; Companion Toolkit");
+      expect(fullHtml).toContain("3 Langkah Hunting di Konvensi");
 
       const onlyToolkit = renderToString(
         React.createElement(CompanionToolkit, { showHuntingFlow: false })
       );
-      expect(onlyToolkit).toContain("EVENT DAY SURVIVAL &amp; COMPANION TOOLKIT");
-      expect(onlyToolkit).not.toContain("3-STEP CONVENTION HUNTING FLOW");
+      expect(onlyToolkit).toContain("Event Day Survival &amp; Companion Toolkit");
+      expect(onlyToolkit).not.toContain("3 Langkah Hunting di Konvensi");
 
       const onlyFlow = renderToString(
         React.createElement(CompanionToolkit, { showToolkit: false })
       );
-      expect(onlyFlow).not.toContain("EVENT DAY SURVIVAL &amp; COMPANION TOOLKIT");
-      expect(onlyFlow).toContain("3-STEP CONVENTION HUNTING FLOW");
+      expect(onlyFlow).not.toContain("Event Day Survival &amp; Companion Toolkit");
+      expect(onlyFlow).toContain("3 Langkah Hunting di Konvensi");
     });
   });
 

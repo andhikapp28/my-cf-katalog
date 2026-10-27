@@ -267,12 +267,12 @@ export function CircleCatalogModal({
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
-          transition={{ duration: 0.15 }}
+          transition={{ duration: 0.18 }}
           onClick={() => {
             if (lightboxIndex !== null) setLightboxIndex(null);
             else onClose();
           }}
-          className="fixed inset-0 bg-[#07090E]/85 backdrop-blur-md"
+          className="fixed inset-0 bg-[#0c0d10]/80"
           aria-hidden="true"
         />
         <motion.div
@@ -283,21 +283,20 @@ export function CircleCatalogModal({
           initial={
             shouldReduceMotion
               ? { opacity: 0 }
-              : { opacity: 0, scale: 0.96, y: 12 }
+              : { opacity: 0, scale: 0.98, y: 10 }
           }
           animate={{ opacity: 1, scale: 1, y: 0 }}
           exit={
             shouldReduceMotion
               ? { opacity: 0 }
-              : { opacity: 0, scale: 0.96, y: 12 }
+              : { opacity: 0, scale: 0.98, y: 10 }
           }
           transition={{
-            opacity: { duration: 0.15, ease: "easeOut" },
-            scale: { type: "spring", stiffness: 360, damping: 26 },
-            y: { type: "spring", stiffness: 360, damping: 26 }
+            duration: 0.2,
+            ease: [0.16, 1, 0.3, 1]
           }}
           onClick={(e) => e.stopPropagation()}
-          className="relative z-10 flex w-full max-w-4xl max-h-[92vh] flex-col rounded-3xl border border-zinc-200 bg-[#FFFFFF] shadow-2xl overflow-hidden"
+          className="relative z-10 flex w-full max-w-4xl max-h-[92vh] flex-col rounded-3xl border border-zinc-200 bg-[#FFFFFF] shadow-2xl overflow-hidden transform-gpu"
           style={{ backgroundColor: "#FFFFFF" }}
         >
           <div
@@ -339,7 +338,7 @@ export function CircleCatalogModal({
                   ) : null}
                   <div
                     className={cn(
-                      "h-full w-full items-center justify-center bg-[#111215] text-[#D6F834] font-[var(--font-display)] text-3xl uppercase tracking-wider",
+                      "h-full w-full items-center justify-center bg-[#111215] text-[#D6F834] font-sans font-bold text-2xl tracking-wider",
                       formattedCircleCut ? "hidden" : "flex"
                     )}
                   >
@@ -357,7 +356,7 @@ export function CircleCatalogModal({
 
                     <span
                       className={cn(
-                        "rounded-full px-3 py-1 font-mono text-xs font-black uppercase tracking-wider shadow-2xs",
+                        "rounded-full px-3 py-1 font-sans text-xs font-semibold shadow-2xs",
                         dayConfig.className
                       )}
                     >
@@ -366,7 +365,7 @@ export function CircleCatalogModal({
 
                     <span
                       className={cn(
-                        "rounded-full px-2.5 py-1 font-mono text-xs font-bold uppercase tracking-wider",
+                        "rounded-full px-2.5 py-1 font-sans text-xs font-semibold",
                         ratingBadge.className
                       )}
                     >
@@ -375,7 +374,7 @@ export function CircleCatalogModal({
                   </div>
                   <h2
                     id="circle-catalog-modal-title"
-                    className="font-[var(--font-display)] text-3xl sm:text-4xl lg:text-5xl font-black tracking-tight text-[#111215] leading-none pt-0.5"
+                    className="font-sans text-2xl sm:text-3xl lg:text-4xl font-extrabold tracking-tight text-[#111215] leading-tight pt-0.5"
                   >
                     {circle.name}
                   </h2>
@@ -386,9 +385,9 @@ export function CircleCatalogModal({
                   type="button"
                   onClick={onClose}
                   aria-label="Tutup katalog circle"
-                  className="min-h-[44px] inline-flex items-center justify-center rounded-xl bg-[#111215] px-4 py-2 font-mono text-xs font-black uppercase tracking-wider text-white transition hover:bg-[#F84632] active:scale-[0.98] shadow-xs select-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#111215]"
+                  className="min-h-[44px] inline-flex items-center justify-center rounded-xl bg-[#111215] px-4 py-2 font-sans text-xs sm:text-sm font-semibold text-white transition hover:bg-[#F84632] active:scale-[0.98] shadow-xs select-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#111215]"
                 >
-                  TUTUP
+                  Tutup
                 </button>
               </div>
             </div>
@@ -397,9 +396,9 @@ export function CircleCatalogModal({
                 type="button"
                 onClick={handleCopyCircleLink}
                 aria-label="Salin tautan profil circle"
-                className="inline-flex min-h-[44px] items-center rounded-full border border-zinc-300 bg-white px-4 py-2 font-mono text-xs font-bold uppercase tracking-wider text-[#111215] hover:border-[#111215] hover:bg-[#111215] hover:text-white transition active:scale-[0.98] shadow-2xs select-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#111215]"
+                className="inline-flex min-h-[44px] items-center rounded-full border border-zinc-300 bg-white px-4 py-2 font-sans text-xs sm:text-sm font-medium text-[#111215] hover:border-[#111215] hover:bg-[#111215] hover:text-white transition active:scale-[0.98] shadow-2xs select-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#111215]"
               >
-                {copiedCircleLink ? "TERSALIN!" : "SALIN TAUTAN"}
+                {copiedCircleLink ? "Tersalin!" : "Salin Tautan"}
               </button>
 
               {socialLinks.map((link) => (
@@ -408,7 +407,7 @@ export function CircleCatalogModal({
                   href={link.url}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="inline-flex min-h-[44px] items-center rounded-full border border-zinc-200 bg-white px-4 py-2 font-mono text-xs font-bold uppercase tracking-wider text-[#111215] hover:border-[#111215] hover:bg-[#111215] hover:text-white transition active:scale-[0.98] shadow-2xs select-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#111215]"
+                  className="inline-flex min-h-[44px] items-center rounded-full border border-zinc-200 bg-white px-4 py-2 font-sans text-xs sm:text-sm font-medium text-[#111215] hover:border-[#111215] hover:bg-[#111215] hover:text-white transition active:scale-[0.98] shadow-2xs select-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#111215]"
                 >
                   {link.label}
                 </a>
@@ -420,15 +419,15 @@ export function CircleCatalogModal({
             style={{ backgroundColor: "#FFFFFF" }}
           >
             <section className="space-y-3 rounded-2xl bg-zinc-50 p-5 border border-zinc-200">
-              <div className="flex flex-wrap items-center gap-x-6 gap-y-2 font-mono text-xs text-zinc-500 border-b border-zinc-200 pb-3">
+              <div className="flex flex-wrap items-center gap-x-6 gap-y-2 font-sans text-xs text-zinc-500 border-b border-zinc-200 pb-3">
                 {fandom ? (
                   <span>
-                    FANDOM: <strong className="text-[#111215] font-bold">{fandom}</strong>
+                    Fandom: <strong className="text-[#111215] font-semibold">{fandom}</strong>
                   </span>
                 ) : null}
                 {categories.length > 0 ? (
                   <span>
-                    KATEGORI: <strong className="text-[#111215] font-bold">{categories.join(", ")}</strong>
+                    Kategori: <strong className="text-[#111215] font-semibold">{categories.join(", ")}</strong>
                   </span>
                 ) : null}
               </div>
@@ -438,11 +437,11 @@ export function CircleCatalogModal({
             </section>
             <section className="space-y-4">
               <div className="flex flex-wrap items-center justify-between gap-2 border-b border-zinc-200 pb-3">
-                <h3 className="font-[var(--font-display)] text-2xl sm:text-3xl font-black tracking-tight text-[#111215] uppercase">
-                  KATALOG KARYA
+                <h3 className="font-sans text-lg sm:text-xl font-bold tracking-tight text-[#111215]">
+                  Katalog Karya
                 </h3>
-                <span className="font-mono text-xs font-bold text-zinc-500 uppercase">
-                  {products.length} KARYA TERDAFTAR
+                <span className="font-sans text-xs font-semibold text-zinc-500">
+                  {products.length} karya terdaftar
                 </span>
               </div>
 
@@ -458,7 +457,7 @@ export function CircleCatalogModal({
                     return (
                       <article
                         key={product.id}
-                        className="group flex flex-col justify-between overflow-hidden rounded-2xl border border-zinc-200 bg-white transition hover:border-[#F84632]/50 hover:shadow-xl hover:shadow-[#F84632]/5 cursor-pointer select-none"
+                        className="group flex flex-col justify-between overflow-hidden rounded-2xl border border-zinc-200 bg-white transition hover:border-[#F84632]/50 hover:shadow-xl hover:shadow-[#F84632]/5 cursor-pointer select-none [contain:paint] transform-gpu"
                         onClick={() => {
                           if (targetGalleryIdx !== -1) {
                             setLightboxIndex(targetGalleryIdx);
@@ -479,10 +478,10 @@ export function CircleCatalogModal({
                             className="h-full w-full rounded-none border-0 transition duration-300 group-hover:scale-105"
                             imageClassName="object-cover"
                             fallbackLabel="No preview"
-                            loading="eager"
+                            loading="lazy"
                           />
                           <div className="absolute top-2.5 left-2.5 z-10 pointer-events-none">
-                            <span className="inline-flex items-center rounded-lg bg-black/80 px-2.5 py-1 font-mono text-xs font-black tracking-wider text-white backdrop-blur-md border border-white/20 shadow-md">
+                            <span className="inline-flex items-center rounded-lg bg-black/85 px-2.5 py-1 font-mono text-xs font-bold tracking-wider text-white border border-white/20 shadow-md">
                               {numberLabel}
                             </span>
                           </div>
@@ -504,8 +503,8 @@ export function CircleCatalogModal({
                               </span>
                             </div>
                           ) : null}
-                          <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/70 via-black/30 to-transparent p-3 text-center opacity-0 transition-opacity duration-200 group-hover:opacity-100 pointer-events-none">
-                            <span className="font-mono text-[11px] font-black text-white uppercase tracking-wider drop-shadow-sm">
+                          <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/75 via-black/35 to-transparent p-3 text-center opacity-0 transition-opacity duration-200 group-hover:opacity-100 pointer-events-none">
+                            <span className="font-sans text-xs font-semibold text-white drop-shadow-sm">
                               Klik untuk Zoom
                             </span>
                           </div>
@@ -517,8 +516,8 @@ export function CircleCatalogModal({
                           >
                             <div className="rounded-xl border border-dashed border-[#5398DA]/50 bg-[#5398DA]/5 p-2.5 space-y-1.5">
                               <div className="flex items-center justify-between">
-                                <span className="font-mono text-[10px] font-black uppercase tracking-wider text-[#111215]">
-                                  SLIP PENGAMBILAN PO
+                                <span className="font-sans text-[11px] font-bold uppercase tracking-wider text-[#111215]">
+                                  Slip Pengambilan PO
                                 </span>
                                 <button
                                   type="button"
@@ -526,12 +525,12 @@ export function CircleCatalogModal({
                                     e.stopPropagation();
                                     handleCopyPo(product.id, product.poPickupNotes!);
                                   }}
-                                  className="min-h-[36px] sm:min-h-0 inline-flex items-center rounded-md bg-[#111215] px-3 py-1 font-mono text-[10px] font-black uppercase tracking-wider text-white hover:bg-[#F84632] transition active:scale-[0.98] select-none"
+                                  className="min-h-[36px] sm:min-h-0 inline-flex items-center rounded-md bg-[#111215] px-3 py-1 font-sans text-xs font-semibold text-white hover:bg-[#F84632] transition active:scale-[0.98] select-none"
                                 >
-                                  {copiedPoId === product.id ? "TERSALIN!" : "SALIN"}
+                                  {copiedPoId === product.id ? "Tersalin!" : "Salin"}
                                 </button>
                               </div>
-                              <p className="font-mono text-xs font-bold text-[#111215] break-words select-all leading-snug">
+                              <p className="font-mono text-xs font-medium text-[#111215] break-words select-all leading-snug">
                                 {product.poPickupNotes}
                               </p>
                             </div>
@@ -543,8 +542,8 @@ export function CircleCatalogModal({
                 </div>
               ) : (
                 <div className="rounded-2xl border border-dashed border-zinc-300 p-8 text-center bg-zinc-50">
-                  <p className="font-mono text-xs font-bold uppercase tracking-wider text-zinc-400">
-                    KATALOG KARYA
+                  <p className="font-sans text-xs font-semibold uppercase tracking-wider text-zinc-400">
+                    Katalog Karya
                   </p>
                   <p className="mt-1 font-sans text-sm text-zinc-600 font-medium">
                     Circle ini belum mendaftarkan katalog karya spesifik di ComiPocket.
@@ -557,8 +556,8 @@ export function CircleCatalogModal({
             className="border-t border-zinc-200 bg-[#FFFFFF] px-5 sm:px-7 py-4 flex flex-col sm:flex-row items-center justify-between gap-3"
             style={{ backgroundColor: "#FFFFFF" }}
           >
-            <p className="font-mono text-xs font-bold text-zinc-500 text-center sm:text-left uppercase">
-              BOOTH {boothCode} · {dayConfig.label} · {products.length} KARYA
+            <p className="font-sans text-xs text-zinc-500 text-center sm:text-left">
+              Booth <strong className="font-mono font-bold text-zinc-800">{boothCode}</strong> · {dayConfig.label} · {products.length} karya
             </p>
 
             <div className="flex items-center gap-2 w-full sm:w-auto justify-end">
@@ -566,9 +565,9 @@ export function CircleCatalogModal({
                 type="button"
                 onClick={onClose}
                 aria-label="Tutup katalog circle"
-                className="inline-flex min-h-[44px] items-center justify-center rounded-xl bg-[#111215] px-5 py-2 font-mono text-xs font-bold uppercase tracking-wider text-white hover:bg-[#F84632] transition active:scale-[0.98] shadow-xs select-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#111215]"
+                className="inline-flex min-h-[44px] items-center justify-center rounded-xl bg-[#111215] px-5 py-2 font-sans text-xs sm:text-sm font-semibold text-white hover:bg-[#F84632] transition active:scale-[0.98] shadow-xs select-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#111215]"
               >
-                TUTUP
+                Tutup
               </button>
             </div>
           </div>
@@ -585,32 +584,32 @@ export function CircleCatalogModal({
           exit={{ opacity: 0 }}
           transition={{ duration: 0.15 }}
           onClick={() => setLightboxIndex(null)}
-          className="fixed inset-0 z-[70] flex flex-col items-center justify-between bg-black/95 p-4 sm:p-6 backdrop-blur-md select-none"
+          className="fixed inset-0 z-[70] flex flex-col items-center justify-between bg-black/95 p-4 sm:p-6 select-none"
         >
           <div
             onClick={(e) => e.stopPropagation()}
             className="flex w-full max-w-5xl items-center justify-between gap-4 text-white pb-3 border-b border-white/20"
           >
             <div className="space-y-0.5 min-w-0">
-              <h3 className="font-[var(--font-display)] text-lg sm:text-xl font-bold uppercase tracking-wide truncate text-[#D6F834]">
+              <h3 className="font-sans text-base sm:text-lg font-bold truncate text-[#D6F834]">
                 {galleryItems[lightboxIndex].title}
               </h3>
-              <p className="font-mono text-xs text-white/60">
+              <p className="font-sans text-xs text-white/60">
                 {galleryItems[lightboxIndex].subtitle}
               </p>
             </div>
 
             <div className="flex items-center gap-3 shrink-0">
-              <span className="font-mono text-xs font-bold text-white/75 bg-white/10 px-3 py-1 rounded-full">
+              <span className="font-mono text-xs font-semibold text-white/75 bg-white/10 px-3 py-1 rounded-full">
                 {lightboxIndex + 1} / {galleryItems.length}
               </span>
               <button
                 type="button"
                 onClick={() => setLightboxIndex(null)}
                 aria-label="Tutup preview lightbox"
-                className="min-h-[44px] inline-flex items-center justify-center rounded-xl bg-white/15 px-4 py-2 font-mono text-xs font-bold uppercase text-white hover:bg-[#F84632] transition active:scale-[0.98] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white"
+                className="min-h-[44px] inline-flex items-center justify-center rounded-xl bg-white/15 px-4 py-2 font-sans text-xs sm:text-sm font-medium text-white hover:bg-[#F84632] transition active:scale-[0.98] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white"
               >
-                TUTUP
+                Tutup
               </button>
             </div>
           </div>
@@ -637,10 +636,10 @@ export function CircleCatalogModal({
                     )
                   }
                   aria-label="Gambar Sebelumnya"
-                  className="absolute left-2 sm:left-4 top-1/2 -translate-y-1/2 min-h-[48px] min-w-[48px] flex items-center justify-center rounded-full bg-black/60 p-3 font-mono text-sm font-bold text-white backdrop-blur-md hover:bg-black/90 transition active:scale-[0.98] border border-white/20 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#D6F834]"
+                  className="absolute left-2 sm:left-4 top-1/2 -translate-y-1/2 min-h-[48px] min-w-[48px] flex items-center justify-center rounded-full bg-black/75 p-3 font-sans text-xs font-semibold text-white hover:bg-black transition active:scale-[0.98] border border-white/20 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#D6F834]"
                   title="Gambar Sebelumnya"
                 >
-                  PREV
+                  Prev
                 </button>
                 <button
                   type="button"
@@ -650,19 +649,19 @@ export function CircleCatalogModal({
                     )
                   }
                   aria-label="Gambar Selanjutnya"
-                  className="absolute right-2 sm:right-4 top-1/2 -translate-y-1/2 min-h-[48px] min-w-[48px] flex items-center justify-center rounded-full bg-black/60 p-3 font-mono text-sm font-bold text-white backdrop-blur-md hover:bg-black/90 transition active:scale-[0.98] border border-white/20 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#D6F834]"
+                  className="absolute right-2 sm:right-4 top-1/2 -translate-y-1/2 min-h-[48px] min-w-[48px] flex items-center justify-center rounded-full bg-black/75 p-3 font-sans text-xs font-semibold text-white hover:bg-black transition active:scale-[0.98] border border-white/20 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#D6F834]"
                   title="Gambar Selanjutnya"
                 >
-                  NEXT
+                  Next
                 </button>
               </>
             )}
           </div>
           <div
             onClick={(e) => e.stopPropagation()}
-            className="text-center font-mono text-[11px] text-white/50 pt-2"
+            className="text-center font-sans text-xs text-white/50 pt-2"
           >
-            Gunakan tombol panah keyboard atau tombol PREV / NEXT untuk beralih gambar. Klik di luar gambar untuk menutup.
+            Gunakan tombol panah keyboard atau tombol navigasi untuk beralih karya. Klik area luar untuk menutup.
           </div>
         </motion.div>
       )}

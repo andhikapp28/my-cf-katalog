@@ -187,7 +187,7 @@ export function CompactCircleCard({
         ) : null}
         <div
           className={cn(
-            "h-full w-full items-center justify-center bg-[#111215] text-[#D6F834] font-[var(--font-display)] text-2xl uppercase tracking-wider",
+            "h-full w-full items-center justify-center bg-[#111215] text-[#D6F834] font-sans font-bold text-xl uppercase tracking-wider",
             circleCutUrl ? "hidden" : "flex"
           )}
         >
@@ -201,14 +201,14 @@ export function CompactCircleCard({
         <div className="flex items-center gap-1.5 flex-wrap">
           <span
             title={`Lokasi Booth: ${boothCode}`}
-            className="inline-flex items-center rounded-md bg-[#111215] px-2 py-0.5 font-mono text-[11px] sm:text-xs font-black tracking-wider text-[#D6F834] uppercase border border-white/10 shrink-0"
+            className="inline-flex items-center rounded-md bg-[#111215] px-2 py-0.5 font-mono text-[11px] sm:text-xs font-bold tracking-wider text-[#D6F834] uppercase border border-white/10 shrink-0"
           >
             {boothCode}
           </span>
 
           <span
             className={cn(
-              "rounded-full px-2 py-0.5 font-mono text-[10px] sm:text-[11px] font-black uppercase tracking-wider shrink-0 shadow-2xs",
+              "rounded-full px-2 py-0.5 font-sans text-[10px] sm:text-[11px] font-semibold shrink-0 shadow-2xs",
               dayConfig.className
             )}
           >
@@ -216,7 +216,7 @@ export function CompactCircleCard({
           </span>
 
           {rating === "M" && (
-            <span className="rounded-full bg-[#F84632]/10 px-1.5 py-0.5 font-mono text-[10px] font-black text-[#F84632] border border-[#F84632]/30 uppercase shrink-0">
+            <span className="rounded-full bg-[#F84632]/10 px-1.5 py-0.5 font-sans text-[10px] font-bold text-[#F84632] border border-[#F84632]/30 uppercase shrink-0">
               18+
             </span>
           )}
@@ -227,18 +227,19 @@ export function CompactCircleCard({
           <h3 className="font-sans font-bold text-sm sm:text-base text-ink-900 group-hover:text-[#F84632] transition-colors line-clamp-1 leading-snug">
             {circle.name}
           </h3>
-          <p className="font-mono text-xs text-zinc-500 line-clamp-1">
+          <p className="font-sans text-xs text-zinc-500 line-clamp-1">
             {tagsText}
           </p>
         </div>
 
-        {/* Bottom Bar: Karya Count & Clean Typography Link LIHAT KARYA */}
+        {/* Bottom Bar: Karya Count & Clean Typography Link */}
         <div className="flex items-center justify-between gap-2 pt-0.5">
-          <span className="font-mono text-xs font-bold text-zinc-500">
+          <span className="font-sans text-xs text-zinc-500 font-medium">
             {productCount} Karya
           </span>
-          <span className="font-mono text-xs font-black uppercase tracking-wider text-[#111215] group-hover:text-[#F84632] transition-colors">
-            LIHAT KARYA
+          <span className="font-sans text-xs font-bold text-zinc-900 group-hover:text-[#F84632] transition-colors inline-flex items-center gap-1">
+            Lihat Karya
+            <span aria-hidden="true">→</span>
           </span>
         </div>
       </div>

@@ -88,26 +88,26 @@ export default async function ProductsPage({
       {/* =================================================================== */}
       {/* 1. BREADCRUMB NAVIGATION                                            */}
       {/* =================================================================== */}
-      <nav aria-label="Breadcrumb" className="flex items-center gap-1.5 font-mono text-xs text-zinc-500">
+      <nav aria-label="Breadcrumb" className="flex items-center gap-1.5 font-sans text-xs text-zinc-500">
         <Link href="/" className="transition hover:text-zinc-900 font-medium">
           Dashboard
         </Link>
         <ChevronRight className="h-3 w-3 text-zinc-400" />
-        <span className="font-bold text-zinc-900">Katalog Karya</span>
+        <span className="font-semibold text-zinc-900">Katalog Karya</span>
       </nav>
 
       {/* =================================================================== */}
-      {/* EDITORIAL HEADER (TANALOKA STYLE)                                   */}
+      {/* EDITORIAL HEADER                                                    */}
       {/* =================================================================== */}
       <div className="space-y-3 border-b border-black/10 pb-6 sm:pb-8">
         <div className="inline-flex items-center gap-2 rounded-full border border-[#F84632]/25 bg-[#F84632]/10 px-3 py-1 shadow-xs">
-          <span className="font-mono text-xs font-bold tracking-widest text-[#F84632] uppercase">
-            DIRECTORY & CATALOG
+          <span className="font-sans text-xs font-bold tracking-wider text-[#F84632] uppercase">
+            Direktori & Katalog
           </span>
         </div>
 
-        <h1 className="font-[var(--font-display)] text-4xl sm:text-5xl lg:text-6xl font-black uppercase tracking-tight text-[#111215] leading-[0.92]">
-          DIREKTORI CIRCLE & KATALOG KARYA COMIFURO<span className="text-[#F84632]">*</span>
+        <h1 className="font-sans text-3xl sm:text-4xl lg:text-5xl font-extrabold tracking-tight text-[#111215] leading-tight">
+          Direktori Circle & Katalog Karya Comifuro
         </h1>
 
         <p className="max-w-3xl text-sm sm:text-base font-medium leading-relaxed text-[#111215]/80">
@@ -117,13 +117,13 @@ export default async function ProductsPage({
       </div>
 
       {/* =================================================================== */}
-      {/* KONTROL PENGUNJUNG: SEARCH & FILTER CHIPS (TEXT-ONLY, TANPA IKON)   */}
+      {/* KONTROL PENGUNJUNG: SEARCH & FILTER CHIPS                           */}
       {/* =================================================================== */}
-      <div className="space-y-4 rounded-3xl border border-zinc-200 bg-white/90 p-4 shadow-sm backdrop-blur-md sm:p-6">
+      <div className="space-y-4 rounded-3xl border border-zinc-200 bg-white p-4 shadow-sm sm:p-6">
         {/* Switcher Edisi Event (CF 22 vs CF 23) */}
         <div className="flex flex-wrap items-center gap-2 pb-3 border-b border-zinc-100">
-          <span className="font-mono text-xs font-bold uppercase tracking-wider text-zinc-400 mr-1 shrink-0">
-            EDISI EVENT:
+          <span className="font-sans text-xs font-semibold text-zinc-400 mr-1 shrink-0">
+            Edisi Event:
           </span>
           {allEvents
             .filter((ev) => ev.slug === "cf22" || ev.slug === "cf23" || ev.circleCount > 0)
@@ -134,7 +134,7 @@ export default async function ProductsPage({
                   key={ev.slug}
                   href={getFilterHref({ event: ev.slug, page: undefined })}
                   className={cn(
-                    "rounded-full px-3.5 py-1.5 font-mono text-xs font-bold uppercase tracking-wider transition border flex items-center gap-2",
+                    "rounded-full px-3.5 py-1.5 font-sans text-xs font-semibold transition border flex items-center gap-2",
                     isActiveTab
                       ? "bg-[#111215] text-[#D6F834] border-[#111215] shadow-xs"
                       : "bg-white text-zinc-600 border-zinc-200 hover:border-zinc-300 hover:bg-zinc-50"
@@ -143,7 +143,7 @@ export default async function ProductsPage({
                   <span>{ev.name.replace(/\s*\(.*?\)/, "")}</span>
                   <span
                     className={cn(
-                      "rounded-full px-2 py-0.5 text-[10px] font-mono",
+                      "rounded-full px-2 py-0.5 text-[11px] font-sans font-medium",
                       isActiveTab
                         ? "bg-white/20 text-white"
                         : ev.circleCount > 0
@@ -174,7 +174,7 @@ export default async function ProductsPage({
               {q ? (
                 <Link
                   href={getFilterHref({ q: undefined })}
-                  className="inline-flex items-center gap-1 rounded-xl border border-zinc-200 bg-white px-2.5 py-1.5 font-mono text-xs font-bold text-zinc-600 hover:text-zinc-900 hover:bg-zinc-100 transition shadow-2xs"
+                  className="inline-flex items-center gap-1 rounded-xl border border-zinc-200 bg-white px-2.5 py-1.5 font-sans text-xs font-medium text-zinc-600 hover:text-zinc-900 hover:bg-zinc-100 transition shadow-2xs"
                   title="Hapus kata kunci pencarian"
                 >
                   <X className="h-3.5 w-3.5" />
@@ -183,7 +183,7 @@ export default async function ProductsPage({
               ) : null}
               <button
                 type="submit"
-                className="inline-flex items-center gap-1.5 rounded-xl bg-[#111215] px-4 py-2 font-mono text-xs font-bold uppercase tracking-wider text-[#D6F834] transition hover:bg-zinc-800 shadow-xs active:scale-95"
+                className="inline-flex items-center gap-1.5 rounded-xl bg-[#111215] px-4 py-2 font-sans text-xs font-semibold text-[#D6F834] transition hover:bg-zinc-800 shadow-xs active:scale-95"
               >
                 <Search className="h-3.5 w-3.5" />
                 <span>Cari</span>
@@ -201,49 +201,49 @@ export default async function ProductsPage({
 
         {/* Filter Hari (Text-Only Pills) */}
         <div className="flex flex-wrap items-center gap-2 pt-3 border-t border-zinc-100">
-          <span className="font-mono text-xs font-bold uppercase tracking-wider text-zinc-400 mr-1">
-            HARI:
+          <span className="font-sans text-xs font-semibold text-zinc-400 mr-1">
+            Hari:
           </span>
           <Link
             href={getFilterHref({ day: undefined })}
             className={cn(
-              "rounded-full px-3.5 py-1.5 font-mono text-xs font-bold uppercase tracking-wider transition border",
+              "rounded-full px-3.5 py-1.5 font-sans text-xs font-semibold transition border",
               !targetDay || targetDay === "ALL_DAYS"
                 ? "bg-[#111215] text-[#D6F834] border-[#111215] shadow-xs"
                 : "bg-white text-zinc-600 border-zinc-200 hover:border-zinc-300 hover:bg-zinc-50"
             )}
           >
-            SEMUA HARI
+            Semua Hari
           </Link>
           <Link
             href={getFilterHref({ day: "DAY_1" })}
             className={cn(
-              "rounded-full px-3.5 py-1.5 font-mono text-xs font-bold uppercase tracking-wider transition border",
+              "rounded-full px-3.5 py-1.5 font-sans text-xs font-semibold transition border",
               targetDay === "DAY_1"
                 ? "bg-[#5398DA] text-white border-[#5398DA] shadow-xs shadow-[#5398DA]/25"
                 : "bg-white text-zinc-600 border-zinc-200 hover:border-[#5398DA]/50 hover:text-[#5398DA]"
             )}
           >
-            DAY 1 (SABTU)
+            Day 1 (Sabtu)
           </Link>
           <Link
             href={getFilterHref({ day: "DAY_2" })}
             className={cn(
-              "rounded-full px-3.5 py-1.5 font-mono text-xs font-bold uppercase tracking-wider transition border",
+              "rounded-full px-3.5 py-1.5 font-sans text-xs font-semibold transition border",
               targetDay === "DAY_2"
                 ? "bg-[#D6F834] text-[#111215] border-[#D6F834] shadow-xs shadow-[#D6F834]/30"
                 : "bg-white text-zinc-600 border-zinc-200 hover:border-[#D6F834] hover:bg-[#D6F834]/10"
             )}
           >
-            DAY 2 (MINGGU)
+            Day 2 (Minggu)
           </Link>
         </div>
 
         {/* Fandom Pills Populer (Text-Only) */}
         <div className="pt-3 border-t border-zinc-100">
           <div className="flex flex-wrap items-center gap-1.5 sm:gap-2">
-            <span className="font-mono text-xs font-bold uppercase tracking-wider text-zinc-400 mr-1 shrink-0">
-              FANDOM POPULER:
+            <span className="font-sans text-xs font-semibold text-zinc-400 mr-1 shrink-0">
+              Fandom Populer:
             </span>
             {POPULAR_FANDOMS.map((f) => {
               const isActive = fandom?.toLowerCase() === f.toLowerCase();
@@ -252,13 +252,13 @@ export default async function ProductsPage({
                   key={f}
                   href={getFilterHref({ fandom: isActive ? undefined : f })}
                   className={cn(
-                    "rounded-full px-3 py-1 font-mono text-xs font-bold uppercase tracking-wider transition border",
+                    "rounded-full px-3.5 py-1 font-sans text-xs font-semibold transition border",
                     isActive
                       ? "bg-[#F84632] text-white border-[#F84632] shadow-xs"
                       : "bg-white text-zinc-700 border-zinc-200 hover:border-[#F84632] hover:text-[#F84632] hover:bg-[#F84632]/5"
                   )}
                 >
-                  {f} {isActive ? "[ X ]" : ""}
+                  {f} {isActive ? "✕" : ""}
                 </Link>
               );
             })}
@@ -272,24 +272,25 @@ export default async function ProductsPage({
       <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         {/* Count & Active Chips */}
         <div className="flex flex-wrap items-center gap-2">
-          <span className="rounded-full border border-zinc-200 bg-white px-3.5 py-1.5 font-mono text-xs font-bold text-zinc-800 shadow-2xs">
-            <strong className="text-[#F84632] font-mono text-sm">{circles.length.toLocaleString("id-ID")}</strong> CIRCLE DITEMUKAN
+          <span className="rounded-full border border-zinc-200 bg-white px-3.5 py-1.5 font-sans text-xs font-medium text-zinc-800 shadow-2xs">
+            <strong className="text-[#F84632] font-sans font-bold text-sm">{circles.length.toLocaleString("id-ID")}</strong> circle ditemukan
           </span>
 
           {fandom ? (
             <Link
               href={getFilterHref({ fandom: undefined })}
-              className="inline-flex items-center gap-1 rounded-full bg-[#F84632]/10 border border-[#F84632]/25 px-3 py-1 font-mono text-xs font-bold text-[#F84632] hover:bg-[#F84632]/20 transition"
+              className="inline-flex items-center gap-1.5 rounded-full bg-[#F84632]/10 border border-[#F84632]/25 px-3 py-1 font-sans text-xs font-semibold text-[#F84632] hover:bg-[#F84632]/20 transition"
               title="Hapus filter fandom"
             >
-              <span>FANDOM: {fandom.toUpperCase()} [ X ]</span>
+              <span>Fandom: {fandom}</span>
+              <span aria-hidden="true">✕</span>
             </Link>
           ) : null}
 
           {hasActiveFilters ? (
             <Link
               href="/products"
-              className="inline-flex items-center gap-1.5 rounded-full border border-zinc-200 bg-white px-3.5 py-1.5 font-mono text-xs font-bold text-[#F84632] hover:bg-zinc-50 transition shadow-2xs"
+              className="inline-flex items-center gap-1.5 rounded-full border border-zinc-200 bg-white px-3.5 py-1.5 font-sans text-xs font-medium text-[#F84632] hover:bg-zinc-50 transition shadow-2xs"
             >
               <RotateCcw className="h-3.5 w-3.5" />
               <span>Reset Filter</span>
@@ -300,13 +301,13 @@ export default async function ProductsPage({
         {/* Sort Controls */}
         <div className="flex items-center gap-2 self-end sm:self-auto">
           <div className="inline-flex items-center rounded-2xl border border-zinc-200 bg-white p-1 shadow-2xs">
-            <span className="px-2 text-[11px] font-mono font-bold uppercase text-zinc-400">
-              SORT:
+            <span className="px-2.5 text-xs font-sans font-semibold text-zinc-400">
+              Urutkan:
             </span>
             <Link
               href={getFilterHref({ sort: undefined })}
               className={cn(
-                "rounded-xl px-3 py-1 font-mono text-xs font-bold uppercase tracking-wider transition",
+                "rounded-xl px-3 py-1 font-sans text-xs font-semibold transition",
                 !sort || sort === "booth"
                   ? "bg-[#111215] text-[#D6F834]"
                   : "text-zinc-600 hover:text-zinc-900"
@@ -317,7 +318,7 @@ export default async function ProductsPage({
             <Link
               href={getFilterHref({ sort: "name" })}
               className={cn(
-                "rounded-xl px-3 py-1 font-mono text-xs font-bold uppercase tracking-wider transition",
+                "rounded-xl px-3 py-1 font-sans text-xs font-semibold transition",
                 sort === "name"
                   ? "bg-[#111215] text-[#D6F834]"
                   : "text-zinc-600 hover:text-zinc-900"
@@ -328,7 +329,7 @@ export default async function ProductsPage({
             <Link
               href={getFilterHref({ sort: "latest" })}
               className={cn(
-                "rounded-xl px-3 py-1 font-mono text-xs font-bold uppercase tracking-wider transition",
+                "rounded-xl px-3 py-1 font-sans text-xs font-semibold transition",
                 sort === "latest"
                   ? "bg-[#111215] text-[#D6F834]"
                   : "text-zinc-600 hover:text-zinc-900"
