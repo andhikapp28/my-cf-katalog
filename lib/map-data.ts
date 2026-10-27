@@ -39,17 +39,26 @@ interface RawCatalogEntry {
   [key: string]: unknown;
 }
 
-let catalogCache: Map<string, RawCatalogEntry> | null = null;
+const catalogCachesByEvent = new Map<string, Map<string, RawCatalogEntry>>();
 
-export function getCatalogCache(): Map<string, RawCatalogEntry> {
-  if (catalogCache) return catalogCache;
+export function getCatalogCache(eventSlug?: string): Map<string, RawCatalogEntry> {
+  const normalized = (eventSlug || "").trim().toLowerCase();
+  const targetKey = normalized.includes("22") ? "cf22" : "cf23";
 
-  catalogCache = new Map();
-  const candidatePaths = [
-    resolve(process.cwd(), "data", "comifuro22-full.json")
-  ];
+  if (catalogCachesByEvent.has(targetKey)) {
+    return catalogCachesByEvent.get(targetKey)!;
+  }
 
-  for (const p of candidatePaths) {
+  const map = new Map<string, RawCatalogEntry>();
+  const filename = targetKey === "cf22" ? "comifuro22-full.json" : "comifuro23-full.json";
+  const primaryPath = resolve(process.cwd(), "data", filename);
+  const fallbackPath = resolve(
+    process.cwd(),
+    "data",
+    targetKey === "cf22" ? "comifuro23-full.json" : "comifuro22-full.json"
+  );
+
+  for (const p of [primaryPath, fallbackPath]) {
     if (existsSync(p)) {
       try {
         const raw = JSON.parse(readFileSync(p, "utf-8"));
@@ -62,11 +71,13 @@ export function getCatalogCache(): Map<string, RawCatalogEntry> {
               : [];
 
         for (const item of items) {
-          if (item.circle_code?.trim()) {
-            catalogCache.set(item.circle_code.trim().toUpperCase(), item);
+          const booth = item.circle_code?.trim().toUpperCase();
+          const name = item.name?.trim().toLowerCase();
+          if (booth && !map.has(booth)) {
+            map.set(booth, item);
           }
-          if (item.name?.trim()) {
-            catalogCache.set(item.name.trim().toLowerCase(), item);
+          if (name && !map.has(name)) {
+            map.set(name, item);
           }
         }
       } catch {
@@ -75,7 +86,8 @@ export function getCatalogCache(): Map<string, RawCatalogEntry> {
     }
   }
 
-  return catalogCache;
+  catalogCachesByEvent.set(targetKey, map);
+  return map;
 }
 
 /**
@@ -241,15 +253,21 @@ export async function getInteractiveMapData(targetMapId?: string) {
   };
 }
 
-let cf22ArchiveMarkersCache: CircleMarker[] | null = null;
+const archiveMarkersCacheByEvent = new Map<string, CircleMarker[]>();
 
-export function loadCF22ArchiveMarkers(): CircleMarker[] {
-  if (cf22ArchiveMarkersCache) return cf22ArchiveMarkersCache;
+export function loadEventArchiveMarkers(eventSlug: string = "cf23"): CircleMarker[] {
+  const normalized = (eventSlug || "").trim().toLowerCase();
+  const targetKey = normalized.includes("22") ? "cf22" : "cf23";
 
-  const jsonPath = resolve(process.cwd(), "data", "comifuro22-full.json");
+  if (archiveMarkersCacheByEvent.has(targetKey)) {
+    return archiveMarkersCacheByEvent.get(targetKey)!;
+  }
+
+  const jsonFilename = targetKey === "cf22" ? "comifuro22-full.json" : "comifuro23-full.json";
+  const jsonPath = resolve(process.cwd(), "data", jsonFilename);
   if (!existsSync(jsonPath)) {
-    cf22ArchiveMarkersCache = [];
-    return cf22ArchiveMarkersCache;
+    archiveMarkersCacheByEvent.set(targetKey, []);
+    return [];
   }
 
   try {
@@ -338,7 +356,7 @@ export function loadCF22ArchiveMarkers(): CircleMarker[] {
       if (item.SellsGame) categories.push("Game");
 
       markers.push({
-        id: `cf22-booth-${item.id || item.user_id || code}`,
+        id: `${targetKey}-booth-${item.id || item.user_id || code}`,
         circleId: String(item.user_id || item.id || code),
         circleName: item.name?.trim() || "Circle Kreator",
         circleSlug: undefined,
@@ -364,13 +382,17 @@ export function loadCF22ArchiveMarkers(): CircleMarker[] {
       });
     }
 
-    cf22ArchiveMarkersCache = markers;
-    return cf22ArchiveMarkersCache;
+    archiveMarkersCacheByEvent.set(targetKey, markers);
+    return markers;
   } catch (err) {
-    console.error("Gagal membaca arsip CF22:", err);
-    cf22ArchiveMarkersCache = [];
-    return cf22ArchiveMarkersCache;
+    console.error(`Gagal membaca marker ${targetKey}:`, err);
+    archiveMarkersCacheByEvent.set(targetKey, []);
+    return [];
   }
+}
+
+export function loadCF22ArchiveMarkers(): CircleMarker[] {
+  return loadEventArchiveMarkers("cf22");
 }
 
 export interface EventMapPageData {
@@ -407,7 +429,7 @@ export async function getEventMapPageData(rawSlug: string): Promise<EventMapPage
   }
 
   const guide = getEventDetailDataWithFallback(rawSlug, eventRecord?.name, eventRecord?.venue);
-  const archiveMarkers = loadCF22ArchiveMarkers();
+  const archiveMarkers = loadEventArchiveMarkers(normalizedSlug);
 
   return {
     slug: normalizedSlug,
@@ -422,9 +444,7 @@ export async function getEventMapPageData(rawSlug: string): Promise<EventMapPage
     },
     isCf23,
     isCf22,
-    statusText: isCf23
-      ? "Denah Venue CF 23 (Hall 5-10) — Penempatan meja booth 1.959 circle sedang menunggu rilis resmi panitia"
-      : undefined,
+    statusText: undefined,
     halls: ICE_BSD_HALLS,
     communityZones: CF23_COMMUNITY_ZONES,
     archiveMarkers

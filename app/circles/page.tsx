@@ -20,7 +20,7 @@ export default async function CirclesPage({
     allEvents.find((e) => e.circleCount > 0) ??
     allEvents[0];
 
-  const activeEventSlug = eventParam || defaultEvent?.slug || "cf22";
+  const activeEventSlug = eventParam || defaultEvent?.slug || "cf23";
 
   const circles = await getCatalogCircles({ eventId: activeEventSlug });
 

@@ -149,12 +149,7 @@ export async function getCatalogCircles(
   }
 
   if (!selectedEvent) {
-    // Gunakan event resmi yang memiliki data booth (CF 22) selama CF 23 masih menunggu rilis scraping panitia
-    const eventWithBooths = await db.query.events.findFirst({
-      where: eq(events.slug, "cf22")
-    });
     selectedEvent =
-      eventWithBooths ??
       (await getActiveEvent()) ??
       (await db.query.events.findFirst({ orderBy: [desc(events.startsAt)] }));
   }
@@ -195,7 +190,7 @@ export async function getCatalogCircles(
       ? circlesList.filter((c) => c.boothLocations.length > 0 || c.products.length > 0)
       : circlesList;
 
-    const catalog = getCatalogCache();
+    const catalog = getCatalogCache(selectedEvent?.slug);
 
     enrichedCircles = participatingCircles.map((circle) => {
     const location = circle.boothLocations[0];
@@ -822,7 +817,7 @@ export async function getLandingPageData() {
   return {
     event: activeEvent,
     stats: {
-      totalCircles: isCf23 ? 1959 : (totalCirclesResult[0]?.value ?? 0),
+      totalCircles: allLocations.length > 0 ? allLocations.length : (isCf23 ? 1957 : (totalCirclesResult[0]?.value ?? 0)),
       totalProducts: totalProductsResult[0]?.value ?? 0,
       totalHalls: maps.length > 0 ? maps.length : (isCf23 ? 6 : 2),
       totalBooths: allLocations.length

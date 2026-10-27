@@ -34,19 +34,22 @@ export default async function ProductsPage({
   const sort = typeof params.sort === "string" ? params.sort : "booth";
   const circleId = typeof params.circle === "string" ? params.circle : undefined;
   const eventId = typeof params.event === "string" ? params.event : undefined;
-  const activeEventSlug = eventId || "cf22";
 
-  const [allEvents, circles] = await Promise.all([
-    getEventsWithCounts(),
-    getCatalogCircles({
-      q: q || undefined,
-      fandom: fandom || undefined,
-      day: targetDay || undefined,
-      circleId: circleId || undefined,
-      eventId: eventId || undefined,
-      sort
-    })
-  ]);
+  const allEvents = await getEventsWithCounts();
+  const defaultEvent =
+    allEvents.find((e) => e.isActive && e.circleCount > 0) ??
+    allEvents.find((e) => e.circleCount > 0) ??
+    allEvents[0];
+  const activeEventSlug = eventId || defaultEvent?.slug || "cf23";
+
+  const circles = await getCatalogCircles({
+    q: q || undefined,
+    fandom: fandom || undefined,
+    day: targetDay || undefined,
+    circleId: circleId || undefined,
+    eventId: activeEventSlug,
+    sort
+  });
 
   const pageParam = getPageParam(params as SearchParams);
   const pagination = paginateItems(circles, pageParam, 24);

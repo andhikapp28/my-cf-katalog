@@ -25,7 +25,7 @@ export function QuickLookupModal() {
   const router = useRouter();
   const [isOpen, setIsOpen] = useState(false);
   const [query, setQuery] = useState("");
-  const [eventSlug, setEventSlug] = useState("cf22");
+  const [eventSlug, setEventSlug] = useState("cf23");
   const [items, setItems] = useState<QuickLookupItem[]>([]);
   const [selectedIndex, setSelectedIndex] = useState(0);
   const [loading, setLoading] = useState(false);
@@ -195,6 +195,18 @@ export function QuickLookupModal() {
             <span className="font-mono text-[11px] font-bold text-zinc-500 uppercase mr-1">Edisi:</span>
             <button
               type="button"
+              onClick={() => setEventSlug("cf23")}
+              className={cn(
+                "rounded-md px-2.5 py-1 font-mono text-[11px] font-bold transition",
+                eventSlug === "cf23"
+                  ? "bg-[#111215] text-[#D6F834] shadow-xs"
+                  : "bg-white text-zinc-600 hover:bg-zinc-200/80 border border-zinc-200"
+              )}
+            >
+              CF 23 (Resmi 1.957 Booth)
+            </button>
+            <button
+              type="button"
               onClick={() => setEventSlug("cf22")}
               className={cn(
                 "rounded-md px-2.5 py-1 font-mono text-[11px] font-bold transition",
@@ -204,18 +216,6 @@ export function QuickLookupModal() {
               )}
             >
               CF 22 (Arsip 1.477 Booth)
-            </button>
-            <button
-              type="button"
-              onClick={() => setEventSlug("cf23")}
-              className={cn(
-                "rounded-md px-2.5 py-1 font-mono text-[11px] font-bold transition",
-                eventSlug === "cf23"
-                  ? "bg-[#111215] text-[#D6F834] shadow-xs"
-                  : "bg-white text-zinc-600 hover:bg-zinc-200/80 border border-zinc-200"
-              )}
-            >
-              CF 23 (Upcoming)
             </button>
           </div>
 
@@ -234,16 +234,12 @@ export function QuickLookupModal() {
             <div className="p-8 text-center space-y-2">
               <Store className="h-8 w-8 text-zinc-300 mx-auto" />
               <p className="text-sm font-bold text-zinc-700">
-                {eventSlug === "cf23"
-                  ? "Data nomor meja booth CF 23 belum dirilis panitia."
-                  : query
-                    ? `Tidak ada circle dengan kata kunci "${query}"`
-                    : "Ketik nama circle atau nomor booth untuk mencari"}
+                {query
+                  ? `Tidak ada circle dengan kata kunci "${query}"`
+                  : "Ketik nama circle atau nomor booth untuk mencari"}
               </p>
               <p className="text-xs text-zinc-500">
-                {eventSlug === "cf23"
-                  ? "Coba beralih ke tab 'CF 22' untuk melihat denah dan 1.477 booth arsip."
-                  : "Contoh pencarian: TC-12, AA-05, Blue Archive, Genshin"}
+                Contoh pencarian: AA-01, TC-12, Genshin, Blue Archive, Honkai
               </p>
             </div>
           ) : (

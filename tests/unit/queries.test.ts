@@ -72,11 +72,11 @@ describe("Database Queries - Active Event (CF 23) & Landing Page Data", () => {
     expect(active?.venue).toBe("ICE BSD City (Hall 5, 6, 7, 8, 9, 10)");
   });
 
-  it("getLandingPageData() mengembalikan statistik CF 23 akurat (1.959 circle, 6 hall venue)", async () => {
+  it("getLandingPageData() mengembalikan statistik CF 23 akurat (1.957 circle, 6 hall venue)", async () => {
     const landing = await getLandingPageData();
     expect(landing).toBeDefined();
     expect(landing?.event.slug).toBe("cf23");
-    expect(landing?.stats.totalCircles).toBe(1959);
+    expect(landing?.stats.totalCircles).toBe(1957);
     expect(landing?.stats.totalHalls).toBe(6);
     expect(landing?.maps.length).toBe(6);
   });
