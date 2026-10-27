@@ -22,7 +22,32 @@ export default async function CirclesPage({
 
   const activeEventSlug = eventParam || defaultEvent?.slug || "cf23";
 
-  const circles = await getCatalogCircles({ eventId: activeEventSlug });
+  const rawCircles = await getCatalogCircles({ eventId: activeEventSlug });
+
+  // Ringkas payload props untuk Client Component: hilangkan metadata berat (floorMap SVG, timestamp internal)
+  // agar SSR payload turun dari 8.8 MB menjadi ~2 MB, mempercepat render dev & prod secara drastis
+  const circles = rawCircles.map((circle) => ({
+    id: circle.id,
+    name: circle.name,
+    slug: circle.slug,
+    notes: circle.notes,
+    socialLink: circle.socialLink,
+    circleCutUrl: circle.circleCutUrl,
+    fandom: circle.fandom,
+    categories: circle.categories,
+    rating: circle.rating ?? undefined,
+    day: circle.day,
+    boothCode: circle.boothCode,
+    productCount: circle.products?.length ?? 0,
+    socialLinks: circle.socialLinks,
+    products: circle.products?.map((p) => ({
+      id: p.id,
+      name: p.name,
+      price: p.price,
+      imageUrl: p.imageUrl,
+      ...(p.poPickupNotes ? { poPickupNotes: p.poPickupNotes } : {})
+    }))
+  }));
 
   // Siapkan opsi event switcher untuk UI
   const eventOptions: EventOption[] = allEvents

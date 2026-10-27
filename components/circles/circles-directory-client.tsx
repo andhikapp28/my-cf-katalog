@@ -10,7 +10,6 @@ import {
 import { CircleCatalogModal } from "@/components/products/circle-catalog-modal";
 import { compareBoothCodes, getCirclePrimaryBoothCode } from "@/lib/floor-map";
 import { cn } from "@/lib/utils";
-import type { CatalogCircle } from "@/db/queries";
 
 export interface EventOption {
   slug: string;
@@ -20,7 +19,7 @@ export interface EventOption {
 }
 
 export interface CirclesDirectoryClientProps {
-  initialCircles: CatalogCircle[];
+  initialCircles: CompactCircleItem[];
   activeEventSlug: string;
   events: EventOption[];
 }

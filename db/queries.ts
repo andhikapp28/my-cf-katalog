@@ -135,7 +135,20 @@ let baseCirclesCache: {
   circles: CatalogCircle[];
 } | null = null;
 
+const baseCirclesCacheMap = new Map<
+  string,
+  {
+    timestamp: number;
+    circles: CatalogCircle[];
+  }
+>();
+
 const CACHE_TTL_MS = 120 * 1000; // 2 menit TTL untuk performa kilat (sub-2ms) saat ganti halaman / filter
+
+export function clearCirclesCache() {
+  baseCirclesCache = null;
+  baseCirclesCacheMap.clear();
+}
 
 export async function getCatalogCircles(
   filters: CatalogCircleFilters = {}
@@ -158,12 +171,9 @@ export async function getCatalogCircles(
   const now = Date.now();
   let enrichedCircles: CatalogCircle[];
 
-  if (
-    baseCirclesCache &&
-    baseCirclesCache.eventId === eventIdKey &&
-    now - baseCirclesCache.timestamp < CACHE_TTL_MS
-  ) {
-    enrichedCircles = baseCirclesCache.circles;
+  const cached = baseCirclesCacheMap.get(eventIdKey);
+  if (cached && now - cached.timestamp < CACHE_TTL_MS) {
+    enrichedCircles = cached.circles;
   } else {
     const circlesList = await db.query.circles.findMany({
       with: {
@@ -267,6 +277,10 @@ export async function getCatalogCircles(
       timestamp: now,
       circles: enrichedCircles
     };
+    baseCirclesCacheMap.set(eventIdKey, {
+      timestamp: now,
+      circles: enrichedCircles
+    });
   }
 
   let result = enrichedCircles;
@@ -632,26 +646,43 @@ export async function getDashboardData(eventId?: string) {
 }
 
 export async function getEventsWithCounts() {
-  return db
-    .select({
-      id: events.id,
-      name: events.name,
-      slug: events.slug,
-      description: events.description,
-      venue: events.venue,
-      isActive: events.isActive,
-      startsAt: events.startsAt,
-      endsAt: events.endsAt,
-      budget: events.budget,
-      bannerImageUrl: events.bannerImageUrl,
-      productCount: countDistinct(products.id),
-      circleCount: countDistinct(boothLocations.circleId)
-    })
-    .from(events)
-    .leftJoin(products, eq(products.eventId, events.id))
-    .leftJoin(boothLocations, eq(boothLocations.eventId, events.id))
-    .groupBy(events.id)
-    .orderBy(desc(events.startsAt));
+  const [evList, productCounts, boothCounts] = await Promise.all([
+    db.query.events.findMany({
+      orderBy: [desc(events.startsAt)]
+    }),
+    db
+      .select({
+        eventId: products.eventId,
+        count: count(products.id)
+      })
+      .from(products)
+      .groupBy(products.eventId),
+    db
+      .select({
+        eventId: boothLocations.eventId,
+        count: countDistinct(boothLocations.circleId)
+      })
+      .from(boothLocations)
+      .groupBy(boothLocations.eventId)
+  ]);
+
+  const productMap = new Map(productCounts.map((p) => [p.eventId, p.count]));
+  const boothMap = new Map(boothCounts.map((b) => [b.eventId, b.count]));
+
+  return evList.map((ev) => ({
+    id: ev.id,
+    name: ev.name,
+    slug: ev.slug,
+    description: ev.description,
+    venue: ev.venue,
+    isActive: ev.isActive,
+    startsAt: ev.startsAt,
+    endsAt: ev.endsAt,
+    budget: ev.budget,
+    bannerImageUrl: ev.bannerImageUrl,
+    productCount: productMap.get(ev.id) ?? 0,
+    circleCount: boothMap.get(ev.id) ?? 0
+  }));
 }
 
 export async function getBooths(eventId?: string) {
@@ -760,7 +791,7 @@ export async function getLandingPageData() {
     maps,
     featuredCircles,
     featuredProducts,
-    allLocations
+    totalBoothsResult
   ] = await Promise.all([
     db.select({ value: count() }).from(circles),
     db.select({ value: count() }).from(products).where(eq(products.eventId, activeEvent.id)),
@@ -790,9 +821,10 @@ export async function getLandingPageData() {
         circle: true
       }
     }),
-    db.query.boothLocations.findMany({
-      where: eq(boothLocations.eventId, activeEvent.id)
-    })
+    db
+      .select({ value: count() })
+      .from(boothLocations)
+      .where(eq(boothLocations.eventId, activeEvent.id))
   ]);
 
   const isCf23 = activeEvent.slug === "cf23";
@@ -814,13 +846,15 @@ export async function getLandingPageData() {
     ]
   };
 
+  const totalBoothsCount = totalBoothsResult[0]?.value ?? 0;
+
   return {
     event: activeEvent,
     stats: {
-      totalCircles: allLocations.length > 0 ? allLocations.length : (isCf23 ? 1957 : (totalCirclesResult[0]?.value ?? 0)),
+      totalCircles: totalBoothsCount > 0 ? totalBoothsCount : (isCf23 ? 1957 : (totalCirclesResult[0]?.value ?? 0)),
       totalProducts: totalProductsResult[0]?.value ?? 0,
       totalHalls: maps.length > 0 ? maps.length : (isCf23 ? 6 : 2),
-      totalBooths: allLocations.length
+      totalBooths: totalBoothsCount
     },
     ticketPricing: {
       platform: ticketPricing.platform,
@@ -834,7 +868,7 @@ export async function getLandingPageData() {
     maps,
     featuredCircles,
     featuredProducts,
-    locations: allLocations
+    locations: []
   };
 }
 
