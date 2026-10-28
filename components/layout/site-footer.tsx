@@ -1,7 +1,15 @@
+"use client";
+
 import Image from "next/image";
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 
 export function SiteFooter() {
+  const pathname = usePathname();
+
+  if (pathname?.includes("/map")) {
+    return null;
+  }
   return (
     <footer className="border-t border-[#E5E5E5] bg-[#FFFFFF] text-[#111215] pt-16 pb-8 transition-colors">
       <div className="container-shell max-w-7xl mx-auto space-y-12">

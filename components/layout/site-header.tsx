@@ -52,6 +52,10 @@ export function SiteHeader() {
 
   const wishlistCount = mounted ? wishlistIds.length : 0;
 
+  if (pathname?.includes("/map")) {
+    return null;
+  }
+
   return (
     <header className="sticky top-0 z-50 border-b border-black/10 bg-[#5398DA]/95 backdrop-blur-md transition-colors duration-200">
       <div className="container-shell flex h-16 items-center justify-between gap-4">
